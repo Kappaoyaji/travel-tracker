@@ -344,7 +344,7 @@
             
             // currentTimeより前のスケジュールを時系列順に並べる
             const pastSchedules = schedules
-                .filter(s => (s.日時UTC || s.日時) && new Date(s.日時UTC || s.日時) <= currentTime)
+                .filter(s => (s.UTC || s.日時) && new Date(s.UTC || s.日時) <= currentTime)
                 .sort((a, b) => new Date(b.日時) - new Date(a.日時));
             
            // 最新のスケジュールを返す（なければ最初のスケジュール）
@@ -370,8 +370,8 @@
                         const arrival = schedules.find(s => s.ID === current.到着地ID);
                         console.log('到着地:', arrival);
                     if (arrival && arrival.日時) {
-                        const departTime = new Date(current.日時UTC || current.日時);
-                        const arriveTime = new Date(arrival.日時UTC || arrival.日時);
+                        const departTime = new Date(current.UTC || current.日時);
+                        const arriveTime = new Date(arrival.UTC || arrival.日時);
                         console.log('時刻比較:', 'current=', currentTime, 'depart=', departTime, 'arrive=', arriveTime);
                         console.log('範囲内?', currentTime >= departTime, currentTime <= arriveTime);
                         
