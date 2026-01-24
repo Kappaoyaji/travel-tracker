@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -248,6 +249,12 @@
     </div>
 
     <script>
+        // 現地時間をUTCに変換
+        function toUTC(dateTimeStr, timezone) {
+            const dt = luxon.DateTime.fromISO(dateTimeStr, { zone: timezone });
+            return dt.toUTC().toJSDate();
+        }
+
         // 設定情報（後で入力）
         const CONFIG = {
             SHEET_URL: 'https://script.google.com/macros/s/AKfycbwzao-67p0eODsPnqxa2a5qBTkKT6jx3B91xaU15bylyrKE28im__5OYKHyVdeJfAW-/exec',
