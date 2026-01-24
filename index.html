@@ -443,24 +443,22 @@
         // タイムライン UI 初期化
         // ========================================
         function initTimeline(schedules) {
-            function initTimeline(schedules) {
-        // データチェック
-        if (!schedules || schedules.length === 0) {
-            console.log('スケジュールデータがありません');
-            return;
-        }
-        
-        timeSlots = generateTimeSlots(schedules);
-        
-        // タイムスロットチェック
-        if (timeSlots.length === 0) {
-            console.log('タイムスロットが生成できませんでした');
-            return;
-        }
+            // データチェック
+            if (!schedules || schedules.length === 0) {
+                console.log('スケジュールデータがありません');
+                return;
+            }
+            
             timeSlots = generateTimeSlots(schedules);
             
-        // タイムゾーンドロップダウンを生成
-        const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
+            // タイムスロットチェック
+            if (timeSlots.length === 0) {
+                console.log('タイムスロットが生成できませんでした');
+                return;
+            }
+            
+            // タイムゾーンドロップダウンを生成
+            const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
             const tzSelect = document.getElementById('timezone-select');
             tzSelect.innerHTML = uniqueTimezones.map(tz => 
                 `<option value="${tz}" ${tz === currentTimezone ? 'selected' : ''}>${tz}</option>`
