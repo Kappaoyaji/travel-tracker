@@ -345,7 +345,7 @@
             // currentTimeより前のスケジュールを時系列順に並べる
             const pastSchedules = schedules
                 .filter(s => (s.UTC || s.日時) && new Date(s.UTC || s.日時) <= currentTime)
-                .sort((a, b) => new Date(b.日時) - new Date(a.日時));
+                .sort((a, b) => new Date(b.UTC || b.日時) - new Date(a.UTC || a.日時));
             
            // 最新のスケジュールを返す（なければ最初のスケジュール）
             const result = pastSchedules.length > 0 ? pastSchedules[0] : schedules[0];
