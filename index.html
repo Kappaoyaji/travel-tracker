@@ -347,6 +347,7 @@
                     
                     // 現在時刻が出発〜到着の間なら補間
                     if (currentTime >= departTime && currentTime <= arriveTime) {
+                        console.log('補間計算中:', currentTime, departTime, arriveTime);
                         const totalDuration = arriveTime - departTime;
                         const elapsed = currentTime - departTime;
                         const progress = elapsed / totalDuration;
