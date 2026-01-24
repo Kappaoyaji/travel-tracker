@@ -565,6 +565,7 @@
             });
             
             document.getElementById('time-slider').addEventListener('input', (e) => {
+                console.log('スライダー動いた:', e.target.value);
                 const slot = timeSlots[currentSlotIndex];
                 const progress = e.target.value / 100;
                 const duration = slot.end - slot.start;
