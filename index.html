@@ -328,8 +328,10 @@
                 .filter(s => (s.日時UTC || s.日時) && new Date(s.日時UTC || s.日時) <= currentTime)
                 .sort((a, b) => new Date(b.日時) - new Date(a.日時));
             
-            // 最新のスケジュールを返す（なければ最初のスケジュール）
-            return pastSchedules.length > 0 ? pastSchedules[0] : schedules[0];
+           // 最新のスケジュールを返す（なければ最初のスケジュール）
+            const result = pastSchedules.length > 0 ? pastSchedules[0] : schedules[0];
+            console.log('getCurrentSchedule結果:', result ? result.場所名 : 'null');
+            return result;
         }
        
             // 現在位置を計算（交通系の場合は補間）
