@@ -311,6 +311,10 @@
             }
             
             map.setCenter(position);
+
+        // 時刻表示を更新
+        document.getElementById('local-time').textContent = formatTime(currentTime, current.タイムゾーン);
+        document.getElementById('japan-time').textContent = formatTime(currentTime, 'Asia/Tokyo');
         }
         
         // 現在のスケジュールを取得
