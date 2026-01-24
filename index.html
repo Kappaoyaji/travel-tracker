@@ -348,6 +348,8 @@
                     if (arrival && arrival.日時) {
                         const departTime = new Date(current.日時);
                         const arriveTime = new Date(arrival.日時);
+                        console.log('時刻比較:', 'current=', currentTime, 'depart=', departTime, 'arrive=', arriveTime);
+                        console.log('範囲内?', currentTime >= departTime, currentTime <= arriveTime);
                         
                         // 現在時刻が出発〜到着の間なら補間
                         if (currentTime >= departTime && currentTime <= arriveTime) {
