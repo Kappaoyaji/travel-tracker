@@ -277,7 +277,7 @@
             try {
                 const response = await fetch(CONFIG.SHEET_URL);
                 const data = await response.json();
-                schedules = data.filter(item => item.status === '有効');
+                schedules = data.filter(item => item.ステータス === '有効' || item.ステータス === '未訪問');
                 
                 // タイムライン初期化
                 initTimeline(schedules);
