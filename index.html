@@ -75,6 +75,137 @@
             z-index: 1000;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+
+        /* タイムラインコントロール */
+        #timeline-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        #timezone-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        #now-btn {
+            padding: 8px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        #now-btn:hover {
+            background: #357ae8;
+        }
+
+        .timeline-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .timeline-navigation button {
+            padding: 8px 16px;
+            background: #f1f3f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .timeline-navigation button:hover:not(:disabled) {
+            background: #e8eaed;
+        }
+
+        .timeline-navigation button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #slot-info {
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            flex: 1;
+        }
+
+        .timeline-slider {
+            margin-bottom: 10px;
+        }
+
+        #time-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        #time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4285f4;
+            cursor: pointer;
+        }
+
+        #time-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4285f4;
+            cursor: pointer;
+            border: none;
+        }
+
+        #current-time {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        /* スマホ対応 */
+        @media (max-width: 768px) {
+            .timeline-header {
+                flex-direction: column;
+            }
+            
+            #timezone-select {
+                max-width: 100%;
+            }
+            
+            #now-btn {
+                width: 100%;
+            }
+            
+            #slot-info {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -96,8 +227,24 @@
     </div>
     
     <div id="timeline-container">
-        <input type="range" id="timeline" min="0" max="100" value="100">
-        <button id="current-time-btn">現在時刻に戻る</button>
+        <div id="timeline-controls">
+            <div class="timeline-header">
+                <select id="timezone-select"></select>
+                <button id="now-btn">現在時刻に戻る</button>
+            </div>
+            
+            <div class="timeline-navigation">
+                <button id="prev-slot">◀ 前</button>
+                <span id="slot-info"></span>
+                <button id="next-slot">次 ▶</button>
+            </div>
+            
+            <div class="timeline-slider">
+                <input type="range" id="time-slider" min="0" max="100" value="0">
+            </div>
+            
+            <div id="current-time"></div>
+        </div>
     </div>
 
     <script>
@@ -129,11 +276,15 @@
         async function loadSchedules() {
             try {
                 const response = await fetch(CONFIG.SHEET_URL);
-                schedules = await response.json();
-                console.log('スケジュール読み込み完了:', schedules);
+                const data = await response.json();
+                schedules = data.filter(item => item.status === '有効');
+                
+                // タイムライン初期化
+                initTimeline(schedules);
+                
                 updateDisplay();
             } catch (error) {
-                console.error('データ読み込みエラー:', error);
+                console.error('スケジュール読み込みエラー:', error);
             }
         }
         
@@ -167,6 +318,225 @@
             // とりあえず最初のスケジュールを返す（後で時間計算を追加）
             return schedules[0];
         }
+
+        // ========================================
+        // タイムライン関連の変数
+        // ========================================
+        let currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        let timelineMode = window.innerWidth >= 768 ? 12 : 6; // PC: 12時間, スマホ: 6時間
+        let timeSlots = [];
+        let currentSlotIndex = 0;
+
+        // ========================================
+        // タイムゾーン・時間計算ユーティリティ
+        // ========================================
+        function getTimeInTimezone(date, timezone) {
+            return new Date(date.toLocaleString('en-US', { timeZone: timezone }));
+        }
+
+        function formatTime(date, timezone) {
+            return date.toLocaleString('ja-JP', {
+                timeZone: timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+
+        function formatDateTime(date, timezone) {
+            return date.toLocaleString('ja-JP', {
+                timeZone: timezone,
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+
+        // ========================================
+        // タイムスロット生成
+        // ========================================
+        function generateTimeSlots(schedules) {
+            const slots = [];
+        const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
+
+        if (schedules.length === 0) return slots;
+
+        // 旅程の開始日時と終了日時を取得
+        const startDate = new Date(Math.min(...schedules.map(s => new Date(s.日時))));
+        const endDate = new Date(Math.max(...schedules.map(s => new Date(s.日時))));
+            
+            // 日数を計算
+            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            
+            if (timelineMode === 12) {
+                // 12時間モード: 6:00-18:00, 18:00-翌6:00
+                for (let day = 0; day < days; day++) {
+                    const baseDate = new Date(startDate);
+                    baseDate.setDate(startDate.getDate() + day);
+                    
+                    // 6:00-18:00
+                    const morning = new Date(baseDate);
+                    morning.setHours(6, 0, 0, 0);
+                    slots.push({
+                        start: new Date(morning),
+                        end: new Date(morning.getTime() + 12 * 60 * 60 * 1000),
+                        label: '6:00-18:00'
+                    });
+                    
+                    // 18:00-翌6:00
+                    const evening = new Date(baseDate);
+                    evening.setHours(18, 0, 0, 0);
+                    slots.push({
+                        start: new Date(evening),
+                        end: new Date(evening.getTime() + 12 * 60 * 60 * 1000),
+                        label: '18:00-翌6:00'
+                    });
+                }
+            } else {
+                // 6時間モード: 6:00-12:00, 12:00-18:00, 18:00-0:00, 0:00-6:00
+                for (let day = 0; day < days; day++) {
+                    const baseDate = new Date(startDate);
+                    baseDate.setDate(startDate.getDate() + day);
+                    
+                    const times = [
+                        { hour: 6, label: '6:00-12:00' },
+                        { hour: 12, label: '12:00-18:00' },
+                        { hour: 18, label: '18:00-0:00' },
+                        { hour: 0, label: '0:00-6:00', nextDay: true }
+                    ];
+                    
+                    times.forEach(time => {
+                        const slotStart = new Date(baseDate);
+                        if (time.nextDay) {
+                            slotStart.setDate(baseDate.getDate() + 1);
+                        }
+                        slotStart.setHours(time.hour, 0, 0, 0);
+                        
+                        slots.push({
+                            start: new Date(slotStart),
+                            end: new Date(slotStart.getTime() + 6 * 60 * 60 * 1000),
+                            label: time.label
+                        });
+                    });
+                }
+            }
+            
+            return slots;
+        }
+
+        // ========================================
+        // 現在時刻を含むスロットを検索
+        // ========================================
+        function findCurrentSlot(slots, time) {
+            for (let i = 0; i < slots.length; i++) {
+                if (time >= slots[i].start && time < slots[i].end) {
+                    return i;
+                }
+            }
+            // 見つからない場合は最初のスロット
+            return 0;
+        }
+
+        // ========================================
+        // タイムライン UI 初期化
+        // ========================================
+        function initTimeline(schedules) {
+            timeSlots = generateTimeSlots(schedules);
+            
+        // タイムゾーンドロップダウンを生成
+        const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
+            const tzSelect = document.getElementById('timezone-select');
+            tzSelect.innerHTML = uniqueTimezones.map(tz => 
+                `<option value="${tz}" ${tz === currentTimezone ? 'selected' : ''}>${tz}</option>`
+            ).join('');
+            
+            // 現在のスロットを設定
+            const nowInTz = getTimeInTimezone(new Date(), currentTimezone);
+            currentSlotIndex = findCurrentSlot(timeSlots, nowInTz);
+            currentTime = nowInTz;
+            
+            updateTimelineUI();
+            
+            // イベントリスナー設定
+            document.getElementById('prev-slot').addEventListener('click', () => {
+                if (currentSlotIndex > 0) {
+                    currentSlotIndex--;
+                    currentTime = timeSlots[currentSlotIndex].start;
+                    updateTimelineUI();
+                    updateDisplay();
+                }
+            });
+            
+            document.getElementById('next-slot').addEventListener('click', () => {
+                if (currentSlotIndex < timeSlots.length - 1) {
+                    currentSlotIndex++;
+                    currentTime = timeSlots[currentSlotIndex].start;
+                    updateTimelineUI();
+                    updateDisplay();
+                }
+            });
+            
+            document.getElementById('now-btn').addEventListener('click', () => {
+                const nowInTz = getTimeInTimezone(new Date(), currentTimezone);
+                currentSlotIndex = findCurrentSlot(timeSlots, nowInTz);
+                currentTime = nowInTz;
+                updateTimelineUI();
+                updateDisplay();
+            });
+            
+            document.getElementById('timezone-select').addEventListener('change', (e) => {
+                currentTimezone = e.target.value;
+                const nowInTz = getTimeInTimezone(new Date(), currentTimezone);
+                currentSlotIndex = findCurrentSlot(timeSlots, nowInTz);
+                currentTime = nowInTz;
+                updateTimelineUI();
+                updateDisplay();
+            });
+            
+            document.getElementById('time-slider').addEventListener('input', (e) => {
+                const slot = timeSlots[currentSlotIndex];
+                const progress = e.target.value / 100;
+                const duration = slot.end - slot.start;
+                currentTime = new Date(slot.start.getTime() + duration * progress);
+                updateTimeDisplay();
+                updateDisplay();
+            });
+        }
+
+        // ========================================
+        // タイムライン UI 更新
+        // ========================================
+        function updateTimelineUI() {
+            const slot = timeSlots[currentSlotIndex];
+            
+            // スロット情報表示
+            document.getElementById('slot-info').textContent = 
+                `${formatDateTime(slot.start, currentTimezone)} - ${formatTime(slot.end, currentTimezone)}`;
+            
+            // ボタンの有効/無効
+            document.getElementById('prev-slot').disabled = currentSlotIndex === 0;
+            document.getElementById('next-slot').disabled = currentSlotIndex === timeSlots.length - 1;
+            
+            // スライダーの位置を更新
+            const progress = (currentTime - slot.start) / (slot.end - slot.start);
+            document.getElementById('time-slider').value = Math.max(0, Math.min(100, progress * 100));
+            
+            updateTimeDisplay();
+        }
+
+        // ========================================
+        // 時刻表示更新
+        // ========================================
+        function updateTimeDisplay() {
+            const localTime = formatDateTime(currentTime, currentTimezone);
+            const jstTime = formatDateTime(currentTime, 'Asia/Tokyo');
+            
+            document.getElementById('current-time').textContent = 
+                `現地: ${localTime} | 日本: ${jstTime}`;
+        }
+
     </script>
     
     <script async defer
