@@ -352,58 +352,55 @@
             console.log('getCurrentSchedule結果:', result ? result.場所名 : 'null');
             return result;
         }
-       
-            // 現在位置を計算（交通系の場合は補間）
+         // 現在位置を計算（交通系の場合は補間）
             function getCurrentPosition() {
-                console.log('getCurrentPosition呼ばれた');
-                if (schedules.length === 0) return null;
+            console.log('getCurrentPosition呼ばれた');
+            if (schedules.length === 0) return null;
+            
+            // 現在時刻より前の最新スケジュール
+            const current = getCurrentSchedule();
+            if (!current) return null;
+            
+            // 出発タイプの場合、到着地との間を補間
+            if (current.タイプ === '出発' && current.到着地ID) {
+                console.log('出発タイプ検出:', current.場所名, current.到着地ID);
+                const arrival = schedules.find(s => s.ID === current.到着地ID);
+                console.log('到着地:', arrival);
                 
-                // 現在時刻より前の最新スケジュール
-                const current = getCurrentSchedule();
-                if (!current) return null;
-                
-                // 出発タイプの場合、到着地との間を補間
-                if (current.タイプ === '出発' && current.到着地ID) {
-                    const arrival = schedules.find(s => s.ID === current.到着地ID);
-                    if (current.タイプ === '出発' && current.到着地ID) {
-                        console.log('出発タイプ検出:', current.場所名, current.到着地ID);
-                        const arrival = schedules.find(s => s.ID === current.到着地ID);
-                        console.log('到着地:', arrival);
-                    if (arrival && arrival.日時) {
-                        const departTime = new Date(current.UTC || current.日時);
-                        const arriveTime = new Date(arrival.UTC || arrival.日時);
-                        console.log('時刻比較:', 'current=', currentTime, 'depart=', departTime, 'arrive=', arriveTime);
-                        console.log('範囲内?', currentTime >= departTime, currentTime <= arriveTime);
+                if (arrival && (arrival.UTC || arrival.日時)) {
+                    const departTime = new Date(current.UTC || current.日時);
+                    const arriveTime = new Date(arrival.UTC || arrival.日時);
+                    console.log('時刻比較:', 'current=', currentTime, 'depart=', departTime, 'arrive=', arriveTime);
+                    console.log('範囲内?', currentTime >= departTime, currentTime <= arriveTime);
+                    
+                    // 現在時刻が出発〜到着の間なら補間
+                    if (currentTime >= departTime && currentTime <= arriveTime) {
+                        console.log('補間計算中:', currentTime, departTime, arriveTime);
+                        const totalDuration = arriveTime - departTime;
+                        const elapsed = currentTime - departTime;
+                        const progress = elapsed / totalDuration;
                         
-                        // 現在時刻が出発〜到着の間なら補間
-                        if (currentTime >= departTime && currentTime <= arriveTime) {
-                            console.log('補間計算中:', currentTime, departTime, arriveTime);
-                            const totalDuration = arriveTime - departTime;
-                            const elapsed = currentTime - departTime;
-                            const progress = elapsed / totalDuration;
-                            
-                            // 緯度経度を補間（経度は最短距離で）
-                            const lat = current.緯度 + (arrival.緯度 - current.緯度) * progress;
+                        // 緯度経度を補間（経度は最短距離で）
+                        const lat = current.緯度 + (arrival.緯度 - current.緯度) * progress;
 
-                            // 経度の差分を-180〜180の範囲に正規化
-                            let lngDiff = arrival.経度 - current.経度;
-                            if (lngDiff > 180) lngDiff -= 360;
-                            if (lngDiff < -180) lngDiff += 360;
+                        // 経度の差分を-180〜180の範囲に正規化
+                        let lngDiff = arrival.経度 - current.経度;
+                        if (lngDiff > 180) lngDiff -= 360;
+                        if (lngDiff < -180) lngDiff += 360;
 
-                            const lng = current.経度 + lngDiff * progress;
-                            
-                            return {
-                                ...current,
-                                緯度: lat,
-                                経度: lng,
-                                場所名: `${current.場所名} → ${arrival.場所名} (移動中)`
-                            };
-                        }
+                        const lng = current.経度 + lngDiff * progress;
+                        
+                        return {
+                            ...current,
+                            緯度: lat,
+                            経度: lng,
+                            場所名: `${current.場所名} → ${arrival.場所名} (移動中)`
+                        };
                     }
                 }
-                
-                return current;
             }
+            
+            return current;
         }
 
         // ========================================
