@@ -443,6 +443,20 @@
         // タイムライン UI 初期化
         // ========================================
         function initTimeline(schedules) {
+            function initTimeline(schedules) {
+        // データチェック
+        if (!schedules || schedules.length === 0) {
+            console.log('スケジュールデータがありません');
+            return;
+        }
+        
+        timeSlots = generateTimeSlots(schedules);
+        
+        // タイムスロットチェック
+        if (timeSlots.length === 0) {
+            console.log('タイムスロットが生成できませんでした');
+            return;
+        }
             timeSlots = generateTimeSlots(schedules);
             
         // タイムゾーンドロップダウンを生成
