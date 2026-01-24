@@ -400,6 +400,11 @@
                 }
             }
             
+            // 到着タイプの場合、その場所に留まる
+            if (current.タイプ === '到着') {
+                return current;
+            }
+
             return current;
         }
 
