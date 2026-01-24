@@ -341,6 +341,10 @@
             // 出発タイプの場合、到着地との間を補間
             if (current.タイプ === '出発' && current.到着地ID) {
                 const arrival = schedules.find(s => s.ID === current.到着地ID);
+                if (current.タイプ === '出発' && current.到着地ID) {
+                    console.log('出発タイプ検出:', current.場所名, current.到着地ID);
+                    const arrival = schedules.find(s => s.ID === current.到着地ID);
+                    console.log('到着地:', arrival);
                 if (arrival && arrival.日時) {
                     const departTime = new Date(current.日時);
                     const arriveTime = new Date(arrival.日時);
