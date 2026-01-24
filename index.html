@@ -570,6 +570,7 @@
                 const progress = e.target.value / 100;
                 const duration = slot.end - slot.start;
                 currentTime = new Date(slot.start.getTime() + duration * progress);
+                console.log('currentTime更新:', currentTime);
                 updateTimeDisplay();
                 updateDisplay();
             });
