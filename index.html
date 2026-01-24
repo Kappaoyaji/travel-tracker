@@ -320,6 +320,7 @@
         
         // 現在のスケジュールを取得
         function getCurrentSchedule() {
+            console.log('getCurrentSchedule: currentTime=', currentTime);
             if (schedules.length === 0) return null;
             
             // currentTimeより前のスケジュールを時系列順に並べる
