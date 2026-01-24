@@ -329,6 +329,44 @@
             // 最新のスケジュールを返す（なければ最初のスケジュール）
             return pastSchedules.length > 0 ? pastSchedules[0] : schedules[0];
         }
+       
+        // 現在位置を計算（交通系の場合は補間）
+        function getCurrentPosition() {
+            if (schedules.length === 0) return null;
+            
+            // 現在時刻より前の最新スケジュール
+            const current = getCurrentSchedule();
+            if (!current) return null;
+            
+            // 出発タイプの場合、到着地との間を補間
+            if (current.タイプ === '出発' && current.到着地ID) {
+                const arrival = schedules.find(s => s.ID === current.到着地ID);
+                if (arrival && arrival.日時) {
+                    const departTime = new Date(current.日時);
+                    const arriveTime = new Date(arrival.日時);
+                    
+                    // 現在時刻が出発〜到着の間なら補間
+                    if (currentTime >= departTime && currentTime <= arriveTime) {
+                        const totalDuration = arriveTime - departTime;
+                        const elapsed = currentTime - departTime;
+                        const progress = elapsed / totalDuration;
+                        
+                        // 緯度経度を補間
+                        const lat = current.緯度 + (arrival.緯度 - current.緯度) * progress;
+                        const lng = current.経度 + (arrival.経度 - current.経度) * progress;
+                        
+                        return {
+                            ...current,
+                            緯度: lat,
+                            経度: lng,
+                            場所名: `${current.場所名} → ${arrival.場所名} (移動中)`
+                        };
+                    }
+                }
+            }
+            
+            return current;
+        }
 
         // ========================================
         // タイムライン関連の変数
