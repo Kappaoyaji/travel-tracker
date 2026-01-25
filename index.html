@@ -90,8 +90,34 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            gap: 15px;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        #center-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .nav-button {
+            min-width: 40px;
+        }
+
+        .control-button {
+            padding: 5px 15px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .control-button:hover {
+            background: #357ae8;
         }
 
         #timezone-select {
@@ -293,13 +319,19 @@
     <div id="timeline-container">
         <div id="timeline-controls">
             <div class="timeline-header">
-                <button id="prev-slot">◀</button>
-                <select id="timezone-select"></select>
-                <div id="current-time-display"></div>
-                <button id="now-btn">NOW</button>
-                <button id="next-slot">▶</button>
+                <button id="prev-slot" class="nav-button">◀</button>
+                
+                <div id="center-controls">
+                    <select id="timezone-select"></select>
+                    <div id="current-time-display"></div>
+                    <button id="play-button" class="control-button" style="display: none;">▶</button>
+                    <button id="now-btn" class="control-button">NOW</button>
+                </div>
+                
+                <button id="next-slot" class="nav-button">▶</button>
             </div>
-            
+        </div>
+                    
             <div class="timeline-slider">
                 <div class="timeline-ticks" id="timeline-ticks"></div>
                 <input type="range" id="time-slider" min="0" max="100" value="0">
@@ -307,7 +339,13 @@
         </div>
     </div>
 
-    <script>
+        <script>
+        // デバイス判定
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                || window.innerWidth <= 768;
+        }
+
         // 現地時間をUTCに変換
         function toUTC(dateTimeStr, timezone) {
             const dt = luxon.DateTime.fromISO(dateTimeStr, { zone: timezone });
@@ -492,14 +530,26 @@
         }
 
         function formatDateTime(date, timezone) {
-            return date.toLocaleString('ja-JP', {
-                timeZone: timezone,
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
+            if (isMobile()) {
+                // スマホ: HH:MM のみ
+                return date.toLocaleString('ja-JP', {
+                    timeZone: timezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+            } else {
+                // PC: YYYY/MM/DD HH:MM
+                return date.toLocaleString('ja-JP', {
+                    timeZone: timezone,
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+            }
         }
 
         // ========================================
@@ -592,6 +642,14 @@
         // ========================================
         function initTimeline(schedules) {
             // データチェック
+            function initTimeline(schedules) {
+            // PC版のみ再生ボタンを表示
+            if (!isMobile()) {
+                document.getElementById('play-button').style.display = 'inline-block';
+            }
+            
+            // データチェック
+            if (!schedules || schedules.length === 0) {
             if (!schedules || schedules.length === 0) {
                 console.log('スケジュールデータがありません');
                 return;
@@ -621,30 +679,45 @@
             
             // イベントリスナー設定
             document.getElementById('prev-slot').addEventListener('click', () => {
-                if (currentSlotIndex > 0) {
-                    currentSlotIndex--;
-                    currentTime = timeSlots[currentSlotIndex].start;
-                    updateTimelineUI();
-                    updateDisplay();
-                }
-            });
+            // 再生中なら停止
+            if (isPlaying && !isMobile()) {
+                document.getElementById('play-button').click();
+            }
             
-            document.getElementById('next-slot').addEventListener('click', () => {
-                if (currentSlotIndex < timeSlots.length - 1) {
-                    currentSlotIndex++;
-                    currentTime = timeSlots[currentSlotIndex].start;
-                    updateTimelineUI();
-                    updateDisplay();
-                }
-            });
-            
-            document.getElementById('now-btn').addEventListener('click', () => {
-                const nowInTz = getTimeInTimezone(new Date(), currentTimezone);
-                currentSlotIndex = findCurrentSlot(timeSlots, nowInTz);
-                currentTime = nowInTz;
+            if (currentSlotIndex > 0) {
+                currentSlotIndex--;
+                currentTime = timeSlots[currentSlotIndex].start;
                 updateTimelineUI();
                 updateDisplay();
-            });
+            }
+        });
+            
+            document.getElementById('next-slot').addEventListener('click', () => {
+            // 再生中なら停止
+            if (isPlaying && !isMobile()) {
+                document.getElementById('play-button').click();
+            }
+            
+            if (currentSlotIndex < timeSlots.length - 1) {
+                currentSlotIndex++;
+                currentTime = timeSlots[currentSlotIndex].start;
+                updateTimelineUI();
+                updateDisplay();
+            }
+        });
+            
+            document.getElementById('now-btn').addEventListener('click', () => {
+            // 再生中なら停止
+            if (isPlaying && !isMobile()) {
+                document.getElementById('play-button').click();
+            }
+            
+            const nowInTz = getTimeInTimezone(new Date(), currentTimezone);
+            currentSlotIndex = findCurrentSlot(timeSlots, nowInTz);
+            currentTime = nowInTz;
+            updateTimelineUI();
+            updateDisplay();
+        });
             
             document.getElementById('timezone-select').addEventListener('change', (e) => {
                 currentTimezone = e.target.value;
@@ -657,6 +730,11 @@
             });
             
             document.getElementById('time-slider').addEventListener('input', (e) => {
+                // 再生中なら停止
+                if (isPlaying && !isMobile()) {
+                    document.getElementById('play-button').click();
+                }
+                
                 console.log('スライダー動いた:', e.target.value);
                 const slot = timeSlots[currentSlotIndex];
                 const progress = e.target.value / 100;
@@ -762,6 +840,50 @@
             const localTime = formatDateTime(currentTime, currentTimezone);
             document.getElementById('current-time-display').textContent = localTime;
         }
+
+                // ========================================
+                // 再生機能
+                // ========================================
+                let isPlaying = false;
+                let playInterval = null;
+
+                // 再生ボタンのイベントリスナー（PC版のみ）
+                if (!isMobile()) {
+                    document.getElementById('play-button').addEventListener('click', function() {
+                        if (isPlaying) {
+                            // 停止
+                            clearInterval(playInterval);
+                            this.textContent = '▶';
+                            isPlaying = false;
+                        } else {
+                            // 再生開始（240倍速）
+                            this.textContent = '⏸';
+                            isPlaying = true;
+                            playInterval = setInterval(() => {
+                                const slot = timeSlots[currentSlotIndex];
+                                const newTime = new Date(currentTime.getTime() + 60 * 1000); // 1分進める
+                                
+                                if (newTime < slot.end) {
+                                    // 現在のスロット内
+                                    currentTime = newTime;
+                                    const progress = (currentTime - slot.start) / (slot.end - slot.start);
+                                    document.getElementById('time-slider').value = progress * 100;
+                                    updateTimeDisplay();
+                                    updateDisplay();
+                                } else if (currentSlotIndex < timeSlots.length - 1) {
+                                    // 次のスロットへ
+                                    currentSlotIndex++;
+                                    currentTime = timeSlots[currentSlotIndex].start;
+                                    updateTimelineUI();
+                                    updateDisplay();
+                                } else {
+                                    // 終端到達で停止
+                                    document.getElementById('play-button').click();
+                                }
+                            }, 250); // 1分 = 0.25秒（240倍速）
+                        }
+                    });
+                }
 
     </script>
     
