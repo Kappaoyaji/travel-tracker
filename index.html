@@ -685,6 +685,53 @@
         }
 
         // ========================================
+        // タイムライン目盛り生成
+        // ========================================
+        function generateTimelineTicks() {
+            const ticksContainer = document.getElementById('timeline-ticks');
+            ticksContainer.innerHTML = '';
+            
+            const slot = timeSlots[currentSlotIndex];
+            const duration = slot.end - slot.start; // ミリ秒
+            const durationMinutes = duration / (1000 * 60); // 分
+            
+            // 10分ごとに目盛りを生成
+            for (let i = 0; i <= durationMinutes; i += 10) {
+                const progress = i / durationMinutes;
+                const time = new Date(slot.start.getTime() + i * 60 * 1000);
+                const hour = time.getHours();
+                const minute = time.getMinutes();
+                
+                const tick = document.createElement('div');
+                tick.className = 'tick';
+                tick.style.left = (progress * 100) + '%';
+                
+                const line = document.createElement('div');
+                line.className = 'tick-line';
+                
+                // 1時間ごと：大
+                if (minute === 0) {
+                    tick.classList.add('tick-large');
+                    const label = document.createElement('div');
+                    label.className = 'tick-label';
+                    label.textContent = hour;
+                    tick.appendChild(label);
+                }
+                // 30分：中
+                else if (minute === 30) {
+                    tick.classList.add('tick-medium');
+                }
+                // 10分：小
+                else {
+                    tick.classList.add('tick-small');
+                }
+                
+                tick.appendChild(line);
+                ticksContainer.appendChild(tick);
+            }
+        }
+
+        // ========================================
         // 時刻表示更新
         // ========================================
         function updateTimeDisplay() {
