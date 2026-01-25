@@ -459,11 +459,6 @@
                 // 移動経路の線を表示
                     showMovementPath(current, arrival);
 
-                // デバッグ: currentのデータを確認
-                    console.log('current全データ:', current);
-                    console.log('current.日時UTC:', current.日時UTC);
-                    console.log('current.UTC:', current.UTC);
-                    console.log('current.日時:', current.日時);
 
                     const departTime = current.UTC ? new Date(current.UTC) : new Date(current.日時);
                     const arriveTime = arrival.UTC ? new Date(arrival.UTC) : new Date(arrival.日時);
