@@ -641,15 +641,12 @@
         // タイムライン UI 初期化
         // ========================================
         function initTimeline(schedules) {
-            // データチェック
-            function initTimeline(schedules) {
             // PC版のみ再生ボタンを表示
             if (!isMobile()) {
                 document.getElementById('play-button').style.display = 'inline-block';
             }
             
             // データチェック
-            if (!schedules || schedules.length === 0) {
             if (!schedules || schedules.length === 0) {
                 console.log('スケジュールデータがありません');
                 return;
@@ -679,45 +676,45 @@
             
             // イベントリスナー設定
             document.getElementById('prev-slot').addEventListener('click', () => {
-            // 再生中なら停止
-            if (isPlaying && !isMobile()) {
-                document.getElementById('play-button').click();
-            }
-            
-            if (currentSlotIndex > 0) {
-                currentSlotIndex--;
-                currentTime = timeSlots[currentSlotIndex].start;
-                updateTimelineUI();
-                updateDisplay();
-            }
-        });
+                // 再生中なら停止
+                if (isPlaying && !isMobile()) {
+                    document.getElementById('play-button').click();
+                }
+                
+                if (currentSlotIndex > 0) {
+                    currentSlotIndex--;
+                    currentTime = timeSlots[currentSlotIndex].start;
+                    updateTimelineUI();
+                    updateDisplay();
+                }
+            });
             
             document.getElementById('next-slot').addEventListener('click', () => {
-            // 再生中なら停止
-            if (isPlaying && !isMobile()) {
-                document.getElementById('play-button').click();
-            }
-            
-            if (currentSlotIndex < timeSlots.length - 1) {
-                currentSlotIndex++;
-                currentTime = timeSlots[currentSlotIndex].start;
-                updateTimelineUI();
-                updateDisplay();
-            }
-        });
+                // 再生中なら停止
+                if (isPlaying && !isMobile()) {
+                    document.getElementById('play-button').click();
+                }
+                
+                if (currentSlotIndex < timeSlots.length - 1) {
+                    currentSlotIndex++;
+                    currentTime = timeSlots[currentSlotIndex].start;
+                    updateTimelineUI();
+                    updateDisplay();
+                }
+            });
             
             document.getElementById('now-btn').addEventListener('click', () => {
-            // 再生中なら停止
-            if (isPlaying && !isMobile()) {
-                document.getElementById('play-button').click();
-            }
-            
-            const nowInTz = getTimeInTimezone(new Date(), currentTimezone);
-            currentSlotIndex = findCurrentSlot(timeSlots, nowInTz);
-            currentTime = nowInTz;
-            updateTimelineUI();
-            updateDisplay();
-        });
+                // 再生中なら停止
+                if (isPlaying && !isMobile()) {
+                    document.getElementById('play-button').click();
+                }
+                
+                const nowInTz = getTimeInTimezone(new Date(), currentTimezone);
+                currentSlotIndex = findCurrentSlot(timeSlots, nowInTz);
+                currentTime = nowInTz;
+                updateTimelineUI();
+                updateDisplay();
+            });
             
             document.getElementById('timezone-select').addEventListener('change', (e) => {
                 currentTimezone = e.target.value;
@@ -762,7 +759,7 @@
                 updateTimeDisplay();
                 updateDisplay();
             });
-         }
+        }
 
         // ========================================
         // タイムライン UI 更新
@@ -877,14 +874,13 @@
                                     updateTimelineUI();
                                     updateDisplay();
                                 } else {
-                                    // 終端到達で停止
-                                    document.getElementById('play-button').click();
-                                }
-                            }, 250); // 1分 = 0.25秒（240倍速）
-                        }
+                                                                   // 終端到達で停止
+                                document.getElementById('play-button').click();
+                            }
+                        }, 250); // 1分 = 0.25秒（240倍速）
                     });
                 }
-            };
+            });
         }
 
     </script>
