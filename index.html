@@ -340,7 +340,7 @@
                 
                 // Luxonでタイムゾーン変換
                 schedules = data
-                    .filter(item => item.ステータス === '有効' || item.ステータス === '未訪問')
+                    .filter(item => !item.ステータス || item.ステータス === '有効' || item.ステータス === '未訪問')
                     .map(item => {
                         if (item.日時 && item.タイムゾーン) {
                             // B列の日時（ISO文字列）をF列のタイムゾーンとして解釈
