@@ -492,7 +492,13 @@
             
             // 到着タイプの場合、その場所に留まる
             if (current.タイプ === '到着') {
+                hideMovementPath(); // 移動経路の線を削除
                 return current;
+            }
+            
+            // 出発タイプでない場合も線を削除
+            if (current.タイプ !== '出発') {
+                hideMovementPath();
             }
 
             return current;
