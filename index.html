@@ -492,13 +492,13 @@
             
             // 到着タイプの場合、その場所に留まる
             if (current.タイプ === '到着') {
-                hideMovementPath(); // 移動経路の線を削除
+                hideMovementPath({ lat: current.緯度, lng: current.経度 }); // 到着地に地図を移動
                 return current;
             }
             
             // 出発タイプでない場合も線を削除
             if (current.タイプ !== '出発') {
-                hideMovementPath();
+                hideMovementPath({ lat: current.緯度, lng: current.経度 });
             }
 
             return current;
@@ -532,10 +532,15 @@
         }
         
         // 移動経路の線を削除
-        function hideMovementPath() {
+        function hideMovementPath(arrivalPosition) {
             if (movementPolyline) {
                 movementPolyline.setMap(null);
                 movementPolyline = null;
+            }
+            
+            // 到着地が指定されていれば地図を移動
+            if (arrivalPosition) {
+                map.setCenter(arrivalPosition);
             }
         }
 
