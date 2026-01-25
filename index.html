@@ -130,11 +130,11 @@
         }
 
         #current-time-display {
-            flex: 1;
             text-align: center;
             font-size: 16px;
             font-weight: 600;
             color: #333;
+            min-width: 150px;
         }
 
         #now-btn {
@@ -231,14 +231,6 @@
             -webkit-appearance: none;
             position: absolute;
             bottom: 0;
-        }
-
-        #time-slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            outline: none;
-            -webkit-appearance: none;
         }
 
         #time-slider::-webkit-slider-thumb {
@@ -512,6 +504,9 @@
         let timelineMode = window.innerWidth >= 768 ? 12 : 6; // PC: 12時間, スマホ: 6時間
         let timeSlots = [];
         let currentSlotIndex = 0;
+        let currentSlotIndex = 0;
+        let isPlaying = false;
+        let playInterval = null;
 
         // ========================================
         // タイムゾーン・時間計算ユーティリティ
@@ -838,11 +833,6 @@
             document.getElementById('current-time-display').textContent = localTime;
         }
 
-                // ========================================
-                // 再生機能
-                // ========================================
-                let isPlaying = false;
-                let playInterval = null;
 
                 // 再生ボタンのイベントリスナー（PC版のみ）
                 if (!isMobile()) {
