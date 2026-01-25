@@ -667,9 +667,6 @@
         function updateTimelineUI() {
             const slot = timeSlots[currentSlotIndex];
             
-            // スロット情報表示
-            document.getElementById('slot-info').textContent = 
-                `${formatDateTime(slot.start, currentTimezone)} - ${formatTime(slot.end, currentTimezone)}`;
             
             // ボタンの有効/無効
             document.getElementById('prev-slot').disabled = currentSlotIndex === 0;
