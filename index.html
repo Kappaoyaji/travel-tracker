@@ -418,7 +418,13 @@
                 marker.setPosition(position);
             }
             
-            map.setCenter(position);
+            // 移動中でない場合のみ地図を移動
+            const schedule = getCurrentSchedule();
+            const isMoving = schedule && schedule.タイプ === '出発' && movementPolyline !== null;
+            
+            if (!isMoving) {
+                map.setCenter(position);
+            }
 
         // 時刻表示を更新
         document.getElementById('local-time').textContent = formatTime(currentTime, current.タイムゾーン);
