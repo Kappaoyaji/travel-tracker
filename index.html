@@ -127,21 +127,24 @@
             background: #357ae8;
         }
 
-        .timeline-navigation button {
+        #prev-slot, #next-slot {
             padding: 8px 16px;
             background: #f1f3f4;
             border: 1px solid #ddd;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.2s;
         }
 
-        .timeline-navigation button:hover:not(:disabled) {
-            background: #e8eaed;
+        #prev-slot:hover:not(:disabled), #next-slot:hover:not(:disabled) {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
         }
 
-        .timeline-navigation button:disabled {
-            opacity: 0.5;
+        #prev-slot:disabled, #next-slot:disabled {
+            opacity: 0.3;
             cursor: not-allowed;
         }
 
