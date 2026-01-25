@@ -498,6 +498,35 @@
             return current;
         }
 
+        // 移動経路の線を表示
+        function showMovementPath(departure, arrival) {
+            // 既存の線を削除
+            if (movementPolyline) {
+                movementPolyline.setMap(null);
+            }
+            
+            // 出発地と到着地を結ぶ線を作成
+            movementPolyline = new google.maps.Polyline({
+                path: [
+                    { lat: departure.緯度, lng: departure.経度 },
+                    { lat: arrival.緯度, lng: arrival.経度 }
+                ],
+                geodesic: false,
+                strokeColor: '#4285f4',
+                strokeOpacity: 0.6,
+                strokeWeight: 3,
+                map: map
+            });
+        }
+        
+        // 移動経路の線を削除
+        function hideMovementPath() {
+            if (movementPolyline) {
+                movementPolyline.setMap(null);
+                movementPolyline = null;
+            }
+        }
+
         // ========================================
         // タイムライン関連の変数
         // ========================================
