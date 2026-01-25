@@ -458,8 +458,8 @@
                 if (arrival && (arrival.UTC || arrival.日時)) {
                 // 移動経路の線を表示
                     showMovementPath(current, arrival);
-                    const departTime = new Date(current.UTC || current.日時);
-                    const arriveTime = new Date(arrival.UTC || arrival.日時);
+                    const departTime = new Date(current.日時UTC || current.UTC || current.日時);
+                    const arriveTime = new Date(arrival.日時UTC || arrival.UTC || arrival.日時);
                     console.log('時刻比較:', 'current=', currentTime, 'depart=', departTime, 'arrive=', arriveTime);
                     console.log('範囲内?', currentTime >= departTime, currentTime <= arriveTime);
                     
