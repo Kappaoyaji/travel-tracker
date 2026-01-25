@@ -90,28 +90,37 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            gap: 10px;
+            margin-bottom: 10px;
+            gap: 15px;
         }
 
         #timezone-select {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
+            flex-shrink: 0;
+            width: auto;
+        }
+
+        #current-time-display {
             flex: 1;
-            max-width: 300px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
         }
 
         #now-btn {
-            padding: 8px 16px;
+            padding: 6px 12px;
             background: #4285f4;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         #now-btn:hover {
@@ -142,13 +151,6 @@
         .timeline-navigation button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-        }
-
-        #slot-info {
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-            flex: 1;
         }
 
         .timeline-slider {
@@ -240,13 +242,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        #current-time {
-            text-align: center;
-            font-size: 13px;
-            color: #666;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-        }
 
         /* スマホ対応 */
         @media (max-width: 768px) {
@@ -290,12 +285,12 @@
         <div id="timeline-controls">
             <div class="timeline-header">
                 <select id="timezone-select"></select>
+                <div id="current-time-display"></div>
                 <button id="now-btn">現在時刻に戻る</button>
             </div>
             
             <div class="timeline-navigation">
                 <button id="prev-slot">◀ 前</button>
-                <span id="slot-info"></span>
                 <button id="next-slot">次 ▶</button>
             </div>
             
@@ -303,8 +298,6 @@
                 <div class="timeline-ticks" id="timeline-ticks"></div>
                 <input type="range" id="time-slider" min="0" max="100" value="0">
             </div>
-            
-            <div id="current-time"></div>
         </div>
     </div>
 
@@ -742,10 +735,7 @@
         // ========================================
         function updateTimeDisplay() {
             const localTime = formatDateTime(currentTime, currentTimezone);
-            const jstTime = formatDateTime(currentTime, 'Asia/Tokyo');
-            
-            document.getElementById('current-time').textContent = 
-                `現地: ${localTime} | 日本: ${jstTime}`;
+            document.getElementById('current-time-display').textContent = localTime;
         }
 
     </script>
