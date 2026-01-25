@@ -257,35 +257,52 @@
         }
 
 
-        /* スマホ対応 */
+               /* スマホ対応 */
         @media (max-width: 768px) {
             #timeline-controls {
                 padding: 10px;
             }
             
             .timeline-header {
-                gap: 8px;
+                gap: 5px;
+                padding: 5px;
+            }
+            
+            #center-controls {
+                gap: 5px;
+                min-width: 0;
+                overflow: visible;
             }
             
             #timezone-select {
-                flex: 1;
-                min-width: 100px;
-                font-size: 12px;
-                padding: 6px 8px;
+                flex: 0 1 auto;
+                min-width: 80px;
+                max-width: 100px;
+                font-size: 11px;
+                padding: 4px 6px;
             }
             
             #current-time-display {
-                font-size: 14px;
+                font-size: 12px;
+                flex: 0 1 auto;
+                min-width: 0;
+                white-space: nowrap;
             }
             
             #prev-slot, #next-slot {
-                padding: 6px 8px;
+                padding: 4px 6px;
                 font-size: 14px;
+                flex-shrink: 0;
             }
             
             #now-btn {
-                padding: 6px 10px;
-                font-size: 12px;
+                padding: 4px 8px;
+                font-size: 11px;
+                flex-shrink: 0;
+            }
+            
+            #play-button {
+                display: none !important;
             }
         }
     </style>
