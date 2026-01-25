@@ -153,6 +153,60 @@
 
         .timeline-slider {
             margin-bottom: 10px;
+            position: relative;
+            height: 60px;
+        }
+
+        .timeline-ticks {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .tick {
+            position: absolute;
+            bottom: 0;
+            transform: translateX(-50%);
+        }
+
+        .tick-line {
+            width: 1px;
+            background: #999;
+            margin: 0 auto;
+        }
+
+        .tick-large .tick-line {
+            height: 20px;
+            background: #333;
+            width: 2px;
+        }
+
+        .tick-medium .tick-line {
+            height: 15px;
+        }
+
+        .tick-small .tick-line {
+            height: 10px;
+        }
+
+        .tick-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+            text-align: center;
+        }
+
+        #time-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            position: absolute;
+            bottom: 0;
         }
 
         #time-slider {
