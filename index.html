@@ -83,7 +83,7 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
 
         .timeline-header {
@@ -128,13 +128,14 @@
         }
 
         #prev-slot, #next-slot {
-            padding: 8px 16px;
+            padding: 6px 10px;
             background: #f1f3f4;
             border: 1px solid #ddd;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             transition: all 0.2s;
+            min-width: auto;
         }
 
         #prev-slot:hover:not(:disabled), #next-slot:hover:not(:disabled) {
@@ -149,7 +150,7 @@
         }
 
         .timeline-slider {
-            margin-bottom: 10px;
+            margin-bottom: 0px;
             position: relative;
             height: 60px;
         }
@@ -240,19 +241,32 @@
 
         /* スマホ対応 */
         @media (max-width: 768px) {
+            #timeline-controls {
+                padding: 10px;
+            }
+            
             .timeline-header {
-                flex-direction: column;
+                gap: 8px;
             }
             
             #timezone-select {
-                max-width: 100%;
+                flex: 1;
+                min-width: 100px;
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+            
+            #current-time-display {
+                font-size: 14px;
+            }
+            
+            #prev-slot, #next-slot {
+                padding: 6px 8px;
+                font-size: 14px;
             }
             
             #now-btn {
-                width: 100%;
-            }
-            
-            #slot-info {
+                padding: 6px 10px;
                 font-size: 12px;
             }
         }
@@ -279,11 +293,11 @@
     <div id="timeline-container">
         <div id="timeline-controls">
             <div class="timeline-header">
-                <button id="prev-slot">◀ 前</button>
+                <button id="prev-slot">◀</button>
                 <select id="timezone-select"></select>
                 <div id="current-time-display"></div>
-                <button id="now-btn">現在時刻に戻る</button>
-                <button id="next-slot">次 ▶</button>
+                <button id="now-btn">NOW</button>
+                <button id="next-slot">▶</button>
             </div>
             
             <div class="timeline-slider">
