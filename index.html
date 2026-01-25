@@ -667,19 +667,23 @@
                 updateDisplay();
             });
 
-            // スライダークリック/タップで即座に移動
-            const handleSliderJump = (e) => {
+            // スライダー領域クリック/タップで位置移動
+            document.querySelector('.timeline-slider').addEventListener('click', (e) => {
+                if (e.target.id === 'time-slider') return; // つまみドラッグは除外
+                
                 const slider = document.getElementById('time-slider');
+                const rect = slider.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const progress = Math.max(0, Math.min(1, clickX / rect.width));
+                
+                slider.value = progress * 100;
+                
                 const slot = timeSlots[currentSlotIndex];
-                const progress = slider.value / 100;
                 const duration = slot.end - slot.start;
                 currentTime = new Date(slot.start.getTime() + duration * progress);
                 updateTimeDisplay();
                 updateDisplay();
-            };
-
-            document.getElementById('time-slider').addEventListener('mousedown', handleSliderJump);
-            document.getElementById('time-slider').addEventListener('touchstart', handleSliderJump);
+            });
          }
 
         // ========================================
