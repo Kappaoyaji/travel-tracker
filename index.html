@@ -523,6 +523,12 @@
                 strokeWeight: 3,
                 map: map
             });
+
+            // 出発地と到着地が両方見える範囲に地図を調整
+            const bounds = new google.maps.LatLngBounds();
+            bounds.extend({ lat: departure.緯度, lng: departure.経度 });
+            bounds.extend({ lat: arrival.緯度, lng: arrival.経度 });
+            map.fitBounds(bounds);
         }
         
         // 移動経路の線を削除
