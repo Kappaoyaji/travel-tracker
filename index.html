@@ -873,16 +873,15 @@
                                     currentTime = timeSlots[currentSlotIndex].start;
                                     updateTimelineUI();
                                     updateDisplay();
-                                } else {
-                                                                   // 終端到達で停止
-                                document.getElementById('play-button').click();
-                            }
-                        }, 250); // 1分 = 0.25秒（240倍速）
+                                                               } else {
+                                    // 終端到達で停止
+                                    document.getElementById('play-button').click();
+                                }
+                            }, 250); // 1分 = 0.25秒（240倍速）
+                        }
                     });
                 }
-            });
-        }
-
+        
     </script>
     
     <script async defer
