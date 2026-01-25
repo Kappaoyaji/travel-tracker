@@ -668,15 +668,9 @@
             });
 
             // スライダークリック/タップで即座に移動
-            document.getElementById('time-slider').addEventListener('click', (e) => {
-                const slider = e.target;
-                const rect = slider.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const progress = clickX / rect.width;
-                
-                slider.value = Math.max(0, Math.min(100, progress * 100));
-                
+            document.getElementById('time-slider').addEventListener('change', (e) => {
                 const slot = timeSlots[currentSlotIndex];
+                const progress = e.target.value / 100;
                 const duration = slot.end - slot.start;
                 currentTime = new Date(slot.start.getTime() + duration * progress);
                 updateTimeDisplay();
