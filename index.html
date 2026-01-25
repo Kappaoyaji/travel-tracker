@@ -470,15 +470,13 @@
                         const elapsed = currentTime - departTime;
                         const progress = elapsed / totalDuration;
                         
-                        // 緯度経度を補間（経度は最短距離で）
-                        const lat = current.緯度 + (arrival.緯度 - current.緯度) * progress;
-
-                        // 経度の差分を-180〜180の範囲に正規化
-                        let lngDiff = arrival.経度 - current.経度;
-                        if (lngDiff > 180) lngDiff -= 360;
-                        if (lngDiff < -180) lngDiff += 360;
-
-                        const lng = current.経度 + lngDiff * progress;
+                        // 大圏航路上の位置を計算
+                        const from = new google.maps.LatLng(current.緯度, current.経度);
+                        const to = new google.maps.LatLng(arrival.緯度, arrival.経度);
+                        const interpolated = google.maps.geometry.spherical.interpolate(from, to, progress);
+                        
+                        const lat = interpolated.lat();
+                        const lng = interpolated.lng();
                         
                         return {
                             ...current,
