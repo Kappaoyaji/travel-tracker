@@ -199,6 +199,21 @@
 <body>
     <div id="map"></div>
     <canvas id="day-night-canvas"></canvas>
+
+    <div id="timeline-container">
+        <div id="timeline-controls">
+            <div class="timeline-header">
+                <select id="timezone-select"></select>
+                <div id="current-time-display">--</div>
+                <button id="now-btn">NOW</button>
+            </div>
+            
+            <div class="timeline-slider">
+                <div class="timeline-ticks" id="timeline-ticks"></div>
+                <input type="range" id="time-slider" min="0" max="1000" value="0">
+            </div>
+        </div>
+    </div>
     
     <div id="person1-info" class="person-info">
         <div class="person-name">Person 1</div>
