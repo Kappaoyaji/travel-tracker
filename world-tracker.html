@@ -250,6 +250,9 @@
         let currentTime = new Date();
         let isPlaying = false;
         let playInterval = null;
+        let currentTimezone = 'Asia/Tokyo';  // 追加
+        let minTime = null;  // 追加
+        let maxTime = null;  // 追加
                 
         // 初期化
         function initMap() {
