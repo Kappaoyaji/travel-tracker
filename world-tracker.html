@@ -242,6 +242,39 @@
             // TODO: SunCalcを使って昼夜境界線を描画
             console.log('昼夜レイヤー更新');
         }
+        // 昼夜レイヤー更新
+        function updateDayNight() {
+            const canvas = document.getElementById('day-night-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // TODO: SunCalcを使って昼夜境界線を描画
+            console.log('昼夜レイヤー更新');
+        }  // ← この閉じ括弧の次の行から追加
+
+        // ↓↓↓ ここに追加 ↓↓↓
+        // リアルタイム更新開始
+        function startRealtime() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            playInterval = setInterval(() => {
+                // 現在時刻を取得（リアルタイム）
+                currentTime = new Date();
+                updateDisplay();
+            }, 60000);  // 1分ごとに更新
+        }
+
+        // リアルタイム更新停止
+        function stopRealtime() {
+            if (playInterval) {
+                clearInterval(playInterval);
+                playInterval = null;
+            }
+            isPlaying = false;
+        }
     </script>
     
     <script async defer
