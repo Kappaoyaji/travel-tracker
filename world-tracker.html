@@ -397,10 +397,11 @@
             
             isPlaying = true;
             playInterval = setInterval(() => {
-                // 現在時刻を取得（リアルタイム）
                 currentTime = new Date();
+                updateSliderPosition();  // 追加
+                updateTimeDisplay();     // 追加
                 updateDisplay();
-            }, 60000);  // 1分ごとに更新
+            }, 60000);
         }
 
         // リアルタイム更新停止
@@ -410,6 +411,116 @@
                 playInterval = null;
             }
             isPlaying = false;
+        }
+
+        // タイムゾーン選択肢を生成
+        function initTimezoneSelect() {
+            const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
+            const tzSelect = document.getElementById('timezone-select');
+            
+            tzSelect.innerHTML = uniqueTimezones.map(tz => 
+                `<option value="${tz}" ${tz === currentTimezone ? 'selected' : ''}>${tz}</option>`
+            ).join('');
+            
+            tzSelect.addEventListener('change', (e) => {
+                currentTimezone = e.target.value;
+                updateTimeDisplay();
+                generateTimelineTicks();
+            });
+        }
+
+        // タイムライン初期化
+        function initTimeline() {
+            const slider = document.getElementById('time-slider');
+            
+            // スライダー操作
+            slider.addEventListener('input', (e) => {
+                stopRealtime();
+                const progress = e.target.value / 1000;
+                currentTime = new Date(minTime.getTime() + (maxTime - minTime) * progress);
+                updateTimeDisplay();
+                updateDisplay();
+            });
+            
+            // NOWボタン
+            document.getElementById('now-btn').addEventListener('click', () => {
+                currentTime = new Date();
+                updateSliderPosition();
+                updateTimeDisplay();
+                updateDisplay();
+                startRealtime();
+            });
+            
+            updateSliderPosition();
+            updateTimeDisplay();
+            generateTimelineTicks();
+        }
+
+        // スライダー位置を更新
+        function updateSliderPosition() {
+            const slider = document.getElementById('time-slider');
+            const progress = (currentTime - minTime) / (maxTime - minTime);
+            slider.value = Math.max(0, Math.min(1000, progress * 1000));
+        }
+
+        // 時刻表示を更新
+        function updateTimeDisplay() {
+            const formatted = currentTime.toLocaleString('ja-JP', {
+                timeZone: currentTimezone,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            document.getElementById('current-time-display').textContent = formatted;
+        }
+
+        // タイムライン目盛りを生成
+        function generateTimelineTicks() {
+            const ticksContainer = document.getElementById('timeline-ticks');
+            ticksContainer.innerHTML = '';
+            
+            const duration = maxTime - minTime;
+            const days = Math.ceil(duration / (1000 * 60 * 60 * 24));
+            
+            // 6時間ごとに目盛り
+            for (let i = 0; i <= days * 4; i++) {
+                const time = new Date(minTime.getTime() + i * 6 * 60 * 60 * 1000);
+                if (time > maxTime) break;
+                
+                const progress = (time - minTime) / duration;
+                const hour = time.getHours();
+                
+                const tick = document.createElement('div');
+                tick.className = 'tick';
+                tick.style.left = (progress * 100) + '%';
+                
+                const line = document.createElement('div');
+                line.className = 'tick-line';
+                
+                // 0時と12時は大きく
+                if (hour === 0 || hour === 12) {
+                    tick.classList.add('tick-large');
+                    const label = document.createElement('div');
+                    label.className = 'tick-label';
+                    label.textContent = time.toLocaleString('ja-JP', {
+                        timeZone: currentTimezone,
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                    tick.appendChild(label);
+                } else {
+                    tick.classList.add('tick-medium');
+                }
+                
+                tick.appendChild(line);
+                ticksContainer.appendChild(tick);
+            }
         }
     </script>
     
