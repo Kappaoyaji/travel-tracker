@@ -455,8 +455,8 @@
             
             // currentTimeより前のスケジュールを時系列順に並べる
             const pastSchedules = schedules
-                .filter(s => (s.UTC || s.日時) && new Date(s.UTC || s.日時) <= currentTime)
-                .sort((a, b) => new Date(b.UTC || b.日時) - new Date(a.UTC || a.日時));
+                .filter(s => s.日時UTC && s.日時UTC <= currentTime)
+                .sort((a, b) => b.日時UTC - a.日時UTC);
             
            // 最新のスケジュールを返す（なければ最初のスケジュール）
             const result = pastSchedules.length > 0 ? pastSchedules[0] : schedules[0];
@@ -478,7 +478,7 @@
                 const arrival = schedules.find(s => s.ID === current.到着地ID);
                 console.log('到着地:', arrival);
                 
-                if (arrival && (arrival.UTC || arrival.日時)) {
+                if (arrival && arrival.日時UTC) {
                 // 移動経路の線を表示
                     showMovementPath(current, arrival);
 
