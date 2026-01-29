@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+        
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        /* 昼夜レイヤー用のCanvas */
+        #day-night-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        /* 人物情報表示 */
+        .person-info {
+            position: absolute;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            font-size: 14px;
+            z-index: 2000;
+        }
+        
+        #person1-info { top: 10px; left: 10px; border-left: 4px solid #FF6B6B; }
+        #person2-info { top: 80px; left: 10px; border-left: 4px solid #4ECDC4; }
+        #person3-info { top: 150px; left: 10px; border-left: 4px solid #FFE66D; }
+        
+        .person-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .person-location {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .person-time {
+            color: #333;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <canvas id="day-night-canvas"></canvas>
+    
+    <div id="person1-info" class="person-info">
+        <div class="person-name">Person 1</div>
+        <div class="person-location" id="person1-location">--</div>
+        <div class="person-time" id="person1-time">--:--</div>
+    </div>
+    
+    <div id="person2-info" class="person-info">
+        <div class="person-name">Person 2</div>
+        <div class="person-location" id="person2-location">--</div>
+        <div class="person-time" id="person2-time">--:--</div>
+    </div>
+    
+    <div id="person3-info" class="person-info">
+        <div class="person-name">Person 3</div>
+        <div class="person-location" id="person3-location">--</div>
+        <div class="person-time" id="person3-time">--:--</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
+    <script>
+        const CONFIG = {
+            SHEET_URL: 'https://script.google.com/macros/s/AKfycbwzao-67p0eODsPnqxa2a5qBTkKT6jx3B91xaU15bylyrKE28im__5OYKHyVdeJfAW-/exec',
+            MAPS_API_KEY: 'AIzaSyBSZjctKwqVnB2hbP2UgWQJAStHV0bXb5g'
+        };
+                
+        let map;
+        let markers = {
+            Person1: null,
+            Person2: null,
+            Person3: null
+        };
+        let schedules = [];
+        let currentTime = new Date();
+        
+        // 初期化
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 35.6762, lng: 139.6503 },
+                zoom: 3,
+                mapTypeId: 'terrain'
+            });
+            
+            loadSchedules();
+            updateDayNight();
+            setInterval(updateDayNight, 60000); // 1分ごとに更新
+        }
+        
+        // スケジュール読み込み
+        async function loadSchedules() {
+            try {
+                const response = await fetch(CONFIG.SHEET_URL);
+                schedules = await response.json();
+                updateDisplay();
+            } catch (error) {
+                console.error('スケジュール読み込みエラー:', error);
+            }
+        }
+        
+        // 表示更新
+        function updateDisplay() {
+            ['Person1', 'Person2', 'Person3'].forEach(person => {
+                const position = getCurrentPosition(person);
+                if (position) {
+                    updateMarker(person, position);
+                    updateInfo(person, position);
+                }
+            });
+        }
+        
+        // 現在位置を取得
+        function getCurrentPosition(person) {
+            const personSchedules = schedules.filter(s => s.persons.includes(person));
+            if (personSchedules.length === 0) return null;
+            
+            // 現在時刻より前の最新スケジュール
+            const current = personSchedules
+                .filter(s => new Date(s.日時) <= currentTime)
+                .sort((a, b) => new Date(b.日時) - new Date(a.日時))[0];
+            
+            return current || personSchedules[0];
+        }
+        
+        // マーカー更新
+        function updateMarker(person, position) {
+            const colors = {
+                Person1: '#FF6B6B',
+                Person2: '#4ECDC4',
+                Person3: '#FFE66D'
+            };
+            
+            const latLng = { lat: position.緯度, lng: position.経度 };
+            
+            if (!markers[person]) {
+                markers[person] = new google.maps.Marker({
+                    position: latLng,
+                    map: map,
+                    title: person,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: colors[person],
+                        fillOpacity: 1,
+                        strokeColor: 'white',
+                        strokeWeight: 2
+                    }
+                });
+            } else {
+                markers[person].setPosition(latLng);
+            }
+        }
+        
+        // 情報パネル更新
+        function updateInfo(person, position) {
+            const num = person.replace('Person', '');
+            document.getElementById(`person${num}-location`).textContent = position.場所名;
+            
+            const localTime = new Date().toLocaleString('ja-JP', {
+                timeZone: position.タイムゾーン,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            document.getElementById(`person${num}-time`).textContent = localTime;
+        }
+        
+        // 昼夜レイヤー更新
+        function updateDayNight() {
+            const canvas = document.getElementById('day-night-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // TODO: SunCalcを使って昼夜境界線を描画
+            console.log('昼夜レイヤー更新');
+        }
+    </script>
+    
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSZjctKwqVnB2hbP2UgWQJAStHV0bXb5g&libraries=geometry&callback=initMap">
+    </script>
+</body>
+</html>
