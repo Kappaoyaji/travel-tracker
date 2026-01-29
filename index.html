@@ -354,11 +354,6 @@
                 || window.innerWidth <= 768;
         }
 
-        // 現地時間をUTCに変換
-        function toUTC(dateTimeStr, timezone) {
-            const dt = luxon.DateTime.fromISO(dateTimeStr, { zone: timezone });
-            return dt.toUTC().toJSDate();
-        }
 
         // 設定情報（後で入力）
         const CONFIG = {
