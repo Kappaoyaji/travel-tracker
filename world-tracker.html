@@ -151,11 +151,41 @@
             if (personSchedules.length === 0) return null;
             
             // 現在時刻より前の最新スケジュール
-            const current = personSchedules
-                .filter(s => new Date(s.日時) <= currentTime)
-                .sort((a, b) => new Date(b.日時) - new Date(a.日時))[0];
+            const pastSchedules = personSchedules
+                .filter(s => s.日時UTC && s.日時UTC <= currentTime)
+                .sort((a, b) => b.日時UTC - a.日時UTC);
             
-            return current || personSchedules[0];
+            const current = pastSchedules.length > 0 ? pastSchedules[0] : personSchedules[0];
+            
+            // 出発タイプで到着地がある場合、補間
+            if (current.タイプ === '出発' && current.到着地ID) {
+                const arrival = schedules.find(s => s.ID === current.到着地ID);
+                
+                if (arrival && arrival.日時UTC) {
+                    const departTime = current.日時UTC;
+                    const arriveTime = arrival.日時UTC;
+                    
+                    // 移動中なら補間
+                    if (currentTime >= departTime && currentTime <= arriveTime) {
+                        const totalDuration = arriveTime - departTime;
+                        const elapsed = currentTime - departTime;
+                        const progress = elapsed / totalDuration;
+                        
+                        // 緯度経度を補間
+                        const lat = current.緯度 + (arrival.緯度 - current.緯度) * progress;
+                        const lng = current.経度 + (arrival.経度 - current.経度) * progress;
+                        
+                        return {
+                            ...current,
+                            緯度: lat,
+                            経度: lng,
+                            場所名: `${current.場所名} → ${arrival.場所名} (移動中)`
+                        };
+                    }
+                }
+            }
+            
+            return current;
         }
         
         // マーカー更新
