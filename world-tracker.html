@@ -60,6 +60,140 @@
             font-weight: 600;
             margin-top: 5px;
         }
+
+        /* タイムラインコンテナ */
+        #timeline-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 2px solid #ddd;
+            padding: 15px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 3000;
+        }
+
+        #timeline-controls {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        #timezone-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        #current-time-display {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        #now-btn {
+            padding: 8px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #now-btn:hover {
+            background: #357ae8;
+        }
+
+        .timeline-slider {
+            position: relative;
+            height: 60px;
+            margin-top: 10px;
+        }
+
+        .timeline-ticks {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .tick {
+            position: absolute;
+            bottom: 0;
+            transform: translateX(-50%);
+        }
+
+        .tick-line {
+            width: 2px;
+            background: #999;
+            margin: 0 auto;
+        }
+
+        .tick-large .tick-line {
+            height: 25px;
+            background: #333;
+            width: 3px;
+        }
+
+        .tick-medium .tick-line {
+            height: 15px;
+        }
+
+        .tick-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        #time-slider {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            cursor: pointer;
+        }
+
+        #time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 40px;
+            border-radius: 4px;
+            background: #4285f4;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        #time-slider::-moz-range-thumb {
+            width: 20px;
+            height: 40px;
+            border-radius: 4px;
+            background: #4285f4;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
