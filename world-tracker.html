@@ -120,7 +120,15 @@
             try {
                 const response = await fetch(CONFIG.SHEET_URL);
                 schedules = await response.json();
+                
+                // 日時をDateオブジェクトに変換
+                schedules = schedules.map(s => ({
+                    ...s,
+                    日時UTC: s.日時 ? new Date(s.日時.replace(' ', 'T')) : null
+                }));
+                
                 updateDisplay();
+                startRealtime();  // リアルタイム更新開始
             } catch (error) {
                 console.error('スケジュール読み込みエラー:', error);
             }
