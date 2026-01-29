@@ -99,7 +99,9 @@
         };
         let schedules = [];
         let currentTime = new Date();
-        
+        let isPlaying = false;
+        let playInterval = null;
+                
         // 初期化
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
