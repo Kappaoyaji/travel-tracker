@@ -483,8 +483,8 @@
                     showMovementPath(current, arrival);
 
 
-                    const departTime = current.UTC ? new Date(current.UTC) : new Date(current.日時);
-                    const arriveTime = arrival.UTC ? new Date(arrival.UTC) : new Date(arrival.日時);
+                    const departTime = current.日時UTC;
+                    const arriveTime = arrival.日時UTC;
                     console.log('時刻比較:', 'current=', currentTime, 'depart=', departTime, 'arrive=', arriveTime);
                     console.log('範囲内?', currentTime >= departTime, currentTime <= arriveTime);
                     
