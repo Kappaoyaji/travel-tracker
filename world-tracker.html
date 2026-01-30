@@ -255,7 +255,7 @@
         let maxTime = null;  // 追加
                 
         // 初期化
-        function initMap() {
+                function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 35.6762, lng: 139.6503 },
                 zoom: 3,
@@ -263,11 +263,38 @@
             });
             
             loadSchedules();
-
         }
         
+        // ↓↓↓ ここに追加 ↓↓↓
         // スケジュール読み込み
         async function loadSchedules() {
+            try {
+                const response = await fetch(CONFIG.SHEET_URL);
+                schedules = await response.json();
+                
+                // 日時をDateオブジェクトに変換
+                schedules = schedules.map(s => ({
+                    ...s,
+                    日時UTC: s.日時 ? new Date(s.日時.replace(' ', 'T')) : null
+                }));
+                
+                // 旅程の開始・終了時刻を取得
+                const times = schedules.map(s => s.日時UTC).filter(t => t);
+                minTime = new Date(Math.min(...times));
+                maxTime = new Date(Math.max(...times));
+                
+                // タイムゾーン選択肢を生成
+                initTimezoneSelect();
+                
+                // タイムライン初期化
+                initTimeline();
+                
+                updateDisplay();
+                startRealtime();
+            } catch (error) {
+                console.error('スケジュール読み込みエラー:', error);
+            }
+        }
         
         // 表示更新
         function updateDisplay() {
@@ -366,17 +393,7 @@
             document.getElementById(`person${num}-time`).textContent = localTime;
         }
         
-        // 昼夜レイヤー更新
-        function updateDayNight() {
-            const canvas = document.getElementById('day-night-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            // TODO: SunCalcを使って昼夜境界線を描画
-            console.log('昼夜レイヤー更新');
-        }
+
         // 昼夜レイヤー更新
         function updateDayNight() {
             const canvas = document.getElementById('day-night-canvas');
