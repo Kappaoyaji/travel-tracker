@@ -251,6 +251,9 @@
         let isPlaying = false;
         let playInterval = null;
         let currentTimezone = 'Asia/Tokyo';  // 追加
+        let currentTimezone = 'Asia/Tokyo';
+        let personNames = { Person1: 'Person 1', Person2: 'Person 2', Person3: 'Person 3' }; // ← 追加
+        let minTime = null;
         let minTime = null;  // 追加
         let maxTime = null;  // 追加
                 
@@ -272,11 +275,22 @@
                 const response = await fetch(CONFIG.SHEET_URL);
                 schedules = await response.json();
                 
+                      
                         // UTCをDateオブジェクトに変換
                         schedules = schedules.map(s => ({
                             ...s,
                             日時UTC: s.UTC ? new Date(s.UTC) : null
                         }));
+                        
+                        // ↓↓↓ ここに追加 ↓↓↓
+                        // 人物名を取得（最初のデータから）
+                        if (schedules.length > 0 && schedules[0].personNames) {
+                            personNames = schedules[0].personNames;
+                        }
+                        // ↑↑↑ ここまで追加 ↑↑↑
+                        
+                        // 旅程の開始・終了時刻を取得
+                        const times = schedules.map(s => s.日時UTC).filter(t => t);
                 
                 // 旅程の開始・終了時刻を取得
                 const times = schedules.map(s => s.日時UTC).filter(t => t);
@@ -366,7 +380,33 @@
                 Person3: '#FFE66D'
             };
             
-            const latLng = { lat: position.緯度, lng: position.経度 };
+                    // 重なり対策: 同じ位置に複数人いる場合は少しずらす
+                    let lat = position.緯度;
+                    let lng = position.経度;
+                    
+                    // 他の人と同じ位置にいるかチェック
+                    const offset = 0.0003; // ずらす量
+                    let offsetIndex = 0;
+                    
+                    ['Person1', 'Person2', 'Person3'].forEach(p => {
+                        if (p === person) return;
+                        if (markers[p]) {
+                            const otherPos = markers[p].getPosition();
+                            if (Math.abs(otherPos.lat() - lat) < 0.0001 && 
+                                Math.abs(otherPos.lng() - lng) < 0.0001) {
+                                offsetIndex++;
+                            }
+                        }
+                    });
+                    
+                    // オフセットを適用（円形に配置）
+                    if (offsetIndex > 0) {
+                        const angle = (offsetIndex * 120) * Math.PI / 180; // 120度ずつ
+                        lat += offset * Math.cos(angle);
+                        lng += offset * Math.sin(angle);
+                    }
+                    
+                    const latLng = { lat: lat, lng: lng };
             
             if (!markers[person]) {
                 markers[person] = new google.maps.Marker({
@@ -389,7 +429,12 @@
         
         // 情報パネル更新
         function updateInfo(person, position) {
+            function updateInfo(person, position) {
             const num = person.replace('Person', '');
+            
+            // 人物名を表示
+            const displayName = personNames[person] || person;
+            document.querySelector(`#person${num}-info .person-name`).textContent = displayName;
             document.getElementById(`person${num}-location`).textContent = position.場所名;
             
             const localTime = new Date().toLocaleString('ja-JP', {
