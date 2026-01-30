@@ -287,10 +287,7 @@
                             personNames = schedules[0].personNames;
                         }
                         // ↑↑↑ ここまで追加 ↑↑↑
-                        
-                        // 旅程の開始・終了時刻を取得
-                        const times = schedules.map(s => s.日時UTC).filter(t => t);
-                
+                                      
                 // 旅程の開始・終了時刻を取得
                 const times = schedules.map(s => s.日時UTC).filter(t => t);
                 minTime = new Date(Math.min(...times));
@@ -590,7 +587,7 @@
                 ticksContainer.appendChild(tick);
             }
         }
-
+    }
     </script>
     
     <script async defer
