@@ -333,9 +333,17 @@
                         const elapsed = currentTime - departTime;
                         const progress = elapsed / totalDuration;
                         
-                        // 緯度経度を補間
+                    // 緯度経度を補間（太平洋横断対応）
                         const lat = current.緯度 + (arrival.緯度 - current.緯度) * progress;
-                        const lng = current.経度 + (arrival.経度 - current.経度) * progress;
+                        
+                        // 経度差が180度を超える場合は逆回り
+                        let lngDiff = arrival.経度 - current.経度;
+                        if (lngDiff > 180) {
+                            lngDiff -= 360;
+                        } else if (lngDiff < -180) {
+                            lngDiff += 360;
+                        }
+                        const lng = current.経度 + lngDiff * progress;
                         
                         return {
                             ...current,
