@@ -454,43 +454,32 @@
     <div id="timeline-container">
         <div id="timeline-controls">
             <div class="timeline-header">
-                <!-- 左ブロック -->
-                <div class="header-left">
-                    <button id="prev-page-btn" class="nav-btn">◀◀</button>
+                <button id="prev-page-btn" class="nav-btn">◀◀</button>
+                <select id="timezone-select"></select>
+                <div id="current-time-display">--</div>
+                <div class="date-jump">
+                    <label id="date-jump-trigger">📅</label>
                 </div>
-            
-                <!-- 中央ブロック -->
-                <div class="header-center">
-                    <select id="timezone-select"></select>
-                    <div id="current-time-display">--</div>
-                    <div class="date-jump">
-                        <label id="date-jump-trigger">📅</label>
-                    </div>
+                <button id="now-btn">NOW</button>
+                <button id="play-btn" class="playback-btn">▶</button>
+                <button id="pause-btn" class="playback-btn" disabled>⏸</button>
+                <button id="stop-btn" class="playback-btn">⏹</button>
+                <div class="speed-control">
+                    <label for="speed-select">速度:</label>
+                    <select id="speed-select">
+                        <option value="1">x1</option>
+                        <option value="60">x60</option>
+                        <option value="240">x240</option>
+                        <option value="480">x480</option>
+                        <option value="960" selected>x960</option>
+                        <option value="2880">x2880</option>
+                    </select>
                 </div>
-            
-                <!-- 右ブロック -->
-                <div class="header-right">
-                    <button id="now-btn">NOW</button>
-                    <button id="play-btn" class="playback-btn">▶</button>
-                    <button id="pause-btn" class="playback-btn" disabled>⏸</button>
-                    <button id="stop-btn" class="playback-btn">⏹</button>
-                    <div class="speed-control">
-                        <label for="speed-select">速度:</label>
-                        <select id="speed-select">
-                            <option value="1">x1</option>
-                            <option value="60">x60</option>
-                            <option value="240">x240</option>
-                            <option value="480">x480</option>
-                            <option value="960" selected>x960</option>
-                            <option value="2880">x2880</option>
-                        </select>
-                    </div>
-                    <div class="loop-control">
-                        <input type="checkbox" id="loop-checkbox">
-                        <label for="loop-checkbox">ループ</label>
-                    </div>
-                    <button id="next-page-btn" class="nav-btn">▶▶</button>
+                <div class="loop-control">
+                    <input type="checkbox" id="loop-checkbox">
+                    <label for="loop-checkbox">ループ</label>
                 </div>
+                <button id="next-page-btn" class="nav-btn">▶▶</button>
             </div>
 
             <div class="timeline-slider">
