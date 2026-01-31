@@ -729,6 +729,11 @@
                 updatePageInfo();
                 updatePageButtons();
                 generateTimelineTicks();
+            // 日付入力フィールドの範囲を設定
+                const dateInput = document.getElementById('date-jump-input');
+                dateInput.min = minTime.toISOString().slice(0, 16);
+                dateInput.max = maxTime.toISOString().slice(0, 16);
+                dateInput.value = currentTime.toISOString().slice(0, 16);
             }
 
             // ページ情報を更新
