@@ -722,37 +722,27 @@
                 Person3: '#FFE66D'
             };
             
-                    // 重なり対策: 同じ位置に複数人いる場合は少しずらす
-                    let lat = position.緯度;
-                    let lng = position.経度;
-                    
-                    // 他の人と同じ位置にいるかチェック
-                    const offset = 0.0003; // ずらす量
-                    let offsetIndex = 0;
-                    
-                    ['Person1', 'Person2', 'Person3'].forEach(p => {
-                        if (p === person) return;
-                        if (markers[p]) {
-                            const otherPos = markers[p].getPosition();
-                            if (Math.abs(otherPos.lat() - lat) < 0.0001 && 
-                                Math.abs(otherPos.lng() - lng) < 0.0001) {
-                                offsetIndex++;
-                            }
-                        }
-                    });
-                    
-                    // オフセットを適用（円形に配置）
-                    if (offsetIndex > 0) {
-                        const angle = (offsetIndex * 120) * Math.PI / 180; // 120度ずつ
-                        lat += offset * Math.cos(angle);
-                        lng += offset * Math.sin(angle);
+                    // 重なり対策: 同じ位置に複数人いる場合はピクセル単位でずらす
+            const baseLatLng = new google.maps.LatLng(position.緯度, position.経度);
+
+            // 他の人と同じ位置にいるかチェック
+            let offsetIndex = 0;
+
+            ['Person1', 'Person2', 'Person3'].forEach(p => {
+                if (p === person) return;
+                if (markers[p]) {
+                    const otherPos = markers[p].getPosition();
+                    if (Math.abs(otherPos.lat() - position.緯度) < 0.0001 &&
+                        Math.abs(otherPos.lng() - position.経度) < 0.0001) {
+                        offsetIndex++;
                     }
-                    
-                    const latLng = { lat: lat, lng: lng };
-            
+                }
+            });
+
+            // マーカー作成/更新
             if (!markers[person]) {
                 markers[person] = new google.maps.Marker({
-                    position: latLng,
+                    position: baseLatLng,
                     map: map,
                     title: person,
                     icon: {
@@ -761,11 +751,29 @@
                         fillColor: colors[person],
                         fillOpacity: 1,
                         strokeColor: 'white',
-                        strokeWeight: 2
+                        strokeWeight: 2,
+                        anchor: new google.maps.Point(0, 0)
                     }
                 });
             } else {
-                markers[person].setPosition(latLng);
+                markers[person].setPosition(baseLatLng);
+            }
+
+            // ピクセル単位で円形配置 (120°ずつ)
+            if (offsetIndex > 0 && markers[person]) {
+                const radius = 15; // 中心からの距離(ピクセル)
+                const angle = offsetIndex * 120 * Math.PI / 180; // 120°ずつ
+                const offsetX = radius * Math.cos(angle);
+                const offsetY = radius * Math.sin(angle);
+
+                const icon = markers[person].getIcon();
+                icon.anchor = new google.maps.Point(-offsetX, -offsetY);
+                markers[person].setIcon(icon);
+            } else if (markers[person]) {
+                // 重なっていない場合は元に戻す
+                const icon = markers[person].getIcon();
+                icon.anchor = new google.maps.Point(0, 0);
+                markers[person].setIcon(icon);
             }
         }
         
