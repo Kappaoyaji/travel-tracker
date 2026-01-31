@@ -670,6 +670,68 @@
             updateDisplay();
         }
 
+        // ページ範囲を初期化
+            function initializePage() {
+                currentPageStart = new Date(minTime);
+                currentPageEnd = new Date(Math.min(minTime.getTime() + PAGE_DURATION, maxTime.getTime()));
+                updatePageInfo();
+                updatePageButtons();
+                generateTimelineTicks();
+            }
+
+            // ページ情報を更新
+            function updatePageInfo() {
+                const startStr = currentPageStart.toLocaleString('ja-JP', {
+                    timeZone: currentTimezone,
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                const endStr = currentPageEnd.toLocaleString('ja-JP', {
+                    timeZone: currentTimezone,
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                document.getElementById('page-info').textContent = `${startStr} 〜 ${endStr}`;
+            }
+
+            // ページボタンの有効/無効を更新
+            function updatePageButtons() {
+                document.getElementById('prev-page-btn').disabled = currentPageStart <= minTime;
+                document.getElementById('next-page-btn').disabled = currentPageEnd >= maxTime;
+            }
+
+            // 前のページへ
+            function goToPrevPage() {
+                const newStart = new Date(currentPageStart.getTime() - PAGE_DURATION);
+                if (newStart < minTime) {
+                    currentPageStart = new Date(minTime);
+                } else {
+                    currentPageStart = newStart;
+                }
+                currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
+                updatePageInfo();
+                updatePageButtons();
+                generateTimelineTicks();
+            }
+
+            // 次のページへ
+            function goToNextPage() {
+                const newStart = new Date(currentPageStart.getTime() + PAGE_DURATION);
+                if (newStart >= maxTime) return;
+
+                currentPageStart = newStart;
+                currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
+                updatePageInfo();
+                updatePageButtons();
+                generateTimelineTicks();
+            }
+
         // タイムゾーン選択肢を生成
         function initTimezoneSelect() {
             const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
