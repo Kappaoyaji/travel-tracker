@@ -318,12 +318,22 @@
             color: #666;
         }
 
-        .time-input-group input {
+        .time-input-group input,
+        .time-input-group select {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
             width: 100px;
+            height: 38px;
+        }
+
+        .time-input-group input[type="date"] {
+            width: 150px;
+        }
+
+        .time-input-group input[type="date"]::-webkit-calendar-picker-indicator {
+            margin-left: -25px;
         }
 
         .popup-actions {
