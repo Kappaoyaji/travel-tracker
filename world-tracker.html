@@ -357,6 +357,8 @@
         let personNames = { Person1: 'Person 1', Person2: 'Person 2', Person3: 'Person 3' };
         let minTime = null;
         let maxTime = null;
+        let playbackSpeed = 960;  // ← 追加
+        let isLooping = false;     // ← 追加
 
                 
         // 初期化
@@ -571,6 +573,58 @@
             isPlaying = false;
         }
 
+        // 自動再生開始
+        function startPlayback() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            document.getElementById('play-btn').disabled = true;
+            document.getElementById('pause-btn').disabled = false;
+            document.getElementById('play-btn').classList.remove('active');
+            document.getElementById('pause-btn').classList.add('active');
+            
+            playInterval = setInterval(() => {
+                const increment = 100 * playbackSpeed;
+                currentTime = new Date(currentTime.getTime() + increment);
+                
+                if (currentTime >= maxTime) {
+                    if (isLooping) {
+                        currentTime = new Date(minTime);
+                    } else {
+                        stopPlayback();
+                        return;
+                    }
+                }
+                
+                updateSliderPosition();
+                updateTimeDisplay();
+                updateDisplay();
+            }, 100);
+        }
+
+        // 一時停止
+        function pausePlayback() {
+            if (playInterval) {
+                clearInterval(playInterval);
+                playInterval = null;
+            }
+            isPlaying = false;
+            
+            document.getElementById('play-btn').disabled = false;
+            document.getElementById('pause-btn').disabled = true;
+            document.getElementById('play-btn').classList.remove('active');
+            document.getElementById('pause-btn').classList.remove('active');
+        }
+
+        // 停止
+        function stopPlayback() {
+            pausePlayback();
+            currentTime = new Date(minTime);
+            updateSliderPosition();
+            updateTimeDisplay();
+            updateDisplay();
+        }
+
         // タイムゾーン選択肢を生成
         function initTimezoneSelect() {
             const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
@@ -607,6 +661,38 @@
                 updateTimeDisplay();
                 updateDisplay();
                 startRealtime();
+            });
+
+            // 再生ボタン
+            document.getElementById('play-btn').addEventListener('click', () => {
+                stopRealtime();
+                startPlayback();
+            });
+
+            // 一時停止ボタン
+            document.getElementById('pause-btn').addEventListener('click', () => {
+                pausePlayback();
+            });
+
+            // 停止ボタン
+            document.getElementById('stop-btn').addEventListener('click', () => {
+                stopRealtime();
+                stopPlayback();
+            });
+
+            // 速度選択
+            document.getElementById('speed-select').addEventListener('change', (e) => {
+                playbackSpeed = parseInt(e.target.value);
+                if (isPlaying && playInterval) {
+                    const wasPlaying = isPlaying;
+                    pausePlayback();
+                    if (wasPlaying) startPlayback();
+                }
+            });
+
+            // ループ設定
+            document.getElementById('loop-checkbox').addEventListener('change', (e) => {
+                isLooping = e.target.checked;
             });
             
             updateSliderPosition();
