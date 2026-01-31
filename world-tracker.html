@@ -898,31 +898,53 @@
         closeDateJumpPopup();
     }
 
-    // 日付ジャンプポップアップを開く
-    function openDateJumpPopup() {
-        const overlay = document.getElementById('date-jump-overlay');
-        const popup = document.getElementById('date-jump-popup');
+        // 日付ジャンプポップアップを開く
+        function openDateJumpPopup() {
+            const overlay = document.getElementById('date-jump-overlay');
+            const popup = document.getElementById('date-jump-popup');
 
-        // 現在の日時を初期値に設定
-        const dateInput = document.getElementById('jump-date');
-        const hourInput = document.getElementById('jump-hour');
-        const minuteInput = document.getElementById('jump-minute');
+            // 現在の日時を初期値に設定
+            const dateInput = document.getElementById('jump-date');
+            const hourSelect = document.getElementById('jump-hour');
+            const minuteSelect = document.getElementById('jump-minute');
 
-        const year = currentTime.getFullYear();
-        const month = String(currentTime.getMonth() + 1).padStart(2, '0');
-        const day = String(currentTime.getDate()).padStart(2, '0');
+            // 日付の範囲設定
+            const year = currentTime.getFullYear();
+            const month = String(currentTime.getMonth() + 1).padStart(2, '0');
+            const day = String(currentTime.getDate()).padStart(2, '0');
 
-        dateInput.value = `${year}-${month}-${day}`;
-        dateInput.min = `${minTime.getFullYear()}-${String(minTime.getMonth() + 1).padStart(2, '0')}-${String(minTime.getDate()).padStart(2, '0')}`;
-        dateInput.max = `${maxTime.getFullYear()}-${String(maxTime.getMonth() + 1).padStart(2, '0')}-${String(maxTime.getDate()).padStart(2, '0')}`;
+            dateInput.value = `${year}-${month}-${day}`;
+            dateInput.min = `${minTime.getFullYear()}-${String(minTime.getMonth() + 1).padStart(2, '0')}-${String(minTime.getDate()).padStart(2, '0')}`;
+            dateInput.max = `${maxTime.getFullYear()}-${String(maxTime.getMonth() + 1).padStart(2, '0')}-${String(maxTime.getDate()).padStart(2, '0')}`;
 
-        hourInput.value = currentTime.getHours();
-        minuteInput.value = currentTime.getMinutes();
+            // 時の選択肢を生成 (0-23)
+            hourSelect.innerHTML = '';
+            for (let i = 0; i < 24; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = String(i).padStart(2, '0');
+                if (i === currentTime.getHours()) {
+                    option.selected = true;
+                }
+                hourSelect.appendChild(option);
+            }
 
-        overlay.classList.add('show');
-        popup.classList.add('show');
-    }
+            // 分の選択肢を生成 (0-59)
+            minuteSelect.innerHTML = '';
+            for (let i = 0; i < 60; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = String(i).padStart(2, '0');
+                if (i === currentTime.getMinutes()) {
+                    option.selected = true;
+                }
+                minuteSelect.appendChild(option);
+            }
 
+            overlay.classList.add('show');
+            popup.classList.add('show');
+        }
+        
     // 日付ジャンプポップアップを閉じる
     function closeDateJumpPopup() {
         const overlay = document.getElementById('date-jump-overlay');
