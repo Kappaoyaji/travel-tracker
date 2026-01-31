@@ -751,30 +751,8 @@
             function initializePage() {
                 currentPageStart = new Date(minTime);
                 currentPageEnd = new Date(Math.min(minTime.getTime() + PAGE_DURATION, maxTime.getTime()));
-                updatePageInfo();
                 updatePageButtons();
                 generateTimelineTicks();
-            }
-
-            // ページ情報を更新
-            function updatePageInfo() {
-                const startStr = currentPageStart.toLocaleString('ja-JP', {
-                    timeZone: currentTimezone,
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                });
-                const endStr = currentPageEnd.toLocaleString('ja-JP', {
-                    timeZone: currentTimezone,
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                });
-                document.getElementById('page-info').textContent = `${startStr} 〜 ${endStr}`;
             }
 
             // ページボタンの有効/無効を更新
@@ -792,7 +770,6 @@
                     currentPageStart = newStart;
                 }
                 currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-                updatePageInfo();
                 updatePageButtons();
                 generateTimelineTicks();
             }
@@ -804,7 +781,6 @@
 
                 currentPageStart = newStart;
                 currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-                updatePageInfo();
                 updatePageButtons();
                 generateTimelineTicks();
             }
@@ -829,7 +805,6 @@
 
         currentTime = targetTime;
 
-        updatePageInfo();
         updatePageButtons();
         generateTimelineTicks();
         updateSliderPosition();
@@ -885,7 +860,6 @@
             tzSelect.addEventListener('change', (e) => {
                 currentTimezone = e.target.value;
                 updateTimeDisplay();
-                updatePageInfo();
                 generateTimelineTicks();
             });
         }
@@ -1001,7 +975,6 @@
                     const pageIndex = Math.floor((currentTime - minTime) / PAGE_DURATION);
                     currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
                     currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-                    updatePageInfo();
                     updatePageButtons();
                     generateTimelineTicks();
                 }
