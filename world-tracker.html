@@ -897,6 +897,23 @@
                 pausePlayback();
                 goToNextPage();
             });
+
+            // 日付ジャンプボタン
+            document.getElementById('date-jump-btn').addEventListener('click', () => {
+                const dateInput = document.getElementById('date-jump-input');
+                if (dateInput.value) {
+                    const targetTime = new Date(dateInput.value);
+                    jumpToDate(targetTime);
+                }
+            });
+
+            // 日付入力でEnterキー
+            document.getElementById('date-jump-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const targetTime = new Date(e.target.value);
+                    jumpToDate(targetTime);
+                }
+            });
             
             updateSliderPosition();
             updateTimeDisplay();
