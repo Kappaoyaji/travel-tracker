@@ -291,6 +291,30 @@
                 <div class="timeline-ticks" id="timeline-ticks"></div>
                 <input type="range" id="time-slider" min="0" max="1000" value="0">
             </div>
+                    <div class="playback-controls">
+            <div class="playback-buttons">
+                <button id="play-btn" class="playback-btn">▶️ 再生</button>
+                <button id="pause-btn" class="playback-btn" disabled>⏸️ 一時停止</button>
+                <button id="stop-btn" class="playback-btn">⏹️ 停止</button>
+            </div>
+            
+            <div class="loop-control">
+                <input type="checkbox" id="loop-checkbox">
+                <label for="loop-checkbox">ループ再生</label>
+            </div>
+            
+            <div class="speed-control">
+                <label for="speed-select">速度:</label>
+                <select id="speed-select">
+                    <option value="1">1x (リアルタイム)</option>
+                    <option value="60">60x (1時間/分)</option>
+                    <option value="240">240x (4時間/分)</option>
+                    <option value="480">480x (8時間/分)</option>
+                    <option value="960" selected>960x (16時間/分)</option>
+                    <option value="2880">2880x (1日/30秒)</option>
+                </select>
+            </div>
+        </div>
         </div>
     </div>
     
