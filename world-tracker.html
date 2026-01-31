@@ -756,8 +756,9 @@
             // スライダー操作
             slider.addEventListener('input', (e) => {
                 stopRealtime();
+                pausePlayback();
                 const progress = e.target.value / 1000;
-                currentTime = new Date(minTime.getTime() + (maxTime - minTime) * progress);
+                currentTime = new Date(currentPageStart.getTime() + (currentPageEnd - currentPageStart) * progress);
                 updateTimeDisplay();
                 updateDisplay();
             });
