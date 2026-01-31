@@ -420,60 +420,49 @@
             });
         }
         
-        // 現在位置を取得
-        function getCurrentPosition(person) {
-            const personSchedules = schedules.filter(s => s.persons.includes(person));
-            if (personSchedules.length === 0) return null;
-            
-            // 現在時刻より前の最新スケジュール
-            const pastSchedules = personSchedules
-                .filter(s => s.日時UTC && s.日時UTC <= currentTime)
-                .sort((a, b) => b.日時UTC - a.日時UTC);
-            
-            const current = pastSchedules.length > 0 ? pastSchedules[0] : personSchedules[0];
-            
-            // 出発タイプで到着地がある場合、補間
-            if (current.タイプ === '出発' && current.到着地ID) {
-                const arrival = schedules.find(s => s.ID === current.到着地ID);
+            // 現在位置を取得
+            function getCurrentPosition(person) {
+                const personSchedules = schedules.filter(s => s.persons.includes(person));
+                if (personSchedules.length === 0) return null;
                 
-                if (arrival && arrival.日時UTC) {
-                    const departTime = current.日時UTC;
-                    const arriveTime = arrival.日時UTC;
+                // 現在時刻より前の最新スケジュール
+                const pastSchedules = personSchedules
+                    .filter(s => s.日時UTC && s.日時UTC <= currentTime)
+                    .sort((a, b) => b.日時UTC - a.日時UTC);
+                
+                const current = pastSchedules.length > 0 ? pastSchedules[0] : personSchedules[0];
+                
+                // 出発タイプで到着地がある場合、補間
+                if (current.タイプ === '出発' && current.到着地ID) {
+                    const arrival = schedules.find(s => s.ID === current.到着地ID);
                     
-                    // 移動中なら補間
-                    if (currentTime >= departTime && currentTime <= arriveTime) {
-                        const totalDuration = arriveTime - departTime;
-                        const elapsed = currentTime - departTime;
-                        const progress = elapsed / totalDuration;
-
-                    // 移動中なら補間
-                    if (currentTime >= departTime && currentTime <= arriveTime) {
-                        const totalDuration = arriveTime - departTime;
-                        const elapsed = currentTime - departTime;
-                        const progress = elapsed / totalDuration;
+                    if (arrival && arrival.日時UTC) {
+                        const departTime = current.日時UTC;
+                        const arriveTime = arrival.日時UTC;
                         
-                        // ↓↓↓ ここから新しいコード ↓↓↓
-                        // Google Maps Geometry APIで大圏航路補間
-                        const from = new google.maps.LatLng(current.緯度, current.経度);
-                        const to = new google.maps.LatLng(arrival.緯度, arrival.経度);
-                        const interpolated = google.maps.geometry.spherical.interpolate(from, to, progress);
-                        
-                        return {
-                            ...current,
-                            緯度: interpolated.lat(),
-                            経度: interpolated.lng(),
-                            場所名: `${current.場所名} → ${arrival.場所名} (移動中)`
-                        };
-                        // ↑↑↑ ここまで新しいコード ↑↑↑
-                    }
-
+                        // 移動中なら補間
+                        if (currentTime >= departTime && currentTime <= arriveTime) {
+                            const totalDuration = arriveTime - departTime;
+                            const elapsed = currentTime - departTime;
+                            const progress = elapsed / totalDuration;
+                            
+                            // Google Maps Geometry APIで大圏航路補間
+                            const from = new google.maps.LatLng(current.緯度, current.経度);
+                            const to = new google.maps.LatLng(arrival.緯度, arrival.経度);
+                            const interpolated = google.maps.geometry.spherical.interpolate(from, to, progress);
+                            
+                            return {
+                                ...current,
+                                緯度: interpolated.lat(),
+                                経度: interpolated.lng(),
+                                場所名: `${current.場所名} → ${arrival.場所名} (移動中)`
+                            };
+                        }
                     }
                 }
+                
+                return current;
             }
-            
-            return current;
-        }
-        
         // マーカー更新
         function updateMarker(person, position) {
             const colors = {
