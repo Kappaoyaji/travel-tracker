@@ -784,6 +784,31 @@
                 generateTimelineTicks();
             }
 
+            // 指定日時にジャンプ
+                function jumpToDate(targetTime) {
+                    if (!targetTime || targetTime < minTime || targetTime > maxTime) {
+                        alert('指定された日時は旅程の範囲外です');
+                        return;
+                    }
+
+                    pausePlayback();
+                    stopRealtime();
+
+                    // 指定日時を含む6時間ページを計算
+                    const pageIndex = Math.floor((targetTime - minTime) / PAGE_DURATION);
+                    currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
+                    currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
+
+                    currentTime = targetTime;
+
+                    updatePageInfo();
+                    updatePageButtons();
+                    generateTimelineTicks();
+                    updateSliderPosition();
+                    updateTimeDisplay();
+                    updateDisplay();
+                }
+
         // タイムゾーン選択肢を生成
         function initTimezoneSelect() {
             const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
