@@ -445,10 +445,13 @@
                 
                 // タイムゾーン選択肢を生成
                 initTimezoneSelect();
-                
+
+                // ページ初期化
+                initializePage();
+
                 // タイムライン初期化
                 initTimeline();
-                
+
                 updateDisplay();
                 startRealtime();
             } catch (error) {
