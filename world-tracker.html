@@ -810,11 +810,22 @@
         }
 
         // スライダー位置を更新
-        function updateSliderPosition() {
-            const slider = document.getElementById('time-slider');
-            const progress = (currentTime - minTime) / (maxTime - minTime);
-            slider.value = Math.max(0, Math.min(1000, progress * 1000));
-        }
+            function updateSliderPosition() {
+                const slider = document.getElementById('time-slider');
+
+                // 現在時刻がページ範囲外なら、適切なページに移動
+                if (currentTime < currentPageStart || currentTime > currentPageEnd) {
+                    const pageIndex = Math.floor((currentTime - minTime) / PAGE_DURATION);
+                    currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
+                    currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
+                    updatePageInfo();
+                    updatePageButtons();
+                    generateTimelineTicks();
+                }
+
+                const progress = (currentTime - currentPageStart) / (currentPageEnd - currentPageStart);
+                slider.value = Math.max(0, Math.min(1000, progress * 1000));
+            }
 
         // 時刻表示を更新
         function updateTimeDisplay() {
