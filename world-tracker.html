@@ -842,51 +842,64 @@
         }
 
         // タイムライン目盛りを生成
-        function generateTimelineTicks() {
-            const ticksContainer = document.getElementById('timeline-ticks');
-            ticksContainer.innerHTML = '';
-            
-            const duration = maxTime - minTime;
-            const days = Math.ceil(duration / (1000 * 60 * 60 * 24));
-            
-            // 6時間ごとに目盛り
-            for (let i = 0; i <= days * 4; i++) {
-                const time = new Date(minTime.getTime() + i * 6 * 60 * 60 * 1000);
-                if (time > maxTime) break;
-                
-                const progress = (time - minTime) / duration;
-                const hour = time.getHours();
-                
-                const tick = document.createElement('div');
-                tick.className = 'tick';
-                tick.style.left = (progress * 100) + '%';
-                
-                const line = document.createElement('div');
-                line.className = 'tick-line';
-                
-                // 0時と12時は大きく
-                if (hour === 0 || hour === 12) {
-                    tick.classList.add('tick-large');
-                    const label = document.createElement('div');
-                    label.className = 'tick-label';
-                    label.textContent = time.toLocaleString('ja-JP', {
-                        timeZone: currentTimezone,
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    });
-                    tick.appendChild(label);
-                } else {
-                    tick.classList.add('tick-medium');
+            function generateTimelineTicks() {
+                const ticksContainer = document.getElementById('timeline-ticks');
+                ticksContainer.innerHTML = '';
+
+                const duration = currentPageEnd - currentPageStart;
+
+                // 10分ごとに目盛り
+                const interval = 10 * 60 * 1000; // 10分（ミリ秒）
+
+                for (let time = new Date(currentPageStart); time <= currentPageEnd; time = new Date(time.getTime() + interval)) {
+                    const progress = (time - currentPageStart) / duration;
+                    const minutes = time.getMinutes();
+
+                    const tick = document.createElement('div');
+                    tick.className = 'tick';
+                    tick.style.left = (progress * 100) + '%';
+
+                    const line = document.createElement('div');
+                    line.className = 'tick-line';
+
+                    // 1時間ごと（0分）は大きく
+                    if (minutes === 0) {
+                        tick.classList.add('tick-large');
+                        line.style.height = '25px';
+                        line.style.width = '3px';
+                        line.style.background = '#333';
+
+                        const label = document.createElement('div');
+                        label.className = 'tick-label';
+                        label.textContent = time.toLocaleString('ja-JP', {
+                            timeZone: currentTimezone,
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        });
+                        tick.appendChild(label);
+                    }
+                    // 30分は中くらい
+                    else if (minutes === 30) {
+                        tick.classList.add('tick-medium');
+                        line.style.height = '15px';
+                        line.style.width = '2px';
+                        line.style.background = '#999';
+                    }
+                    // 10分、20分、40分、50分は小さく
+                    else {
+                        line.style.height = '10px';
+                        line.style.width = '1px';
+                        line.style.background = '#ccc';
+                    }
+
+                    tick.appendChild(line);
+                    ticksContainer.appendChild(tick);
                 }
-                
-                tick.appendChild(line);
-                ticksContainer.appendChild(tick);
             }
         
-    }
     </script>
     
     <script async defer
