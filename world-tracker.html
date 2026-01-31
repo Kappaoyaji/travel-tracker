@@ -770,23 +770,35 @@
         }
         
         // 情報パネル更新
-        function updateInfo(person, position) {
-            const num = person.replace('Person', '');
-            
-            // 人物名を表示
-            const displayName = personNames[person] || person;
-            document.querySelector(`#person${num}-info .person-name`).textContent = displayName;
-            document.getElementById(`person${num}-location`).textContent = position.場所名;
-            
-            const localTime = new Date().toLocaleString('ja-JP', {
-                timeZone: position.タイムゾーン,
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-            document.getElementById(`person${num}-time`).textContent = localTime;
-        }
+            function updateInfo(person, position) {
+                const num = person.replace('Person', '');
 
+                // 人物名を表示
+                const displayName = personNames[person] || person;
+                document.querySelector(`#person${num}-info .person-name`).textContent = displayName;
+                document.getElementById(`person${num}-location`).textContent = position.場所名;
+
+                // 再生中の時刻を表示
+                const localTime = currentTime.toLocaleString('ja-JP', {
+                    timeZone: position.タイムゾーン,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                document.getElementById(`person${num}-time`).textContent = localTime;
+
+                // 再生中かどうかで背景色を変更
+                const infoBox = document.getElementById(`person${num}-info`);
+                const now = new Date();
+                const timeDiff = Math.abs(currentTime - now);
+
+                if (timeDiff > 60000) {  // 1分以上差がある = 再生中
+                    infoBox.style.background = '#fff3cd';  // 薄い黄色
+                } else {
+                    infoBox.style.background = 'white';  // 通常
+                }
+            }
+            
         // 昼夜レイヤー更新
         function updateDayNight() {
             const canvas = document.getElementById('day-night-canvas');
