@@ -401,6 +401,9 @@
         let maxTime = null;
         let playbackSpeed = 960;  // ← 追加
         let isLooping = false;     // ← 追加
+        let currentPageStart = null;
+        let currentPageEnd = null;
+        const PAGE_DURATION = 6 * 60 * 60 * 1000; // 6時間（ミリ秒）
 
                 
         // 初期化
