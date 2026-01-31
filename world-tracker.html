@@ -479,32 +479,37 @@
         </div>
     </div>
 
+
     <!-- 日付ジャンプポップアップ -->
     <div id="date-jump-overlay"></div>
-    <div id="date-jump-popup">
-        <div class="popup-header">
-            <h3>日時を指定</h3>
-            <button class="popup-close" id="popup-close">×</button>
-        </div>
-        <div class="time-inputs">
-            <div class="time-input-group">
-                <label>日付</label>
-                <input type="date" id="jump-date">
+        <div id="date-jump-popup">
+            <div class="popup-header">
+                <h3>日時を指定</h3>
+                <button class="popup-close" id="popup-close">×</button>
             </div>
-            <div class="time-input-group">
-                <label>時</label>
-                <input type="number" id="jump-hour" min="0" max="23" value="0">
+            <div class="time-inputs">
+                <div class="time-input-group">
+                    <label>日付</label>
+                    <input type="date" id="jump-date">
+                </div>
+                <div class="time-input-group">
+                    <label>時</label>
+                    <select id="jump-hour">
+                        <!-- 0-23の選択肢 -->
+                    </select>
+                </div>
+                <div class="time-input-group">
+                    <label>分</label>
+                    <select id="jump-minute">
+                        <!-- 0-59の選択肢 -->
+                    </select>
+                </div>
             </div>
-            <div class="time-input-group">
-                <label>分</label>
-                <input type="number" id="jump-minute" min="0" max="59" value="0">
+            <div class="popup-actions">
+                <button class="popup-btn popup-btn-secondary" id="popup-cancel">キャンセル</button>
+                <button class="popup-btn popup-btn-primary" id="popup-jump">ジャンプ</button>
             </div>
         </div>
-        <div class="popup-actions">
-            <button class="popup-btn popup-btn-secondary" id="popup-cancel">キャンセル</button>
-            <button class="popup-btn popup-btn-primary" id="popup-jump">ジャンプ</button>
-        </div>
-    </div>
     
     <div id="person1-info" class="person-info">
         <div class="person-name">Person 1</div>
