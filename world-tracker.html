@@ -803,6 +803,18 @@
             document.getElementById('loop-checkbox').addEventListener('change', (e) => {
                 isLooping = e.target.checked;
             });
+
+            // 前のページボタン
+            document.getElementById('prev-page-btn').addEventListener('click', () => {
+                pausePlayback();
+                goToPrevPage();
+            });
+
+            // 次のページボタン
+            document.getElementById('next-page-btn').addEventListener('click', () => {
+                pausePlayback();
+                goToNextPage();
+            });
             
             updateSliderPosition();
             updateTimeDisplay();
