@@ -962,20 +962,33 @@
                 goToNextPage();
             });
 
-            // 日付ジャンプボタン
-            document.getElementById('date-jump-btn').addEventListener('click', () => {
-                const dateInput = document.getElementById('date-jump-input');
-                if (dateInput.value) {
-                    const targetTime = new Date(dateInput.value);
-                    jumpToDate(targetTime);
-                }
+            // 日付ジャンプトリガー
+            document.getElementById('date-jump-trigger').addEventListener('click', () => {
+                openDateJumpPopup();
             });
 
-            // 日付入力でEnterキー
-            document.getElementById('date-jump-input').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const targetTime = new Date(e.target.value);
-                    jumpToDate(targetTime);
+            // ポップアップを閉じる
+            document.getElementById('popup-close').addEventListener('click', () => {
+                closeDateJumpPopup();
+            });
+
+            document.getElementById('popup-cancel').addEventListener('click', () => {
+                closeDateJumpPopup();
+            });
+
+            document.getElementById('date-jump-overlay').addEventListener('click', () => {
+                closeDateJumpPopup();
+            });
+
+            // ジャンプ実行
+            document.getElementById('popup-jump').addEventListener('click', () => {
+                const dateValue = document.getElementById('jump-date').value;
+                const hour = parseInt(document.getElementById('jump-hour').value);
+                const minute = parseInt(document.getElementById('jump-minute').value);
+
+                if (dateValue) {
+                    const [year, month, day] = dateValue.split('-').map(Number);
+                    jumpToDate(year, month, day, hour, minute);
                 }
             });
             
