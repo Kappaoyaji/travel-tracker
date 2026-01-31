@@ -369,48 +369,62 @@
                 <select id="timezone-select"></select>
                 <div id="current-time-display">--</div>
                 <button id="now-btn">NOW</button>
+                <button id="prev-page-btn" class="nav-btn">◀◀</button>
+                <button id="next-page-btn" class="nav-btn">▶▶</button>
+                <button id="play-btn" class="playback-btn">▶</button>
+                <button id="pause-btn" class="playback-btn" disabled>⏸</button>
+                <button id="stop-btn" class="playback-btn">⏹</button>
+                <div class="speed-control">
+                    <label for="speed-select">速度:</label>
+                    <select id="speed-select">
+                        <option value="1">x1</option>
+                        <option value="60">x60</option>
+                        <option value="240">x240</option>
+                        <option value="480">x480</option>
+                        <option value="960" selected>x960</option>
+                        <option value="2880">x2880</option>
+                    </select>
+                </div>
+                <div class="loop-control">
+                    <input type="checkbox" id="loop-checkbox">
+                    <label for="loop-checkbox">ループ</label>
+                </div>
+                <div class="date-jump">
+                    <label id="date-jump-trigger">📅</label>
+                </div>
             </div>
-
-            <div class="timeline-navigation">
-                <button id="prev-page-btn" class="nav-btn">◀ 前の6時間</button>
-                <div class="page-info" id="page-info">--</div>
-                <button id="next-page-btn" class="nav-btn">次の6時間 ▶</button>
-            </div>
-
-            <div class="date-jump">
-                <label for="date-jump-input">📅 日時指定:</label>
-                <input type="datetime-local" id="date-jump-input">
-                <button id="date-jump-btn">ジャンプ</button>
-            </div>
-            
+        
             <div class="timeline-slider">
                 <div class="timeline-ticks" id="timeline-ticks"></div>
                 <input type="range" id="time-slider" min="0" max="1000" value="0">
             </div>
-                    <div class="playback-controls">
-            <div class="playback-buttons">
-                <button id="play-btn" class="playback-btn">▶️ 再生</button>
-                <button id="pause-btn" class="playback-btn" disabled>⏸️ 一時停止</button>
-                <button id="stop-btn" class="playback-btn">⏹️ 停止</button>
-            </div>
-            
-            <div class="loop-control">
-                <input type="checkbox" id="loop-checkbox">
-                <label for="loop-checkbox">ループ再生</label>
-            </div>
-            
-            <div class="speed-control">
-                <label for="speed-select">速度:</label>
-                <select id="speed-select">
-                    <option value="1">1x (リアルタイム)</option>
-                    <option value="60">60x (1時間/分)</option>
-                    <option value="240">240x (4時間/分)</option>
-                    <option value="480">480x (8時間/分)</option>
-                    <option value="960" selected>960x (16時間/分)</option>
-                    <option value="2880">2880x (1日/30秒)</option>
-                </select>
-            </div>
         </div>
+        
+        <!-- 日付ジャンプポップアップ -->
+        <div id="date-jump-overlay"></div>
+        <div id="date-jump-popup">
+            <div class="popup-header">
+                <h3>日時を指定</h3>
+                <button class="popup-close" id="popup-close">×</button>
+            </div>
+            <div class="time-inputs">
+                <div class="time-input-group">
+                    <label>日付</label>
+                    <input type="date" id="jump-date">
+                </div>
+                <div class="time-input-group">
+                    <label>時</label>
+                    <input type="number" id="jump-hour" min="0" max="23" value="0">
+                </div>
+                <div class="time-input-group">
+                    <label>分</label>
+                    <input type="number" id="jump-minute" min="0" max="59" value="0">
+                </div>
+            </div>
+            <div class="popup-actions">
+                <button class="popup-btn popup-btn-secondary" id="popup-cancel">キャンセル</button>
+                <button class="popup-btn popup-btn-primary" id="popup-jump">ジャンプ</button>
+            </div>
         </div>
     </div>
     
