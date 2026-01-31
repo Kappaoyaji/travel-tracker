@@ -744,6 +744,7 @@
             tzSelect.addEventListener('change', (e) => {
                 currentTimezone = e.target.value;
                 updateTimeDisplay();
+                updatePageInfo();
                 generateTimelineTicks();
             });
         }
