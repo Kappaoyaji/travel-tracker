@@ -722,15 +722,19 @@
             Person3: '#FFE66D'
         };
 
-        // 各人物に固定のピクセルオフセット (120°円形配置)
+        // 各人物に固定の微小オフセット (緯度経度)
+        // アイコンサイズ(scale=10)の約半分ずつずらす
         const offsets = {
-            Person1: { x: 0, y: 0 },                    // 中心
-            Person2: { x: 6, y: 0 },                    // 右に6px
-            Person3: { x: -3, y: -5 }                   // 左上に6px
+            Person1: { lat: 0, lng: 0 },                        // 中心
+            Person2: { lat: 0.00005, lng: 0.00008 },           // 右上
+            Person3: { lat: -0.00005, lng: 0.00008 }           // 左上
         };
 
-        const latLng = { lat: position.緯度, lng: position.経度 };
         const offset = offsets[person];
+        const latLng = {
+            lat: position.緯度 + offset.lat,
+            lng: position.経度 + offset.lng
+        };
 
         if (!markers[person]) {
             markers[person] = new google.maps.Marker({
@@ -743,18 +747,15 @@
                     fillColor: colors[person],
                     fillOpacity: 1,
                     strokeColor: 'white',
-                    strokeWeight: 2,
-                    anchor: new google.maps.Point(offset.x, offset.y)
+                    strokeWeight: 2
                 }
             });
         } else {
             markers[person].setPosition(latLng);
-            const icon = markers[person].getIcon();
-            icon.anchor = new google.maps.Point(offset.x, offset.y);
-            markers[person].setIcon(icon);
         }
-    }    
-        // 情報パネル更新
+    } 
+    
+    // 情報パネル更新
             function updateInfo(person, position) {
                 const num = person.replace('Person', '');
 
