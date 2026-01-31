@@ -714,69 +714,65 @@
                 
                 return current;
             }
-        // マーカー更新
-        function updateMarker(person, position) {
-            const colors = {
-                Person1: '#FF6B6B',
-                Person2: '#4ECDC4',
-                Person3: '#FFE66D'
-            };
-            
-                    // 重なり対策: 同じ位置に複数人いる場合はピクセル単位でずらす
-            const baseLatLng = new google.maps.LatLng(position.緯度, position.経度);
+    // マーカー更新
+    function updateMarker(person, position) {
+        const colors = {
+            Person1: '#FF6B6B',
+            Person2: '#4ECDC4',
+            Person3: '#FFE66D'
+        };
 
-            // 他の人と同じ位置にいるかチェック
-            let offsetIndex = 0;
+        // 重なり対策: 同じ位置に複数人いる場合は少しずらす
+        let lat = position.緯度;
+        let lng = position.経度;
 
-            ['Person1', 'Person2', 'Person3'].forEach(p => {
-                if (p === person) return;
-                if (markers[p]) {
-                    const otherPos = markers[p].getPosition();
-                    if (Math.abs(otherPos.lat() - position.緯度) < 0.0001 &&
-                        Math.abs(otherPos.lng() - position.経度) < 0.0001) {
-                        offsetIndex++;
-                    }
+        // 他の人と同じ位置にいるかチェック
+        let offsetIndex = 0;
+
+        ['Person1', 'Person2', 'Person3'].forEach(p => {
+            if (p === person) return;
+            if (markers[p]) {
+                const otherPos = markers[p].getPosition();
+                if (Math.abs(otherPos.lat() - position.緯度) < 0.0001 &&
+                    Math.abs(otherPos.lng() - position.経度) < 0.0001) {
+                    offsetIndex++;
+                }
+            }
+        });
+
+        // ズームレベルに応じたオフセット量を計算
+        if (offsetIndex > 0) {
+            const zoom = map.getZoom();
+            // ズームレベルが大きいほど小さくずらす
+            const baseOffset = 0.5 / Math.pow(2, zoom - 3);
+            const radius = baseOffset;
+            const angle = offsetIndex * 120 * Math.PI / 180; // 120°ずつ
+
+            lat += radius * Math.sin(angle);
+            lng += radius * Math.cos(angle);
+        }
+
+        const latLng = { lat: lat, lng: lng };
+
+        if (!markers[person]) {
+            markers[person] = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                title: person,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: colors[person],
+                    fillOpacity: 1,
+                    strokeColor: 'white',
+                    strokeWeight: 2
                 }
             });
-
-            // マーカー作成/更新
-            if (!markers[person]) {
-                markers[person] = new google.maps.Marker({
-                    position: baseLatLng,
-                    map: map,
-                    title: person,
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 10,
-                        fillColor: colors[person],
-                        fillOpacity: 1,
-                        strokeColor: 'white',
-                        strokeWeight: 2,
-                        anchor: new google.maps.Point(0, 0)
-                    }
-                });
-            } else {
-                markers[person].setPosition(baseLatLng);
-            }
-
-            // ピクセル単位で円形配置 (120°ずつ)
-            if (offsetIndex > 0 && markers[person]) {
-                const radius = 15; // 中心からの距離(ピクセル)
-                const angle = offsetIndex * 120 * Math.PI / 180; // 120°ずつ
-                const offsetX = radius * Math.cos(angle);
-                const offsetY = radius * Math.sin(angle);
-
-                const icon = markers[person].getIcon();
-                icon.anchor = new google.maps.Point(-offsetX, -offsetY);
-                markers[person].setIcon(icon);
-            } else if (markers[person]) {
-                // 重なっていない場合は元に戻す
-                const icon = markers[person].getIcon();
-                icon.anchor = new google.maps.Point(0, 0);
-                markers[person].setIcon(icon);
-            }
+        } else {
+            markers[person].setPosition(latLng);
         }
-        
+    } 
+    
         // 情報パネル更新
             function updateInfo(person, position) {
                 const num = person.replace('Person', '');
