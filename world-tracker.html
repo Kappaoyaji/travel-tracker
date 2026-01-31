@@ -445,25 +445,28 @@
                         const totalDuration = arriveTime - departTime;
                         const elapsed = currentTime - departTime;
                         const progress = elapsed / totalDuration;
+
+                    // 移動中なら補間
+                    if (currentTime >= departTime && currentTime <= arriveTime) {
+                        const totalDuration = arriveTime - departTime;
+                        const elapsed = currentTime - departTime;
+                        const progress = elapsed / totalDuration;
                         
-                    // 緯度経度を補間（太平洋横断対応）
-                        const lat = current.緯度 + (arrival.緯度 - current.緯度) * progress;
-                        
-                        // 経度差が180度を超える場合は逆回り
-                        let lngDiff = arrival.経度 - current.経度;
-                        if (lngDiff > 180) {
-                            lngDiff -= 360;
-                        } else if (lngDiff < -180) {
-                            lngDiff += 360;
-                        }
-                        const lng = current.経度 + lngDiff * progress;
+                        // ↓↓↓ ここから新しいコード ↓↓↓
+                        // Google Maps Geometry APIで大圏航路補間
+                        const from = new google.maps.LatLng(current.緯度, current.経度);
+                        const to = new google.maps.LatLng(arrival.緯度, arrival.経度);
+                        const interpolated = google.maps.geometry.spherical.interpolate(from, to, progress);
                         
                         return {
                             ...current,
-                            緯度: lat,
-                            経度: lng,
+                            緯度: interpolated.lat(),
+                            経度: interpolated.lng(),
                             場所名: `${current.場所名} → ${arrival.場所名} (移動中)`
                         };
+                        // ↑↑↑ ここまで新しいコード ↑↑↑
+                    }
+
                     }
                 }
             }
