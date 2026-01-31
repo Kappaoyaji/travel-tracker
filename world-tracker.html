@@ -582,15 +582,40 @@
 
                 
         // 初期化
-                function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 35.6762, lng: 139.6503 },
-                zoom: 3,
-                mapTypeId: 'terrain'
-            });
-            
-            loadSchedules();
-        }
+            function initMap() {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 35, lng: -150 },  // 仮の中心
+                    zoom: 3,
+                    mapTypeId: 'terrain'
+                });
+
+                loadSchedules();
+            }
+
+            // 全員が見える範囲に地図を調整
+            function fitMapToAllPeople() {
+                const bounds = new google.maps.LatLngBounds();
+                let hasPosition = false;
+
+                ['Person1', 'Person2', 'Person3'].forEach(person => {
+                    const position = getCurrentPosition(person);
+                    if (position && position.緯度 && position.経度) {
+                        bounds.extend(new google.maps.LatLng(position.緯度, position.経度));
+                        hasPosition = true;
+                    }
+                });
+
+                if (hasPosition) {
+                    map.fitBounds(bounds);
+
+                    // ズームレベルが近すぎる場合は少し引く
+                    google.maps.event.addListenerOnce(map, 'bounds_changed', function () {
+                        if (map.getZoom() > 5) {
+                            map.setZoom(5);
+                        }
+                    });
+                }
+            }
         
         // ↓↓↓ ここに追加 ↓↓↓
         // スケジュール読み込み
@@ -629,6 +654,7 @@
 
                 updateDisplay();
                 startRealtime();
+                fitMapToAllPeople();
             } catch (error) {
                 console.error('スケジュール読み込みエラー:', error);
             }
