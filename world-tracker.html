@@ -814,31 +814,70 @@
                 generateTimelineTicks();
             }
 
-            // 指定日時にジャンプ
-                function jumpToDate(targetTime) {
-                    if (!targetTime || targetTime < minTime || targetTime > maxTime) {
-                        alert('指定された日時は旅程の範囲外です');
-                        return;
-                    }
+    // 指定日時にジャンプ
+    function jumpToDate(year, month, day, hour, minute) {
+        // 月は0始まりなので-1
+        const targetTime = new Date(year, month - 1, day, hour, minute);
 
-                    pausePlayback();
-                    stopRealtime();
+        if (!targetTime || targetTime < minTime || targetTime > maxTime) {
+            alert('指定された日時は旅程の範囲外です');
+            return;
+        }
 
-                    // 指定日時を含む6時間ページを計算
-                    const pageIndex = Math.floor((targetTime - minTime) / PAGE_DURATION);
-                    currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
-                    currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
+        pausePlayback();
+        stopRealtime();
 
-                    currentTime = targetTime;
+        // 指定日時を含む6時間ページを計算
+        const pageIndex = Math.floor((targetTime - minTime) / PAGE_DURATION);
+        currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
+        currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
 
-                    updatePageInfo();
-                    updatePageButtons();
-                    generateTimelineTicks();
-                    updateSliderPosition();
-                    updateTimeDisplay();
-                    updateDisplay();
-                }
+        currentTime = targetTime;
 
+        updatePageInfo();
+        updatePageButtons();
+        generateTimelineTicks();
+        updateSliderPosition();
+        updateTimeDisplay();
+        updateDisplay();
+
+        // ポップアップを閉じる
+        closeDateJumpPopup();
+    }
+
+    // 日付ジャンプポップアップを開く
+    function openDateJumpPopup() {
+        const overlay = document.getElementById('date-jump-overlay');
+        const popup = document.getElementById('date-jump-popup');
+
+        // 現在の日時を初期値に設定
+        const dateInput = document.getElementById('jump-date');
+        const hourInput = document.getElementById('jump-hour');
+        const minuteInput = document.getElementById('jump-minute');
+
+        const year = currentTime.getFullYear();
+        const month = String(currentTime.getMonth() + 1).padStart(2, '0');
+        const day = String(currentTime.getDate()).padStart(2, '0');
+
+        dateInput.value = `${year}-${month}-${day}`;
+        dateInput.min = `${minTime.getFullYear()}-${String(minTime.getMonth() + 1).padStart(2, '0')}-${String(minTime.getDate()).padStart(2, '0')}`;
+        dateInput.max = `${maxTime.getFullYear()}-${String(maxTime.getMonth() + 1).padStart(2, '0')}-${String(maxTime.getDate()).padStart(2, '0')}`;
+
+        hourInput.value = currentTime.getHours();
+        minuteInput.value = currentTime.getMinutes();
+
+        overlay.classList.add('show');
+        popup.classList.add('show');
+    }
+
+    // 日付ジャンプポップアップを閉じる
+    function closeDateJumpPopup() {
+        const overlay = document.getElementById('date-jump-overlay');
+        const popup = document.getElementById('date-jump-popup');
+
+        overlay.classList.remove('show');
+        popup.classList.remove('show');
+    }
         // タイムゾーン選択肢を生成
         function initTimezoneSelect() {
             const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
