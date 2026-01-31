@@ -634,6 +634,12 @@
             playInterval = setInterval(() => {
                 const increment = 100 * playbackSpeed;
                 currentTime = new Date(currentTime.getTime() + increment);
+
+                    // ページ範囲を超えたら次のページへ
+                if (currentTime > currentPageEnd && currentPageEnd < maxTime) {
+                    goToNextPage();
+                }
+                    
                 
                 if (currentTime >= maxTime) {
                     if (isLooping) {
