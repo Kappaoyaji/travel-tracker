@@ -1327,20 +1327,24 @@
                 }
             });
 
-                        // 地球儀切り替えボタン
+            // 地球儀切り替えボタン
+            let isGlobeMode = false;
             document.getElementById('globe-toggle-btn').addEventListener('click', () => {
-                const currentProjection = map.getProjection();
                 const btn = document.getElementById('globe-toggle-btn');
 
-                // 現在のマップタイプを確認して切り替え
-                if (map.getRenderingType() === google.maps.RenderingType.VECTOR) {
-                    // 地球儀モード → 平面モードへ
-                    map.setTilt(0);
-                    btn.textContent = '🌍 地球儀表示';
-                } else {
-                    // 平面モード → 地球儀モードへ
+                if (!isGlobeMode) {
+                    // 地球儀モードへ
+                    map.setZoom(2);
                     map.setTilt(45);
+                    map.setHeading(0);
                     btn.textContent = '🗺️ 平面表示';
+                    isGlobeMode = true;
+                } else {
+                    // 平面モードへ
+                    map.setTilt(0);
+                    map.setHeading(0);
+                    btn.textContent = '🌍 地球儀表示';
+                    isGlobeMode = false;
                 }
             });
             
