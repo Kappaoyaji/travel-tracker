@@ -963,9 +963,13 @@
                 const increment = 100 * playbackSpeed;
                 currentTime = new Date(currentTime.getTime() + increment);
 
-                    // ページ範囲を超えたら次のページへ
+                // ページ範囲を超えたら次のページへ（ただし最後のページでは停止）
                 if (currentTime > currentPageEnd && currentPageEnd < maxTime) {
                     goToNextPage();
+                } else if (currentTime >= maxTime) {
+                    currentTime = new Date(maxTime);
+                    stopPlayback();
+                    return;
                 }
                     
                 
