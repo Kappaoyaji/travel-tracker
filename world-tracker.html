@@ -623,7 +623,13 @@
                         div.style.border = '2px solid white';
                         div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
                         div.style.cursor = 'pointer';
-                        div.style.zIndex = '1000';
+                        // Person1が一番上、Person3が一番下
+                        const zIndexMap = {
+                            Person1: 1003,
+                            Person2: 1002,
+                            Person3: 1001
+                        };
+                        div.style.zIndex = zIndexMap[this.person];
                         div.style.transition = 'left 0.3s ease, top 0.3s ease';
 
                         div.addEventListener('click', () => {
