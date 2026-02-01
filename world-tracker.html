@@ -804,7 +804,7 @@
                 return current;
             }
 
-    // 3人のマーカーが重なっているかチェック（緯度経度が同じ場所にいるか）
+    // マーカーが重なっているかチェック（2人以上が同じ場所にいるか）
     function checkOverlapping() {
         const positions = {};
         let hasAllPositions = true;
@@ -821,26 +821,41 @@
 
         if (!hasAllPositions) return;
 
-        // 3人全員が同じ位置にいるかチェック（小数点4桁まで比較）
-        const pos1 = positions.Person1;
-        const pos2 = positions.Person2;
-        const pos3 = positions.Person3;
-
         const threshold = 0.0001; // 約10m以内なら「同じ場所」と判定
 
-        const isOverlapping =
-            Math.abs(pos1.lat - pos2.lat) < threshold &&
-            Math.abs(pos1.lng - pos2.lng) < threshold &&
-            Math.abs(pos1.lat - pos3.lat) < threshold &&
-            Math.abs(pos1.lng - pos3.lng) < threshold;
+        // 各人物ごとに、他の誰かと重なっているかチェック
+        const overlapping = {
+            Person1: false,
+            Person2: false,
+            Person3: false
+        };
+
+        const people = ['Person1', 'Person2', 'Person3'];
+
+        // 全ペアをチェック
+        for (let i = 0; i < people.length; i++) {
+            for (let j = i + 1; j < people.length; j++) {
+                const person1 = people[i];
+                const person2 = people[j];
+                const pos1 = positions[person1];
+                const pos2 = positions[person2];
+
+                // 2人が重なっているか
+                if (Math.abs(pos1.lat - pos2.lat) < threshold &&
+                    Math.abs(pos1.lng - pos2.lng) < threshold) {
+                    overlapping[person1] = true;
+                    overlapping[person2] = true;
+                }
+            }
+        }
 
         // 各CustomMarkerに重なり状態を通知
         ['Person1', 'Person2', 'Person3'].forEach(person => {
             if (customMarkers[person]) {
-                customMarkers[person].setOverlapping(isOverlapping);
+                customMarkers[person].setOverlapping(overlapping[person]);
             }
         });
-    }
+    }   
     // マーカー更新
         // マーカー更新
         function updateMarker(person, position) {
