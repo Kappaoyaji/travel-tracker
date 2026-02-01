@@ -755,7 +755,7 @@
                     center: { lat: 35, lng: -150 },
                     zoom: 3,
                     mapTypeId: 'terrain',
-                    mapId: 'DEMO_MAP_ID'  // 地球儀表示用
+                    mapId: 'a715282933bf24c915059e5f'  // 地球儀表示用
                 });
 
                 loadSchedules();
@@ -1329,20 +1329,29 @@
 
             // 地球儀切り替えボタン
             let isGlobeMode = false;
+            let savedZoom = 3;
+            let savedCenter = null;
+
             document.getElementById('globe-toggle-btn').addEventListener('click', () => {
                 const btn = document.getElementById('globe-toggle-btn');
 
                 if (!isGlobeMode) {
+                    // 現在の状態を保存
+                    savedZoom = map.getZoom();
+                    savedCenter = map.getCenter();
+
                     // 地球儀モードへ
                     map.setZoom(2);
                     map.setTilt(45);
-                    map.setHeading(0);
                     btn.textContent = '🗺️ 平面表示';
                     isGlobeMode = true;
                 } else {
-                    // 平面モードへ
+                    // 平面モードへ（元の状態に戻す）
                     map.setTilt(0);
-                    map.setHeading(0);
+                    if (savedCenter) {
+                        map.setCenter(savedCenter);
+                        map.setZoom(savedZoom);
+                    }
                     btn.textContent = '🌍 地球儀表示';
                     isGlobeMode = false;
                 }
