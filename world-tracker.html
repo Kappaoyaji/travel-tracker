@@ -561,6 +561,76 @@
         };
                 
         let map;
+        let map;
+
+            // CustomMarkerクラス: 重なり時のみピクセルオフセット
+            class CustomMarker extends google.maps.OverlayView {
+                constructor(position, color, person, offset) {
+                    super();
+                    this.position = position;
+                    this.color = color;
+                    this.person = person;
+                    this.baseOffset = offset; // 基本オフセット {x: 0, y: 0}
+                    this.currentOffset = { x: 0, y: 0 }; // 実際に適用されるオフセット
+                    this.div = null;
+                }
+
+                onAdd() {
+                    const div = document.createElement('div');
+                    div.style.position = 'absolute';
+                    div.style.width = '20px';
+                    div.style.height = '20px';
+                    div.style.borderRadius = '50%';
+                    div.style.backgroundColor = this.color;
+                    div.style.border = '2px solid white';
+                    div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+                    div.style.cursor = 'pointer';
+                    div.style.zIndex = '1000';
+                    div.style.transition = 'left 0.3s ease, top 0.3s ease'; // スムーズな移動
+
+                    // クリックイベント
+                    div.addEventListener('click', () => {
+                        showPersonInfo(this.person);
+                    });
+
+                    this.div = div;
+
+                    const panes = this.getPanes();
+                    panes.overlayMouseTarget.appendChild(div);
+                }
+
+                draw() {
+                    const overlayProjection = this.getProjection();
+                    const pos = overlayProjection.fromLatLngToDivPixel(this.position);
+
+                    if (this.div && pos) {
+                        this.div.style.left = (pos.x + this.currentOffset.x - 10) + 'px';
+                        this.div.style.top = (pos.y + this.currentOffset.y - 10) + 'px';
+                    }
+                }
+
+                onRemove() {
+                    if (this.div && this.div.parentNode) {
+                        this.div.parentNode.removeChild(this.div);
+                        this.div = null;
+                    }
+                }
+
+                setPosition(position) {
+                    this.position = position;
+                    this.draw();
+                }
+
+                // 重なり状態に応じてオフセットを設定
+                setOverlapping(isOverlapping) {
+                    if (isOverlapping) {
+                        this.currentOffset = this.baseOffset;
+                    } else {
+                        this.currentOffset = { x: 0, y: 0 };
+                    }
+                    this.draw();
+                }
+            }
         let markers = {
             Person1: null,
             Person2: null,
@@ -754,7 +824,7 @@
             markers[person].setPosition(latLng);
         }
     } 
-    
+
     // 情報パネル更新
             function updateInfo(person, position) {
                 const num = person.replace('Person', '');
