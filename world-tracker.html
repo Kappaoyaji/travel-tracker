@@ -970,12 +970,9 @@
                     
                 
                 if (currentTime >= maxTime) {
-                    if (isLooping) {
-                        currentTime = new Date(minTime);
-                    } else {
-                        stopPlayback();
-                        return;
-                    }
+                    currentTime = new Date(maxTime);
+                    stopPlayback();
+                    return;
                 }
                 
                 updateSliderPosition();
