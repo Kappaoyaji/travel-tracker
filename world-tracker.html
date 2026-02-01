@@ -596,75 +596,76 @@
         let currentPageEnd = null;
         const PAGE_DURATION = 6 * 60 * 60 * 1000; // 6時間（ミリ秒）
 
-        // CustomMarkerクラス: 重なり時のみピクセルオフセット
-            class CustomMarker extends google.maps.OverlayView {
-                constructor(position, color, person, offset) {
-                    super();
-                    this.position = position;
-                    this.color = color;
-                    this.person = person;
-                    this.baseOffset = offset;
-                    this.currentOffset = { x: 0, y: 0 };
-                    this.div = null;
-                }
-
-                onAdd() {
-                    const div = document.createElement('div');
-                    div.style.position = 'absolute';
-                    div.style.width = '20px';
-                    div.style.height = '20px';
-                    div.style.borderRadius = '50%';
-                    div.style.backgroundColor = this.color;
-                    div.style.border = '2px solid white';
-                    div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
-                    div.style.cursor = 'pointer';
-                    div.style.zIndex = '1000';
-                    div.style.transition = 'left 0.3s ease, top 0.3s ease';
-
-                    div.addEventListener('click', () => {
-                        showPersonInfo(this.person);
-                    });
-
-                    this.div = div;
-
-                    const panes = this.getPanes();
-                    panes.overlayMouseTarget.appendChild(div);
-                }
-
-                draw() {
-                    const overlayProjection = this.getProjection();
-                    const pos = overlayProjection.fromLatLngToDivPixel(this.position);
-
-                    if (this.div && pos) {
-                        this.div.style.left = (pos.x + this.currentOffset.x - 10) + 'px';
-                        this.div.style.top = (pos.y + this.currentOffset.y - 10) + 'px';
-                    }
-                }
-
-                onRemove() {
-                    if (this.div && this.div.parentNode) {
-                        this.div.parentNode.removeChild(this.div);
-                        this.div = null;
-                    }
-                }
-
-                setPosition(position) {
-                    this.position = position;
-                    this.draw();
-                }
-
-                setOverlapping(isOverlapping) {
-                    if (isOverlapping) {
-                        this.currentOffset = this.baseOffset;
-                    } else {
-                        this.currentOffset = { x: 0, y: 0 };
-                    }
-                    this.draw();
-                }
-            }
+      
                 
         // 初期化
             function initMap() {
+                  // CustomMarkerクラス: 重なり時のみピクセルオフセット
+                class CustomMarker extends google.maps.OverlayView {
+                    constructor(position, color, person, offset) {
+                        super();
+                        this.position = position;
+                        this.color = color;
+                        this.person = person;
+                        this.baseOffset = offset;
+                        this.currentOffset = { x: 0, y: 0 };
+                        this.div = null;
+                    }
+
+                    onAdd() {
+                        const div = document.createElement('div');
+                        div.style.position = 'absolute';
+                        div.style.width = '20px';
+                        div.style.height = '20px';
+                        div.style.borderRadius = '50%';
+                        div.style.backgroundColor = this.color;
+                        div.style.border = '2px solid white';
+                        div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+                        div.style.cursor = 'pointer';
+                        div.style.zIndex = '1000';
+                        div.style.transition = 'left 0.3s ease, top 0.3s ease';
+
+                        div.addEventListener('click', () => {
+                            showPersonInfo(this.person);
+                        });
+
+                        this.div = div;
+
+                        const panes = this.getPanes();
+                        panes.overlayMouseTarget.appendChild(div);
+                    }
+
+                    draw() {
+                        const overlayProjection = this.getProjection();
+                        const pos = overlayProjection.fromLatLngToDivPixel(this.position);
+
+                        if (this.div && pos) {
+                            this.div.style.left = (pos.x + this.currentOffset.x - 10) + 'px';
+                            this.div.style.top = (pos.y + this.currentOffset.y - 10) + 'px';
+                        }
+                    }
+
+                    onRemove() {
+                        if (this.div && this.div.parentNode) {
+                            this.div.parentNode.removeChild(this.div);
+                            this.div = null;
+                        }
+                    }
+
+                    setPosition(position) {
+                        this.position = position;
+                        this.draw();
+                    }
+
+                    setOverlapping(isOverlapping) {
+                        if (isOverlapping) {
+                            this.currentOffset = this.baseOffset;
+                        } else {
+                            this.currentOffset = { x: 0, y: 0 };
+                        }
+                        this.draw();
+                    }
+                }
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: { lat: 35, lng: -150 },  // 仮の中心
                     zoom: 3,
