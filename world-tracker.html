@@ -596,12 +596,13 @@
         let currentPageEnd = null;
         const PAGE_DURATION = 6 * 60 * 60 * 1000; // 6時間（ミリ秒）
 
-      
+        // CustomMarkerクラス（グローバル変数として定義）
+        let CustomMarker;
                 
         // 初期化
             function initMap() {
-                  // CustomMarkerクラス: 重なり時のみピクセルオフセット
-                class CustomMarker extends google.maps.OverlayView {
+                    // CustomMarkerクラスを定義
+                CustomMarker = class extends google.maps.OverlayView {
                     constructor(position, color, person, offset) {
                         super();
                         this.position = position;
@@ -665,7 +666,7 @@
                         }
                         this.draw();
                     }
-                }
+                };
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: { lat: 35, lng: -150 },  // 仮の中心
                     zoom: 3,
