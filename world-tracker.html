@@ -87,6 +87,27 @@
         #person1-info { top: 65px; left: 10px; border-left: 4px solid #FF6B6B; }
         #person2-info { top: 155px; left: 10px; border-left: 4px solid #4ECDC4; }
         #person3-info { top: 245px; left: 10px; border-left: 4px solid #FFE66D; }
+
+                
+        /* 地球儀切り替えボタン */
+        #globe-toggle-btn {
+            position: absolute;
+            top: 335px;
+            left: 10px;
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #4285f4;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 2000;
+        }
+        
+        #globe-toggle-btn:hover {
+            background: #f0f8ff;
+        }
         
         .person-name {
             font-weight: bold;
@@ -527,8 +548,6 @@
                     <label id="date-jump-trigger">📅</label>
                 </div>
                 <button id="now-btn">NOW</button>
-                <button id="globe-toggle-btn" class="nav-btn">🌍 地球儀</button>
-                <button id="play-btn" class="playback-btn">▶</button>
                 <button id="play-btn" class="playback-btn">▶</button>
                 <button id="pause-btn" class="playback-btn" disabled>⏸</button>
                 <button id="stop-btn" class="playback-btn">⏹</button>
@@ -606,6 +625,11 @@
         <div class="person-location" id="person3-location">--</div>
         <div class="person-time" id="person3-time">--:--</div>
     </div>
+
+    <!-- 地球儀切り替えボタン -->
+    <button id="globe-toggle-btn">🌍 地球儀表示</button>
+    
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
     <script>
@@ -728,9 +752,10 @@
                     }
                 };
                 map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: 35, lng: -150 },  // 仮の中心
+                    center: { lat: 35, lng: -150 },
                     zoom: 3,
-                    mapTypeId: 'terrain'
+                    mapTypeId: 'terrain',
+                    mapId: 'DEMO_MAP_ID'  // 地球儀表示用
                 });
 
                 loadSchedules();
@@ -1299,6 +1324,23 @@
                 if (dateValue) {
                     const [year, month, day] = dateValue.split('-').map(Number);
                     jumpToDate(year, month, day, hour, minute);
+                }
+            });
+
+                        // 地球儀切り替えボタン
+            document.getElementById('globe-toggle-btn').addEventListener('click', () => {
+                const currentProjection = map.getProjection();
+                const btn = document.getElementById('globe-toggle-btn');
+
+                // 現在のマップタイプを確認して切り替え
+                if (map.getRenderingType() === google.maps.RenderingType.VECTOR) {
+                    // 地球儀モード → 平面モードへ
+                    map.setTilt(0);
+                    btn.textContent = '🌍 地球儀表示';
+                } else {
+                    // 平面モード → 地球儀モードへ
+                    map.setTilt(45);
+                    btn.textContent = '🗺️ 平面表示';
                 }
             });
             
