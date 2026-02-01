@@ -561,17 +561,50 @@
         };
                 
         let map;
+        let markers = {
+            Person1: null,
+            Person2: null,
+            Person3: null
+        };
+        let customMarkers = {
+            Person1: null,
+            Person2: null,
+            Person3: null
+        };
+        let schedules = [];
+        let currentTime = new Date();
+        let isPlaying = false;
+        let playInterval = null;
+        let currentTimezone = 'Asia/Tokyo';
+        let personNames = { Person1: 'Person 1', Person2: 'Person 2', Person3: 'Person 3' };
+        let minTime = null;
+        let maxTime = null;
+        const colors = {
+                Person1: '#FF6B6B',
+                Person2: '#4ECDC4',
+                Person3: '#FFE66D'
+            };
 
+            const markerOffsets = {
+                Person1: { x: 0, y: 0 },      // 中心
+                Person2: { x: 7, y: -4 },     // 右上
+                Person3: { x: -7, y: -4 }     // 左上
+            };
+        let playbackSpeed = 960;  // ← 追加
+        let isLooping = false;     // ← 追加
+        let currentPageStart = null;
+        let currentPageEnd = null;
+        const PAGE_DURATION = 6 * 60 * 60 * 1000; // 6時間（ミリ秒）
 
-            // CustomMarkerクラス: 重なり時のみピクセルオフセット
+        // CustomMarkerクラス: 重なり時のみピクセルオフセット
             class CustomMarker extends google.maps.OverlayView {
                 constructor(position, color, person, offset) {
                     super();
                     this.position = position;
                     this.color = color;
                     this.person = person;
-                    this.baseOffset = offset; // 基本オフセット {x: 0, y: 0}
-                    this.currentOffset = { x: 0, y: 0 }; // 実際に適用されるオフセット
+                    this.baseOffset = offset;
+                    this.currentOffset = { x: 0, y: 0 };
                     this.div = null;
                 }
 
@@ -586,9 +619,8 @@
                     div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
                     div.style.cursor = 'pointer';
                     div.style.zIndex = '1000';
-                    div.style.transition = 'left 0.3s ease, top 0.3s ease'; // スムーズな移動
+                    div.style.transition = 'left 0.3s ease, top 0.3s ease';
 
-                    // クリックイベント
                     div.addEventListener('click', () => {
                         showPersonInfo(this.person);
                     });
@@ -621,7 +653,6 @@
                     this.draw();
                 }
 
-                // 重なり状態に応じてオフセットを設定
                 setOverlapping(isOverlapping) {
                     if (isOverlapping) {
                         this.currentOffset = this.baseOffset;
@@ -631,30 +662,6 @@
                     this.draw();
                 }
             }
-        let markers = {
-            Person1: null,
-            Person2: null,
-            Person3: null
-        };
-        let customMarkers = {
-            Person1: null,
-            Person2: null,
-            Person3: null
-        };
-        let schedules = [];
-        let currentTime = new Date();
-        let isPlaying = false;
-        let playInterval = null;
-        let currentTimezone = 'Asia/Tokyo';
-        let personNames = { Person1: 'Person 1', Person2: 'Person 2', Person3: 'Person 3' };
-        let minTime = null;
-        let maxTime = null;
-        let playbackSpeed = 960;  // ← 追加
-        let isLooping = false;     // ← 追加
-        let currentPageStart = null;
-        let currentPageEnd = null;
-        const PAGE_DURATION = 6 * 60 * 60 * 1000; // 6時間（ミリ秒）
-
                 
         // 初期化
             function initMap() {
@@ -735,16 +742,19 @@
             }
         }
         
-        // 表示更新
-        function updateDisplay() {
-            ['Person1', 'Person2', 'Person3'].forEach(person => {
-                const position = getCurrentPosition(person);
-                if (position) {
-                    updateMarker(person, position);
-                    updateInfo(person, position);
-                }
-            });
-        }
+    // 表示更新
+    function updateDisplay() {
+        ['Person1', 'Person2', 'Person3'].forEach(person => {
+            const position = getCurrentPosition(person);
+            if (position) {
+                updateMarker(person, position);
+                updateInfo(person, position);
+            }
+        });
+
+        // マーカー更新後に重なりチェック
+        checkOverlapping();
+    }
         
             // 現在位置を取得
             function getCurrentPosition(person) {
