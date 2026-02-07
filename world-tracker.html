@@ -685,6 +685,18 @@
 
         markers[person] = marker;
 
+        // マーカークリックで展開/収束をトグル
+        marker.addListener('click', () => {
+            // 既に広がっているか確認
+            const spiderfiedMarkers = oms.markersNearAnyOtherMarker();
+
+            if (spiderfiedMarkers.length > 0) {
+                // 広がっている → 戻す
+                oms.unspiderfy();
+            }
+            // 広がっていない場合は自動的に広がる（OMSのデフォルト動作）
+        });
+
         // OMSに追加
         oms.addMarker(marker);
     }
