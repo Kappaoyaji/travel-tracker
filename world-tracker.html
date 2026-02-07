@@ -947,13 +947,23 @@
             stopPlayback();
         });
 
-        // 早送りボタン
-        document.getElementById('forward-btn').addEventListener('click', () => {
+        // 早送りボタン（タッチ対応）
+        const forwardBtn = document.getElementById('forward-btn');
+        forwardBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startForward();
+        }, { passive: false });
+        forwardBtn.addEventListener('click', () => {
             startForward();
         });
 
-        // 巻き戻しボタン
-        document.getElementById('rewind-btn').addEventListener('click', () => {
+        // 巻き戻しボタン（タッチ対応）
+        const rewindBtn = document.getElementById('rewind-btn');
+        rewindBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startRewind();
+        }, { passive: false });
+        rewindBtn.addEventListener('click', () => {
             startRewind();
         });
 
