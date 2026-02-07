@@ -970,23 +970,24 @@
             document.getElementById('pause-btn').classList.add('active');
             
             playInterval = setInterval(() => {
-                const increment = 100 * playbackSpeed;
-                currentTime = new Date(currentTime.getTime() + increment);
+                const increment = 100 * Math.abs(playbackSpeed);
+                const direction = playbackSpeed > 0 ? 1 : -1;
+                currentTime = new Date(currentTime.getTime() + increment * direction);
 
-                if (currentTime > currentPageEnd && currentPageEnd < maxTime) {
-                    goToNextPage();
-                } else if (currentTime >= maxTime) {
-                    // 旅の記憶モード：最初に戻る
+                // 早送り時：最後まで到達したら最初に戻る
+                if (playbackSpeed > 0 && currentTime >= maxTime) {
                     currentTime = new Date(minTime);
-
-                    // 最初のページに移動
-                    currentPageStart = new Date(minTime);
-                    currentPageEnd = new Date(Math.min(minTime.getTime() + PAGE_DURATION, maxTime.getTime()));
-                    updatePageButtons();
-                    generateTimelineTicks();
-
                     stopPlayback();
-                    updateSliderPosition();
+                    updateTimeDisplay();
+                    updateDisplay();
+                    updateNowButtonState();
+                    return;
+                }
+
+                // 巻き戻し時：最初まで戻ったら停止
+                if (playbackSpeed < 0 && currentTime <= minTime) {
+                    currentTime = new Date(minTime);
+                    stopPlayback();
                     updateTimeDisplay();
                     updateDisplay();
                     updateNowButtonState();
