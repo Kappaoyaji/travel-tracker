@@ -608,11 +608,6 @@
                 updateInfo(person, position);
             }
         });
-
-        // マーカー更新後、少し待ってから重なりチェック
-        setTimeout(() => {
-            checkOverlapping();
-        }, 100);
     }
         
             // 現在位置を取得
@@ -658,86 +653,60 @@
                 
                 return current;
             }
-
-    // マーカーが重なっているかチェック（2人以上が同じ場所にいるか）
-    function checkOverlapping() {
-        const positions = {};
-        let hasAllPositions = true;
-
-        // 各人物の現在位置を取得
-        ['Person1', 'Person2', 'Person3'].forEach(person => {
-            const position = getCurrentPosition(person);
-            if (!position || !position.緯度 || !position.経度) {
-                hasAllPositions = false;
-                return;
-            }
-            positions[person] = { lat: position.緯度, lng: position.経度 };
-        });
-
-        if (!hasAllPositions) return;
-
-        const threshold = 0.0001; // 約10m以内なら「同じ場所」と判定
-
-        // 各人物ごとに、他の誰かと重なっているかチェック
-        const overlapping = {
-            Person1: false,
-            Person2: false,
-            Person3: false
-        };
-
-        const people = ['Person1', 'Person2', 'Person3'];
-
-        // 全ペアをチェック
-        for (let i = 0; i < people.length; i++) {
-            for (let j = i + 1; j < people.length; j++) {
-                const person1 = people[i];
-                const person2 = people[j];
-                const pos1 = positions[person1];
-                const pos2 = positions[person2];
-
-                // 2人が重なっているか
-                if (Math.abs(pos1.lat - pos2.lat) < threshold &&
-                    Math.abs(pos1.lng - pos2.lng) < threshold) {
-                    overlapping[person1] = true;
-                    overlapping[person2] = true;
-                }
-            }
-        }
-
-        // 各CustomMarkerに重なり状態を通知
-        ['Person1', 'Person2', 'Person3'].forEach(person => {
-            if (customMarkers[person]) {
-                customMarkers[person].setOverlapping(overlapping[person]);
-            }
-        });
-    }   
+   
     // マーカー更新
-        // マーカー更新
-        function updateMarker(person, position) {
-            const latLng = new google.maps.LatLng(position.緯度, position.経度);
+    function updateMarker(person, position) {
+        const latLng = new google.maps.LatLng(position.緯度, position.経度);
 
-            // 既存のCustomMarkerを削除
-            if (customMarkers[person]) {
-                customMarkers[person].setMap(null);
-                customMarkers[person] = null;
-            }
-
-            // 新しいCustomMarkerを作成
-            const customMarker = new CustomMarker(
-                latLng,
-                colors[person],
-                person,
-                markerOffsets[person]
-            );
-            customMarker.setMap(map);
-            customMarkers[person] = customMarker;
-
-            // 既存のマーカー（互換性のため残す）
-            if (markers[person]) {
-                markers[person].setMap(null);
-                markers[person] = null;
-            }
+        // 既存のマーカーをOMSから削除
+        if (markers[person]) {
+            oms.removeMarker(markers[person]);
+            markers[person].setMap(null);
+            markers[person] = null;
         }
+
+        // 新しいマーカーを作成
+        const marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+            title: personNames[person] || person,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                fillColor: colors[person],
+                fillOpacity: 1,
+                strokeColor: 'white',
+                strokeWeight: 2
+            },
+            zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
+        });
+
+        // 情報ウィンドウ
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+            <div style="padding: 8px; font-family: sans-serif;">
+                <strong style="font-size: 14px;">${personNames[person]}</strong><br>
+                <span style="color: #666; font-size: 12px;">${position.場所名}</span><br>
+                <span style="font-weight: 600; font-size: 13px;">${currentTime.toLocaleString('ja-JP', {
+                timeZone: position.タイムゾーン,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            })}</span>
+            </div>
+        `
+        });
+
+        // クリックイベント
+        marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+        });
+
+        markers[person] = marker;
+
+        // OMSに追加
+        oms.addMarker(marker);
+    }
 
     // 情報パネル更新
             function updateInfo(person, position) {
