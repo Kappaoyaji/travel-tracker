@@ -1016,13 +1016,74 @@
             } 
 
         // 停止
-    function stopPlayback() {
-        pausePlayback();
-        updateSliderPosition();
-        updateTimeDisplay();
-        updateDisplay();
-        updateNowButtonState(); // 追加
-    }
+            function stopPlayback() {
+                pausePlayback();
+                updateSliderPosition();
+                updateTimeDisplay();
+                updateDisplay();
+                updateNowButtonState();
+            }
+
+            // 早送り開始/速度変更
+            function startForward() {
+                // 既に早送り中なら速度を上げる
+                if (isForwarding) {
+                    forwardSpeedIndex = (forwardSpeedIndex + 1) % speedLevels.length;
+                } else {
+                    // 新規開始
+                    pausePlayback();
+                    isRewinding = false;
+                    isForwarding = true;
+                    forwardSpeedIndex = 0;
+                }
+
+                playbackSpeed = speedLevels[forwardSpeedIndex];
+                updateSpeedDisplay();
+                startPlayback();
+            }
+
+            // 巻き戻し開始/速度変更
+            function startRewind() {
+                // 既に巻き戻し中なら速度を上げる
+                if (isRewinding) {
+                    rewindSpeedIndex = (rewindSpeedIndex + 1) % speedLevels.length;
+                } else {
+                    // 新規開始
+                    pausePlayback();
+                    isForwarding = false;
+                    isRewinding = true;
+                    rewindSpeedIndex = 0;
+                }
+
+                playbackSpeed = -speedLevels[rewindSpeedIndex]; // マイナスで逆再生
+                updateSpeedDisplay();
+                startPlayback();
+            }
+
+            // 速度表示を更新
+            function updateSpeedDisplay() {
+                const forwardBtn = document.getElementById('forward-btn');
+                const rewindBtn = document.getElementById('rewind-btn');
+                const forwardSpeedEl = document.getElementById('forward-speed');
+                const rewindSpeedEl = document.getElementById('rewind-speed');
+
+                if (isForwarding) {
+                    forwardSpeedEl.textContent = `x${speedLevels[forwardSpeedIndex]}`;
+                    forwardBtn.classList.add('active');
+                    rewindBtn.classList.remove('active');
+                    rewindSpeedEl.textContent = 'x60';
+                } else if (isRewinding) {
+                    rewindSpeedEl.textContent = `x${speedLevels[rewindSpeedIndex]}`;
+                    rewindBtn.classList.add('active');
+                    forwardBtn.classList.remove('active');
+                    forwardSpeedEl.textContent = 'x60';
+                } else {
+                    forwardBtn.classList.remove('active');
+                    rewindBtn.classList.remove('active');
+                    forwardSpeedEl.textContent = 'x60';
+                    rewindSpeedEl.textContent = 'x60';
+                }
+            }
 
         // ページ範囲を初期化
             function initializePage() {
