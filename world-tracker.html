@@ -1008,13 +1008,17 @@
                 playInterval = null;
             }
             isPlaying = false;
+            isForwarding = false;
+            isRewinding = false;
 
             document.getElementById('play-btn').disabled = false;
             document.getElementById('pause-btn').disabled = false;
             document.getElementById('stop-btn').disabled = false;
             document.getElementById('play-btn').classList.remove('active');
             document.getElementById('pause-btn').classList.remove('active');
-            } 
+
+            updateSpeedDisplay();
+        }
 
         // 停止
             function stopPlayback() {
