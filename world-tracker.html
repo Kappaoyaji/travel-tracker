@@ -281,134 +281,6 @@
             display: none;
         }
 
-        /* 日付ジャンプポップアップ */
-        #date-jump-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 10000;
-            display: none;
-        }
-
-        #date-jump-popup.show {
-            display: block;
-        }
-
-        #date-jump-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            display: none;
-        }
-
-        #date-jump-overlay.show {
-            display: block;
-        }
-
-        .popup-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .popup-header h3 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .popup-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-        }
-
-        .popup-close:hover {
-            color: #333;
-        }
-
-        .time-inputs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .time-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .time-input-group label {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .time-input-group input,
-        .time-input-group select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 100px;
-            height: 38px;
-        }
-
-        .time-input-group input[type="date"] {
-            width: 150px;
-        }
-
-        .time-input-group input[type="date"]::-webkit-calendar-picker-indicator {
-            margin-left: -25px;
-        }
-
-        .popup-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        .popup-btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .popup-btn-primary {
-            background: #4285f4;
-            color: white;
-        }
-
-        .popup-btn-primary:hover {
-            background: #357ae8;
-        }
-
-        .popup-btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-        }
-
-        .popup-btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
         .timeline-slider {
             position: relative;
             height: 50px;
@@ -528,20 +400,6 @@
             padding: 8px;
         }
 
-        .date-jump {
-            order: 3;
-        }
-
-        .date-jump label {
-            font-size: 24px;
-            padding: 8px;
-            min-width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         #now-btn {
             order: 3;
             min-width: 60px;
@@ -648,9 +506,6 @@
                 <button id="prev-page-btn" class="nav-btn">◀◀</button>
                 <select id="timezone-select"></select>
                 <div id="current-time-display">--</div>
-                <div class="date-jump">
-                    <label id="date-jump-trigger">📅</label>
-                </div>
                 <button id="now-btn">NOW</button>
                 <button id="play-btn" class="playback-btn">▶</button>
                 <button id="pause-btn" class="playback-btn" disabled>⏸</button>
@@ -675,39 +530,7 @@
             </div>
         </div>
     </div>
-
-
-    <!-- 日付ジャンプポップアップ -->
-    <div id="date-jump-overlay"></div>
-        <div id="date-jump-popup">
-            <div class="popup-header">
-                <h3>日時を指定</h3>
-                <button class="popup-close" id="popup-close">×</button>
-            </div>
-            <div class="time-inputs">
-                <div class="time-input-group">
-                    <label>日付</label>
-                    <input type="date" id="jump-date">
-                </div>
-                <div class="time-input-group">
-                    <label>時</label>
-                    <select id="jump-hour">
-                        <!-- 0-23の選択肢 -->
-                    </select>
-                </div>
-                <div class="time-input-group">
-                    <label>分</label>
-                    <select id="jump-minute">
-                        <!-- 0-59の選択肢 -->
-                    </select>
-                </div>
-            </div>
-            <div class="popup-actions">
-                <button class="popup-btn popup-btn-secondary" id="popup-cancel">キャンセル</button>
-                <button class="popup-btn popup-btn-primary" id="popup-jump">ジャンプ</button>
-            </div>
-        </div>
-    
+   
     <div id="person1-info" class="person-info">
         <div class="person-name">Person 1</div>
         <div class="person-location" id="person1-location">--</div>
@@ -1283,81 +1106,7 @@
         generateTimelineTicks();
         updateNowButtonState(); // 追加
     }
-
-    // 指定日時にジャンプ
-    function jumpToDate(year, month, day, hour, minute) {
-        const targetTime = new Date(year, month - 1, day, hour, minute);
-
-        if (!targetTime || targetTime < minTime || targetTime > maxTime) {
-            alert('指定された日時は旅程の範囲外です');
-            return;
-        }
-
-        pausePlayback();
-
-        const pageIndex = Math.floor((targetTime - minTime) / PAGE_DURATION);
-        currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
-        currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-
-        currentTime = targetTime;
-
-        updatePageButtons();
-        generateTimelineTicks();
-        updateSliderPosition();
-        updateTimeDisplay();
-        updateDisplay();
-        updateNowButtonState(); // 追加
-
-        closeDateJumpPopup();
-    }
-
-        // 日付ジャンプポップアップを開く
-        function openDateJumpPopup() {
-            const overlay = document.getElementById('date-jump-overlay');
-            const popup = document.getElementById('date-jump-popup');
-
-            // 現在の日時を初期値に設定
-            const dateInput = document.getElementById('jump-date');
-            const hourSelect = document.getElementById('jump-hour');
-            const minuteSelect = document.getElementById('jump-minute');
-
-            // 日付の範囲設定
-            const year = currentTime.getFullYear();
-            const month = String(currentTime.getMonth() + 1).padStart(2, '0');
-            const day = String(currentTime.getDate()).padStart(2, '0');
-
-            dateInput.value = `${year}-${month}-${day}`;
-            dateInput.min = `${minTime.getFullYear()}-${String(minTime.getMonth() + 1).padStart(2, '0')}-${String(minTime.getDate()).padStart(2, '0')}`;
-            dateInput.max = `${maxTime.getFullYear()}-${String(maxTime.getMonth() + 1).padStart(2, '0')}-${String(maxTime.getDate()).padStart(2, '0')}`;
-
-            // 時の選択肢を生成 (0-23)
-            hourSelect.innerHTML = '';
-            for (let i = 0; i < 24; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = String(i).padStart(2, '0');
-                if (i === currentTime.getHours()) {
-                    option.selected = true;
-                }
-                hourSelect.appendChild(option);
-            }
-
-            // 分の選択肢を生成 (0-59)
-            minuteSelect.innerHTML = '';
-            for (let i = 0; i < 60; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = String(i).padStart(2, '0');
-                if (i === currentTime.getMinutes()) {
-                    option.selected = true;
-                }
-                minuteSelect.appendChild(option);
-            }
-
-            overlay.classList.add('show');
-            popup.classList.add('show');
-        }
-        
+       
     // 日付ジャンプポップアップを閉じる
     function closeDateJumpPopup() {
         const overlay = document.getElementById('date-jump-overlay');
@@ -1448,36 +1197,6 @@
             document.getElementById('next-page-btn').addEventListener('click', () => {
                 pausePlayback();
                 goToNextPage();
-            });
-
-            // 日付ジャンプトリガー
-            document.getElementById('date-jump-trigger').addEventListener('click', () => {
-                openDateJumpPopup();
-            });
-
-            // ポップアップを閉じる
-            document.getElementById('popup-close').addEventListener('click', () => {
-                closeDateJumpPopup();
-            });
-
-            document.getElementById('popup-cancel').addEventListener('click', () => {
-                closeDateJumpPopup();
-            });
-
-            document.getElementById('date-jump-overlay').addEventListener('click', () => {
-                closeDateJumpPopup();
-            });
-
-            // ジャンプ実行
-            document.getElementById('popup-jump').addEventListener('click', () => {
-                const dateValue = document.getElementById('jump-date').value;
-                const hour = parseInt(document.getElementById('jump-hour').value);
-                const minute = parseInt(document.getElementById('jump-minute').value);
-
-                if (dateValue) {
-                    const [year, month, day] = dateValue.split('-').map(Number);
-                    jumpToDate(year, month, day, hour, minute);
-                }
             });
           
             updateSliderPosition();
