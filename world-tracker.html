@@ -472,6 +472,14 @@
                     mapTypeId: 'terrain',
                 });
 
+                // OverlappingMarkerSpiderfier初期化
+                oms = new OverlappingMarkerSpiderfier(map, {
+                    markersWontMove: false,
+                    markersWontHide: false,
+                    basicFormatEvents: true,
+                    keepSpiderfied: true
+                });
+
                 loadSchedules();
             }
 
