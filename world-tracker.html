@@ -784,7 +784,6 @@
             isPlaying = true;
             playInterval = setInterval(() => {
                 currentTime = new Date();
-                updateSliderPosition();  // 追加
                 updateTimeDisplay();     // 追加
                 updateDisplay();
             }, 60000);
@@ -835,7 +834,6 @@
                     return;
                 }
 
-                updateSliderPosition();
                 updateTimeDisplay();
                 updateDisplay();
                 updateNowButtonState();
@@ -864,7 +862,6 @@
         // 停止
             function stopPlayback() {
                 pausePlayback();
-                updateSliderPosition();
                 updateTimeDisplay();
                 updateDisplay();
                 updateNowButtonState();
