@@ -641,6 +641,24 @@
                 Person2: { x: 7, y: -4 },     // 右上
                 Person3: { x: -7, y: -4 }     // 左上
             };
+
+        // タイムゾーン表記マッピング
+        const timezoneDisplay = {
+            'Asia/Tokyo': '',                          // 日本は表示なし
+            'America/Los_Angeles': 'ロサンゼルス時間',
+            'America/Vancouver': 'バンクーバー時間',
+            'America/Denver': 'デンバー時間',
+            'America/Chicago': 'シカゴ時間',
+            'America/New_York': 'ニューヨーク時間',
+            'America/Seattle': 'シアトル時間',
+            'Pacific/Honolulu': 'ホノルル時間',
+            'Europe/London': 'ロンドン時間',
+            'Europe/Paris': 'パリ時間',
+            'Asia/Hong_Kong': '香港時間',
+            'Asia/Singapore': 'シンガポール時間',
+            'Australia/Sydney': 'シドニー時間'
+        };
+
         let playbackSpeed = 960;  // ← 追加
         let currentPageStart = null;
         let currentPageEnd = null;
@@ -1010,7 +1028,12 @@
                     minute: '2-digit',
                     hour12: false
                 });
-                document.getElementById(`person${num}-time`).textContent = localTime;
+
+                // タイムゾーン表記を取得（日本は空文字）
+                const tzDisplay = timezoneDisplay[position.タイムゾーン] || '';
+                const timeDisplay = tzDisplay ? `${localTime} (${tzDisplay})` : localTime;
+
+                document.getElementById(`person${num}-time`).textContent = timeDisplay;
 
                 // 再生中かどうかでスタイルを変更
                 const infoBox = document.getElementById(`person${num}-info`);
