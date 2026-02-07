@@ -533,10 +533,12 @@
             'Australia/Sydney': 'シドニー時間'
         };
 
-        let playbackSpeed = 960;  // ← 追加
-        let currentPageStart = null;
-        let currentPageEnd = null;
-        const PAGE_DURATION = 6 * 60 * 60 * 1000; // 6時間（ミリ秒）
+        let playbackSpeed = 960;
+        const speedLevels = [60, 240, 960, 2880]; // 速度レベル
+        let forwardSpeedIndex = 0;  // 早送り速度インデックス
+        let rewindSpeedIndex = 0;   // 巻き戻し速度インデックス
+        let isForwarding = false;   // 早送り中フラグ
+        let isRewinding = false;    // 巻き戻し中フラグ
 
         // CustomMarkerクラス（グローバル変数として定義）
         let CustomMarker;
