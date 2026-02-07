@@ -135,16 +135,39 @@
             gap: 12px;
         }
 
-        /* 日付表示 */
-        #current-time-display {
-            font-size: 16px;
-            font-weight: 700;
-            color: #2c3e50;
-            text-align: center;
+        /* 日付表示コンテナ */
+        #time-display-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             background: #f0f8ff;
             padding: 8px 12px;
             border-radius: 6px;
             border: 2px solid #4285f4;
+        }
+
+        #current-time-display {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        /* 速度インジケーター */
+        #rewind-indicator,
+        #forward-indicator {
+            font-size: 14px;
+            font-weight: 700;
+            color: #4285f4;
+            min-width: 30px;
+        }
+
+        #rewind-indicator {
+            text-align: right;
+        }
+
+        #forward-indicator {
+            text-align: left;
         }
 
         /* コントロールボタン */
@@ -164,10 +187,8 @@
             font-size: 24px;
             transition: all 0.2s;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
             color: #4285f4;
             font-weight: 600;
         }
@@ -189,23 +210,6 @@
             background: #4285f4;
             color: white;
             border-color: #4285f4;
-        }
-
-        /* 早送り/巻き戻しボタンの速度表示 */
-        .btn-icon {
-            font-size: 20px;
-            line-height: 1;
-        }
-
-        .btn-speed {
-            font-size: 11px;
-            font-weight: 600;
-            color: #666;
-            line-height: 1;
-        }
-
-        .control-btn.active .btn-speed {
-            color: white;
         }
 
         /* 下部コントロール */
@@ -277,22 +281,20 @@
 
     <div id="control-container">
         <div id="control-panel">
-            <!-- 日付表示 -->
-            <div id="current-time-display">--</div>
+            <!-- 日付表示（速度表示統合） -->
+            <div id="time-display-container">
+                <span id="rewind-indicator"></span>
+                <span id="current-time-display">--</span>
+                <span id="forward-indicator"></span>
+            </div>
 
             <!-- コントロールボタン -->
             <div class="control-buttons">
-                <button id="rewind-btn" class="control-btn">
-                    <div class="btn-icon">◀◀</div>
-                    <div class="btn-speed" id="rewind-speed">x60</div>
-                </button>
+                <button id="rewind-btn" class="control-btn">◀◀</button>
                 <button id="play-btn" class="control-btn">▶</button>
                 <button id="pause-btn" class="control-btn">⏸</button>
                 <button id="stop-btn" class="control-btn">⏹</button>
-                <button id="forward-btn" class="control-btn">
-                    <div class="btn-icon">▶▶</div>
-                    <div class="btn-speed" id="forward-speed">x60</div>
-                </button>
+                <button id="forward-btn" class="control-btn">▶▶</button>
             </div>
 
             <!-- タイムゾーン＋NOWボタン -->
@@ -868,28 +870,37 @@
                 startPlayback();
             }
 
-            // 速度表示を更新
+            // 速度表示を更新（三角マーク）
             function updateSpeedDisplay() {
                 const forwardBtn = document.getElementById('forward-btn');
                 const rewindBtn = document.getElementById('rewind-btn');
-                const forwardSpeedEl = document.getElementById('forward-speed');
-                const rewindSpeedEl = document.getElementById('rewind-speed');
+                const forwardIndicator = document.getElementById('forward-indicator');
+                const rewindIndicator = document.getElementById('rewind-indicator');
+
+                // 三角マークの数を決定
+                const getArrows = (speedIndex) => {
+                    if (speedIndex === 0) return ''; // x60: 表示なし
+                    if (speedIndex === 1) return '▶'; // x240: 1個
+                    if (speedIndex === 2) return '▶▶'; // x960: 2個
+                    if (speedIndex === 3) return '▶▶▶'; // x2880: 3個
+                    return '';
+                };
 
                 if (isForwarding) {
-                    forwardSpeedEl.textContent = `x${speedLevels[forwardSpeedIndex]}`;
+                    forwardIndicator.textContent = getArrows(forwardSpeedIndex);
+                    rewindIndicator.textContent = '';
                     forwardBtn.classList.add('active');
                     rewindBtn.classList.remove('active');
-                    rewindSpeedEl.textContent = 'x60';
                 } else if (isRewinding) {
-                    rewindSpeedEl.textContent = `x${speedLevels[rewindSpeedIndex]}`;
+                    rewindIndicator.textContent = getArrows(rewindSpeedIndex).replace(/▶/g, '◀');
+                    forwardIndicator.textContent = '';
                     rewindBtn.classList.add('active');
                     forwardBtn.classList.remove('active');
-                    forwardSpeedEl.textContent = 'x60';
                 } else {
+                    forwardIndicator.textContent = '';
+                    rewindIndicator.textContent = '';
                     forwardBtn.classList.remove('active');
                     rewindBtn.classList.remove('active');
-                    forwardSpeedEl.textContent = 'x60';
-                    rewindSpeedEl.textContent = 'x60';
                 }
             }
        
@@ -933,8 +944,8 @@
             isForwarding = false;
             isRewinding = false;
             playbackSpeed = 960;
-            updateSpeedDisplay();
             startPlayback();
+            updateSpeedDisplay();
             document.getElementById('play-btn').classList.add('active');
         }, { passive: false });
         playBtn.addEventListener('click', () => {
@@ -942,8 +953,8 @@
             isForwarding = false;
             isRewinding = false;
             playbackSpeed = 960;
-            updateSpeedDisplay();
             startPlayback();
+            updateSpeedDisplay();
             document.getElementById('play-btn').classList.add('active');
         });
 
@@ -952,9 +963,11 @@
         pauseBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             pausePlayback();
+            updateSpeedDisplay();
         }, { passive: false });
         pauseBtn.addEventListener('click', () => {
             pausePlayback();
+            updateSpeedDisplay();
         });
 
         // 停止ボタン（タッチ対応）
