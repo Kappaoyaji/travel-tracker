@@ -555,33 +555,30 @@
     
     <canvas id="day-night-canvas"></canvas>
 
-    <div id="timeline-container">
-        <div id="timeline-controls">
-            <div class="timeline-header">
-                <button id="prev-page-btn" class="nav-btn">◀◀</button>
-                <select id="timezone-select"></select>
-                <div id="current-time-display">--</div>
-                <button id="now-btn">NOW</button>
-                <button id="play-btn" class="playback-btn">▶</button>
-                <button id="pause-btn" class="playback-btn">⏸</button>
-                <button id="stop-btn" class="playback-btn">⏹</button>
-                <div class="speed-control">
-                    <label for="speed-select">速度:</label>
-                    <select id="speed-select">
-                        <option value="1">x1</option>
-                        <option value="60">x60</option>
-                        <option value="240">x240</option>
-                        <option value="480">x480</option>
-                        <option value="960" selected>x960</option>
-                        <option value="2880">x2880</option>
-                    </select>
-                </div>
-                <button id="next-page-btn" class="nav-btn">▶▶</button>
+    <div id="control-container">
+        <div id="control-panel">
+            <!-- 日付表示 -->
+            <div id="current-time-display">--</div>
+
+            <!-- コントロールボタン -->
+            <div class="control-buttons">
+                <button id="rewind-btn" class="control-btn">
+                    <div class="btn-icon">◀◀</div>
+                    <div class="btn-speed" id="rewind-speed">x60</div>
+                </button>
+                <button id="play-btn" class="control-btn">▶</button>
+                <button id="pause-btn" class="control-btn">⏸</button>
+                <button id="stop-btn" class="control-btn">⏹</button>
+                <button id="forward-btn" class="control-btn">
+                    <div class="btn-icon">▶▶</div>
+                    <div class="btn-speed" id="forward-speed">x60</div>
+                </button>
             </div>
 
-            <div class="timeline-slider">
-                <div class="timeline-ticks" id="timeline-ticks"></div>
-                <input type="range" id="time-slider" min="0" max="1000" value="0">
+            <!-- タイムゾーン＋NOWボタン -->
+            <div class="bottom-controls">
+                <select id="timezone-select"></select>
+                <button id="now-btn">NOW</button>
             </div>
         </div>
     </div>
