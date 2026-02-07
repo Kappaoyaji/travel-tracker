@@ -925,25 +925,45 @@
             }
         });
 
-        // 再生ボタン
-        document.getElementById('play-btn').addEventListener('click', () => {
+        // 再生ボタン（タッチ対応）
+        const playBtn = document.getElementById('play-btn');
+        playBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             pausePlayback();
             isForwarding = false;
             isRewinding = false;
-            playbackSpeed = 960; // 通常速度
+            playbackSpeed = 960;
             updateSpeedDisplay();
             startPlayback();
-
+            document.getElementById('play-btn').classList.add('active');
+        }, { passive: false });
+        playBtn.addEventListener('click', () => {
+            pausePlayback();
+            isForwarding = false;
+            isRewinding = false;
+            playbackSpeed = 960;
+            updateSpeedDisplay();
+            startPlayback();
             document.getElementById('play-btn').classList.add('active');
         });
 
-        // 一時停止ボタン
-        document.getElementById('pause-btn').addEventListener('click', () => {
+        // 一時停止ボタン（タッチ対応）
+        const pauseBtn = document.getElementById('pause-btn');
+        pauseBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            pausePlayback();
+        }, { passive: false });
+        pauseBtn.addEventListener('click', () => {
             pausePlayback();
         });
 
-        // 停止ボタン
-        document.getElementById('stop-btn').addEventListener('click', () => {
+        // 停止ボタン（タッチ対応）
+        const stopBtn = document.getElementById('stop-btn');
+        stopBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            stopPlayback();
+        }, { passive: false });
+        stopBtn.addEventListener('click', () => {
             stopPlayback();
         });
 
