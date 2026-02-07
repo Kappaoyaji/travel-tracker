@@ -485,6 +485,135 @@
             border: none;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+
+            /* スマホ対応（768px以下） */
+    @media (max-width: 768px) {
+        /* タイムラインコンテナの高さ調整 */
+        #timeline-container {
+            max-height: 160px;
+            padding: 8px 10px;
+        }
+
+        /* タイムラインヘッダーを2段組みに */
+        .timeline-header {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* 1段目: ページ切り替え + スライダー */
+        #prev-page-btn,
+        #next-page-btn {
+            order: 1;
+            min-width: 50px;
+            height: 44px;
+            font-size: 18px;
+            padding: 8px 12px;
+        }
+
+        .timeline-slider {
+            order: 2;
+            flex: 1;
+            width: 100%;
+            margin: 0;
+        }
+
+        /* 2段目: 再生コントロール */
+        #play-btn,
+        #pause-btn,
+        #stop-btn {
+            order: 3;
+            min-width: 44px;
+            height: 44px;
+            font-size: 18px;
+            padding: 8px;
+        }
+
+        .date-jump {
+            order: 3;
+        }
+
+        .date-jump label {
+            font-size: 24px;
+            padding: 8px;
+            min-width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #now-btn {
+            order: 3;
+            min-width: 60px;
+            height: 44px;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        /* タイムゾーンと速度選択を小さく */
+        #timezone-select {
+            order: 4;
+            font-size: 12px;
+            padding: 4px 6px;
+            min-width: 120px;
+            height: 32px;
+        }
+
+        .speed-control {
+            order: 4;
+            gap: 4px;
+        }
+
+        .speed-control label {
+            font-size: 12px;
+        }
+
+        #speed-select {
+            font-size: 12px;
+            padding: 4px 6px;
+            height: 32px;
+        }
+
+        /* 日付表示を小さく */
+        #current-time-display {
+            order: 0;
+            width: 100%;
+            font-size: 14px;
+            padding: 4px 8px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        /* スライダーの高さ調整 */
+        .timeline-slider {
+            height: 40px;
+            margin-top: 4px;
+        }
+
+        #time-slider {
+            height: 6px;
+        }
+
+        #time-slider::-webkit-slider-thumb {
+            width: 16px;
+            height: 32px;
+        }
+
+        #time-slider::-moz-range-thumb {
+            width: 16px;
+            height: 32px;
+        }
+
+        /* タイムライン目盛りを簡略化 */
+        .tick-label {
+            font-size: 10px;
+        }
+
+        .tick-medium,
+        .tick:not(.tick-large) {
+            display: none; /* 小さい目盛りは非表示 */
+        }
+    }
     </style>
 </head>
 <body>
