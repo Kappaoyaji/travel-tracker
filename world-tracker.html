@@ -728,8 +728,8 @@
                 // ページ初期化
                 initializePage();
 
-                // タイムライン初期化
-                initTimeline();
+                // コントロールパネル初期化
+                initControls();
 
                 // 初期表示時刻を設定
                 initializeCurrentTime();
@@ -1153,79 +1153,51 @@
             });
         }
 
-        // タイムライン初期化
-        function initTimeline() {
-            const slider = document.getElementById('time-slider');
-            
-            // スライダー操作
-            slider.addEventListener('input', (e) => {
+    // コントロールパネル初期化
+    function initControls() {
+        // NOWボタン
+        document.getElementById('now-btn').addEventListener('click', () => {
+            const now = new Date();
+
+            // 予定期間中のみ動作
+            if (now >= minTime && now <= maxTime) {
                 pausePlayback();
-                const progress = e.target.value / 1000;
-                currentTime = new Date(currentPageStart.getTime() + (currentPageEnd - currentPageStart) * progress);
+                currentTime = new Date(now);
                 updateTimeDisplay();
                 updateDisplay();
-                updateNowButtonState(); // 追加
-            });
-            
-            // NOWボタン
-            document.getElementById('now-btn').addEventListener('click', () => {
-                const now = new Date();
+                updateNowButtonState();
+            }
+        });
 
-                // 予定期間中のみ動作
-                if (now >= minTime && now <= maxTime) {
-                    pausePlayback();
-                    currentTime = new Date(now);
-                    updateSliderPosition();
-                    updateTimeDisplay();
-                    updateDisplay();
-                    updateNowButtonState();
-                }
-            });
+        // 再生ボタン
+        document.getElementById('play-btn').addEventListener('click', () => {
+            pausePlayback();
+            playbackSpeed = 960; // 通常速度
+            startPlayback();
+        });
 
-            // 再生ボタン
-            document.getElementById('play-btn').addEventListener('click', () => {
-                stopRealtime();
-                startPlayback();
-            });
+        // 一時停止ボタン
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            pausePlayback();
+        });
 
-            // 一時停止ボタン
-            document.getElementById('pause-btn').addEventListener('click', () => {
-                pausePlayback();
-            });
+        // 停止ボタン
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            stopPlayback();
+        });
 
-            // 停止ボタン
-            document.getElementById('stop-btn').addEventListener('click', () => {
-                stopRealtime();
-                stopPlayback();
-            });
+        // 早送りボタン
+        document.getElementById('forward-btn').addEventListener('click', () => {
+            startForward();
+        });
 
-            // 速度選択
-            document.getElementById('speed-select').addEventListener('change', (e) => {
-                playbackSpeed = parseInt(e.target.value);
-                if (isPlaying && playInterval) {
-                    const wasPlaying = isPlaying;
-                    pausePlayback();
-                    if (wasPlaying) startPlayback();
-                }
-            });
+        // 巻き戻しボタン
+        document.getElementById('rewind-btn').addEventListener('click', () => {
+            startRewind();
+        });
 
-            // 前のページボタン
-            document.getElementById('prev-page-btn').addEventListener('click', () => {
-                pausePlayback();
-                goToPrevPage();
-            });
-
-            // 次のページボタン
-            document.getElementById('next-page-btn').addEventListener('click', () => {
-                pausePlayback();
-                goToNextPage();
-            });
-          
-            updateSliderPosition();
-            updateTimeDisplay();
-            generateTimelineTicks();
-        }
-
+        updateTimeDisplay();
+    }
         // スライダー位置を更新
             function updateSliderPosition() {
                 const slider = document.getElementById('time-slider');
