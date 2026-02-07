@@ -773,6 +773,51 @@
                 }
             }
         
+    // 初期表示時刻を設定
+    function initializeCurrentTime() {
+        const now = new Date();
+
+        if (now < minTime) {
+            // 予定開始前 → 最初の予定時刻
+            currentTime = new Date(minTime);
+        } else if (now >= minTime && now <= maxTime) {
+            // 予定期間中 → 現在時刻
+            currentTime = new Date(now);
+        } else {
+            // 予定終了後 → 最初の予定時刻（振り返りモード）
+            currentTime = new Date(minTime);
+        }
+
+        // ページ範囲を初期化
+        initializePage();
+    }
+
+    // NOWボタンの有効/無効を更新
+    function updateNowButtonState() {
+        const now = new Date();
+        const nowBtn = document.getElementById('now-btn');
+        const timeDiff = Math.abs(currentTime - now);
+
+        // 予定期間外なら常に非活性
+        if (now < minTime || now > maxTime) {
+            nowBtn.disabled = true;
+            nowBtn.style.opacity = '0.5';
+            nowBtn.style.cursor = 'not-allowed';
+            return;
+        }
+
+        // 予定期間中で、現在時刻から1分以上離れていたら活性化
+        if (timeDiff > 60000) {
+            nowBtn.disabled = false;
+            nowBtn.style.opacity = '1';
+            nowBtn.style.cursor = 'pointer';
+        } else {
+            nowBtn.disabled = true;
+            nowBtn.style.opacity = '0.5';
+            nowBtn.style.cursor = 'not-allowed';
+        }
+    }
+
         // ↓↓↓ ここに追加 ↓↓↓
         // スケジュール読み込み
         async function loadSchedules() {
@@ -808,8 +853,11 @@
                 // タイムライン初期化
                 initTimeline();
 
+                // 初期表示時刻を設定
+                initializeCurrentTime();
+
                 updateDisplay();
-                startRealtime();
+                updateNowButtonState();
                 fitMapToAllPeople();
                 // ローディング画面を非表示
                 setTimeout(() => {
@@ -1041,18 +1089,19 @@
                 const increment = 100 * playbackSpeed;
                 currentTime = new Date(currentTime.getTime() + increment);
 
-                // ページ範囲を超えたら次のページへ（ただし最後のページでは停止）
                 if (currentTime > currentPageEnd && currentPageEnd < maxTime) {
                     goToNextPage();
                 } else if (currentTime >= maxTime) {
                     currentTime = new Date(maxTime);
                     stopPlayback();
+                    updateNowButtonState(); // 追加
                     return;
                 }
-                    
+
                 updateSliderPosition();
                 updateTimeDisplay();
                 updateDisplay();
+                updateNowButtonState(); // 追加
             }, 100);
         }
 
@@ -1071,12 +1120,13 @@
         }
 
         // 停止
-        function stopPlayback() {
-            pausePlayback();
-            updateSliderPosition();
-            updateTimeDisplay();
-            updateDisplay();
-        }
+    function stopPlayback() {
+        pausePlayback();
+        updateSliderPosition();
+        updateTimeDisplay();
+        updateDisplay();
+        updateNowButtonState(); // 追加
+    }
 
         // ページ範囲を初期化
             function initializePage() {
@@ -1093,32 +1143,32 @@
             }
 
             // 前のページへ
-            function goToPrevPage() {
-                const newStart = new Date(currentPageStart.getTime() - PAGE_DURATION);
-                if (newStart < minTime) {
-                    currentPageStart = new Date(minTime);
-                } else {
-                    currentPageStart = newStart;
-                }
-                currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-                updatePageButtons();
-                generateTimelineTicks();
-            }
-
+    function goToPrevPage() {
+        const newStart = new Date(currentPageStart.getTime() - PAGE_DURATION);
+        if (newStart < minTime) {
+            currentPageStart = new Date(minTime);
+        } else {
+            currentPageStart = newStart;
+        }
+        currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
+        updatePageButtons();
+        generateTimelineTicks();
+        updateNowButtonState(); // 追加
+    }
             // 次のページへ
-            function goToNextPage() {
-                const newStart = new Date(currentPageStart.getTime() + PAGE_DURATION);
-                if (newStart >= maxTime) return;
+    function goToNextPage() {
+        const newStart = new Date(currentPageStart.getTime() + PAGE_DURATION);
+        if (newStart >= maxTime) return;
 
-                currentPageStart = newStart;
-                currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-                updatePageButtons();
-                generateTimelineTicks();
-            }
+        currentPageStart = newStart;
+        currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
+        updatePageButtons();
+        generateTimelineTicks();
+        updateNowButtonState(); // 追加
+    }
 
     // 指定日時にジャンプ
     function jumpToDate(year, month, day, hour, minute) {
-        // 月は0始まりなので-1
         const targetTime = new Date(year, month - 1, day, hour, minute);
 
         if (!targetTime || targetTime < minTime || targetTime > maxTime) {
@@ -1127,9 +1177,7 @@
         }
 
         pausePlayback();
-        stopRealtime();
 
-        // 指定日時を含む6時間ページを計算
         const pageIndex = Math.floor((targetTime - minTime) / PAGE_DURATION);
         currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
         currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
@@ -1141,8 +1189,8 @@
         updateSliderPosition();
         updateTimeDisplay();
         updateDisplay();
+        updateNowButtonState(); // 追加
 
-        // ポップアップを閉じる
         closeDateJumpPopup();
     }
 
@@ -1223,21 +1271,27 @@
             
             // スライダー操作
             slider.addEventListener('input', (e) => {
-                stopRealtime();
                 pausePlayback();
                 const progress = e.target.value / 1000;
                 currentTime = new Date(currentPageStart.getTime() + (currentPageEnd - currentPageStart) * progress);
                 updateTimeDisplay();
                 updateDisplay();
+                updateNowButtonState(); // 追加
             });
             
             // NOWボタン
             document.getElementById('now-btn').addEventListener('click', () => {
-                currentTime = new Date();
-                updateSliderPosition();
-                updateTimeDisplay();
-                updateDisplay();
-                startRealtime();
+                const now = new Date();
+
+                // 予定期間中のみ動作
+                if (now >= minTime && now <= maxTime) {
+                    pausePlayback();
+                    currentTime = new Date(now);
+                    updateSliderPosition();
+                    updateTimeDisplay();
+                    updateDisplay();
+                    updateNowButtonState();
+                }
             });
 
             // 再生ボタン
