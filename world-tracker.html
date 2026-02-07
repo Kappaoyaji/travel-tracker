@@ -234,176 +234,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-
-            /* スマホ対応（768px以下） */
-    @media (max-width: 768px) {
-        /* タイムラインコンテナの高さ調整 */
-        #timeline-container {
-            max-height: 160px;
-            padding: 8px 10px;
-        }
-
-        /* タイムラインヘッダーを2段組みに */
-        .timeline-header {
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        /* 1段目: ページ切り替え（左右端） + スライダー（中央） */
-        #prev-page-btn {
-            order: 1;
-            min-width: 50px;
-            height: 44px;
-            font-size: 18px;
-            padding: 8px 12px;
-        }
-
-        .timeline-slider {
-            order: 2;
-            flex: 1;
-            margin: 0 8px;
-        }
-
-        #next-page-btn {
-            order: 3;
-            min-width: 50px;
-            height: 44px;
-            font-size: 18px;
-            padding: 8px 12px;
-            margin-left: auto;
-        }
-
-        /* 2段目: 再生コントロール（左寄せ） */
-        #play-btn {
-            order: 4;
-            min-width: 44px;
-            height: 44px;
-            font-size: 18px;
-            padding: 8px;
-        }
-
-        #pause-btn {
-            order: 5;
-            min-width: 44px;
-            height: 44px;
-            font-size: 18px;
-            padding: 8px;
-        }
-
-        #stop-btn {
-            order: 6;
-            min-width: 44px;
-            height: 44px;
-            font-size: 18px;
-            padding: 8px;
-        }
-
-        #now-btn {
-            order: 7;
-            min-width: 60px;
-            height: 44px;
-            font-size: 14px;
-            padding: 8px 12px;
-        }
-
-        /* タイムゾーンと速度選択を右寄せ */
-        #timezone-select {
-            order: 8;
-            font-size: 12px;
-            padding: 4px 6px;
-            min-width: 120px;
-            height: 32px;
-            margin-left: auto;
-        }
-
-        .speed-control {
-            order: 9;
-            gap: 4px;
-        }
-
-        /* 2段目: 再生コントロール */
-        #play-btn,
-        #pause-btn,
-        #stop-btn {
-            order: 3;
-            min-width: 44px;
-            height: 44px;
-            font-size: 18px;
-            padding: 8px;
-        }
-
-        #now-btn {
-            order: 3;
-            min-width: 60px;
-            height: 44px;
-            font-size: 14px;
-            padding: 8px 12px;
-        }
-
-        /* タイムゾーンと速度選択を小さく */
-        #timezone-select {
-            order: 4;
-            font-size: 12px;
-            padding: 4px 6px;
-            min-width: 120px;
-            height: 32px;
-        }
-
-        .speed-control {
-            order: 4;
-            gap: 4px;
-        }
-
-        .speed-control label {
-            font-size: 12px;
-        }
-
-        #speed-select {
-            font-size: 12px;
-            padding: 4px 6px;
-            height: 32px;
-        }
-
-        /* 日付表示を小さく */
-        #current-time-display {
-            order: 0;
-            width: 100%;
-            font-size: 14px;
-            padding: 4px 8px;
-            text-align: center;
-            margin-bottom: 4px;
-        }
-
-        /* スライダーの高さ調整 */
-        .timeline-slider {
-            height: 40px;
-            margin-top: 4px;
-        }
-
-        #time-slider {
-            height: 6px;
-        }
-
-        #time-slider::-webkit-slider-thumb {
-            width: 16px;
-            height: 32px;
-        }
-
-        #time-slider::-moz-range-thumb {
-            width: 16px;
-            height: 32px;
-        }
-
-        /* タイムライン目盛りを簡略化 */
-        .tick-label {
-            font-size: 10px;
-        }
-
-        .tick-medium,
-        .tick:not(.tick-large) {
-            display: none; /* 小さい目盛りは非表示 */
-        }
-    }
     </style>
 </head>
 <body>
@@ -665,9 +495,6 @@
             // 予定終了後 → 最初の予定時刻（振り返りモード）
             currentTime = new Date(minTime);
         }
-
-        // ページ範囲を初期化
-        initializePage();
     }
 
     // NOWボタンの有効/無効を更新
@@ -724,9 +551,6 @@
                 
                 // タイムゾーン選択肢を生成
                 initTimezoneSelect();
-
-                // ページ初期化
-                initializePage();
 
                 // コントロールパネル初期化
                 initControls();
@@ -1089,54 +913,7 @@
                     rewindSpeedEl.textContent = 'x60';
                 }
             }
-
-        // ページ範囲を初期化
-            function initializePage() {
-                currentPageStart = new Date(minTime);
-                currentPageEnd = new Date(Math.min(minTime.getTime() + PAGE_DURATION, maxTime.getTime()));
-                updatePageButtons();
-                generateTimelineTicks();
-            }
-
-            // ページボタンの有効/無効を更新
-            function updatePageButtons() {
-                document.getElementById('prev-page-btn').disabled = currentPageStart <= minTime;
-                document.getElementById('next-page-btn').disabled = currentPageEnd >= maxTime;
-            }
-
-            // 前のページへ
-    function goToPrevPage() {
-        const newStart = new Date(currentPageStart.getTime() - PAGE_DURATION);
-        if (newStart < minTime) {
-            currentPageStart = new Date(minTime);
-        } else {
-            currentPageStart = newStart;
-        }
-        currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-        updatePageButtons();
-        generateTimelineTicks();
-        updateNowButtonState(); // 追加
-    }
-            // 次のページへ
-    function goToNextPage() {
-        const newStart = new Date(currentPageStart.getTime() + PAGE_DURATION);
-        if (newStart >= maxTime) return;
-
-        currentPageStart = newStart;
-        currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-        updatePageButtons();
-        generateTimelineTicks();
-        updateNowButtonState(); // 追加
-    }
        
-    // 日付ジャンプポップアップを閉じる
-    function closeDateJumpPopup() {
-        const overlay = document.getElementById('date-jump-overlay');
-        const popup = document.getElementById('date-jump-popup');
-
-        overlay.classList.remove('show');
-        popup.classList.remove('show');
-    }
         // タイムゾーン選択肢を生成
         function initTimezoneSelect() {
             const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
@@ -1198,22 +975,6 @@
 
         updateTimeDisplay();
     }
-        // スライダー位置を更新
-            function updateSliderPosition() {
-                const slider = document.getElementById('time-slider');
-
-                // 現在時刻がページ範囲外なら、適切なページに移動
-                if (currentTime < currentPageStart || currentTime > currentPageEnd) {
-                    const pageIndex = Math.floor((currentTime - minTime) / PAGE_DURATION);
-                    currentPageStart = new Date(minTime.getTime() + pageIndex * PAGE_DURATION);
-                    currentPageEnd = new Date(Math.min(currentPageStart.getTime() + PAGE_DURATION, maxTime.getTime()));
-                    updatePageButtons();
-                    generateTimelineTicks();
-                }
-
-                const progress = (currentTime - currentPageStart) / (currentPageEnd - currentPageStart);
-                slider.value = Math.max(0, Math.min(1000, progress * 1000));
-            }
 
         // 時刻表示を更新
         function updateTimeDisplay() {
@@ -1228,66 +989,7 @@
             });
             document.getElementById('current-time-display').textContent = formatted;
         }
-
-        // タイムライン目盛りを生成
-            function generateTimelineTicks() {
-                const ticksContainer = document.getElementById('timeline-ticks');
-                ticksContainer.innerHTML = '';
-
-                const duration = currentPageEnd - currentPageStart;
-
-                // 10分ごとに目盛り
-                const interval = 10 * 60 * 1000; // 10分（ミリ秒）
-
-                for (let time = new Date(currentPageStart); time <= currentPageEnd; time = new Date(time.getTime() + interval)) {
-                    const progress = (time - currentPageStart) / duration;
-                    const minutes = time.getMinutes();
-
-                    const tick = document.createElement('div');
-                    tick.className = 'tick';
-                    tick.style.left = (progress * 100) + '%';
-
-                    const line = document.createElement('div');
-                    line.className = 'tick-line';
-
-                    // 1時間ごと（0分）は大きく
-                    if (minutes === 0) {
-                        tick.classList.add('tick-large');
-                        line.style.height = '25px';
-                        line.style.width = '3px';
-                        line.style.background = '#333';
-
-                        const label = document.createElement('div');
-                        label.className = 'tick-label';
-                        label.textContent = time.toLocaleString('ja-JP', {
-                            timeZone: currentTimezone,
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false
-                        });
-                        tick.appendChild(label);
-                    }
-                    // 30分は中くらい
-                    else if (minutes === 30) {
-                        tick.classList.add('tick-medium');
-                        line.style.height = '15px';
-                        line.style.width = '2px';
-                        line.style.background = '#999';
-                    }
-                    // 10分、20分、40分、50分は小さく
-                    else {
-                        line.style.height = '10px';
-                        line.style.width = '1px';
-                        line.style.background = '#ccc';
-                    }
-
-                    tick.appendChild(line);
-                    ticksContainer.appendChild(tick);
-                }
-            }
-        
+       
     </script>
     
     <script async defer
