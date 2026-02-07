@@ -261,24 +261,6 @@
             cursor: pointer;
         }
 
-        .loop-control {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .loop-control input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        .loop-control label {
-            font-size: 13px;
-            color: #666;
-            cursor: pointer;
-        }
-
         /* 日付ジャンプ */
         .date-jump {
             display: flex;
@@ -555,10 +537,6 @@
                         <option value="2880">x2880</option>
                     </select>
                 </div>
-                <div class="loop-control">
-                    <input type="checkbox" id="loop-checkbox">
-                    <label for="loop-checkbox">ループ</label>
-                </div>
                 <button id="next-page-btn" class="nav-btn">▶▶</button>
             </div>
 
@@ -657,7 +635,6 @@
                 Person3: { x: -7, y: -4 }     // 左上
             };
         let playbackSpeed = 960;  // ← 追加
-        let isLooping = false;     // ← 追加
         let currentPageStart = null;
         let currentPageEnd = null;
         const PAGE_DURATION = 6 * 60 * 60 * 1000; // 6時間（ミリ秒）
@@ -1330,11 +1307,6 @@
                     pausePlayback();
                     if (wasPlaying) startPlayback();
                 }
-            });
-
-            // ループ設定
-            document.getElementById('loop-checkbox').addEventListener('change', (e) => {
-                isLooping = e.target.checked;
             });
 
             // 前のページボタン
