@@ -833,40 +833,51 @@
             }
 
             // 早送り開始/速度変更
-            function startForward() {
-                // 既に早送り中なら速度を上げる
-                if (isForwarding) {
-                    forwardSpeedIndex = (forwardSpeedIndex + 1) % speedLevels.length;
-                } else {
-                    // 新規開始
-                    pausePlayback();
-                    isRewinding = false;
-                    isForwarding = true;
-                    forwardSpeedIndex = 0;
-                }
+        function startForward() {
+            // 一旦完全停止
+            pausePlayback();
 
-                playbackSpeed = speedLevels[forwardSpeedIndex];
-                updateSpeedDisplay();
-                startPlayback();
+            // 既に早送り中なら速度を上げる
+            if (isForwarding) {
+                forwardSpeedIndex = (forwardSpeedIndex + 1) % speedLevels.length;
+            } else {
+                // 新規開始
+                isRewinding = false;
+                isForwarding = true;
+                forwardSpeedIndex = 0;
             }
 
-            // 巻き戻し開始/速度変更
-            function startRewind() {
-                // 既に巻き戻し中なら速度を上げる
-                if (isRewinding) {
-                    rewindSpeedIndex = (rewindSpeedIndex + 1) % speedLevels.length;
-                } else {
-                    // 新規開始
-                    pausePlayback();
-                    isForwarding = false;
-                    isRewinding = true;
-                    rewindSpeedIndex = 0;
-                }
+            playbackSpeed = speedLevels[forwardSpeedIndex];
+            updateSpeedDisplay();
 
-                playbackSpeed = -speedLevels[rewindSpeedIndex]; // マイナスで逆再生
-                updateSpeedDisplay();
+            // 少し待ってから再開（Safari対策）
+            setTimeout(() => {
                 startPlayback();
+            }, 50);
+        }
+
+        function startRewind() {
+            // 一旦完全停止
+            pausePlayback();
+
+            // 既に巻き戻し中なら速度を上げる
+            if (isRewinding) {
+                rewindSpeedIndex = (rewindSpeedIndex + 1) % speedLevels.length;
+            } else {
+                // 新規開始
+                isForwarding = false;
+                isRewinding = true;
+                rewindSpeedIndex = 0;
             }
+
+            playbackSpeed = -speedLevels[rewindSpeedIndex];
+            updateSpeedDisplay();
+
+            // 少し待ってから再開（Safari対策）
+            setTimeout(() => {
+                startPlayback();
+            }, 50);
+        }
 
             // 速度表示を更新
             function updateSpeedDisplay() {
