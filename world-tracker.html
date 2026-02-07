@@ -148,8 +148,8 @@
         .control-btn {
             min-width: 60px;
             height: 60px;
-            background: #f5f5f5;
-            border: 2px solid #ddd;
+            background: white;
+            border: 2px solid #4285f4;
             border-radius: 8px;
             cursor: pointer;
             font-size: 24px;
@@ -159,6 +159,8 @@
             align-items: center;
             justify-content: center;
             gap: 2px;
+            color: #4285f4;
+            font-weight: 600;
         }
 
         .control-btn:hover:not(:disabled) {
@@ -949,8 +951,13 @@
         // 再生ボタン
         document.getElementById('play-btn').addEventListener('click', () => {
             pausePlayback();
+            isForwarding = false;
+            isRewinding = false;
             playbackSpeed = 960; // 通常速度
+            updateSpeedDisplay();
             startPlayback();
+
+            document.getElementById('play-btn').classList.add('active');
         });
 
         // 一時停止ボタン
