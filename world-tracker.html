@@ -245,19 +245,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-
-        /* 情報ウィンドウを最前面に表示 */
-        .gm-style-iw-c {
-            z-index: 9999 !important;
-        }
-
-        .gm-style-iw-d {
-            z-index: 9999 !important;
-        }
-
-        .gm-style-iw-t::after {
-            z-index: 9999 !important;
-        }
         </style>
 
     </style>
@@ -694,27 +681,6 @@
                 strokeWeight: 2
             },
             zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
-        });
-
-        // 情報ウィンドウ
-        const infoWindow = new google.maps.InfoWindow({
-            content: `
-            <div style="padding: 8px; font-family: sans-serif;">
-                <strong style="font-size: 14px;">${personNames[person]}</strong><br>
-                <span style="color: #666; font-size: 12px;">${position.場所名}</span><br>
-                <span style="font-weight: 600; font-size: 13px;">${currentTime.toLocaleString('ja-JP', {
-                timeZone: position.タイムゾーン,
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            })}</span>
-            </div>
-        `
-        });
-
-        // クリックイベント
-        marker.addListener('click', () => {
-            infoWindow.open(map, marker);
         });
 
         markers[person] = marker;
