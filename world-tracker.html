@@ -77,11 +77,12 @@
         .person-info {
             position: absolute;
             background: white;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 6px 8px;        /* 上下6px、左右8px */
+            border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            font-size: 14px;
+            font-size: 13px;         /* 少し小さく */
             z-index: 2000;
+            line-height: 1.3;        /* 行間を詰める */
         }
         
         #person1-info { top: 100px; left: 10px; border-left: 4px solid #FF6B6B; }
@@ -93,23 +94,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 3px;      /* 5px → 3px */
         }
 
         .person-name {
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;         /* 14px → 13px */
         }
 
         .person-time {
             color: #333;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;         /* 13px → 12px */
         }
 
         .person-location {
             color: #666;
-            font-size: 12px;
+            font-size: 11px;         /* 12px → 11px */
+            line-height: 1.2;
         }
 
         /* コントロールパネル */
