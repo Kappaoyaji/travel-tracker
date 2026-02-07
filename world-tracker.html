@@ -686,15 +686,18 @@
         markers[person] = marker;
 
         // マーカークリックで展開/収束をトグル
+        let clickTimeout;
         marker.addListener('click', () => {
-            // 既に広がっているか確認
-            const spiderfiedMarkers = oms.markersNearAnyOtherMarker();
+            clearTimeout(clickTimeout);
+            clickTimeout = setTimeout(() => {
+                // 現在のスパイダー状態を確認
+                const spiderfied = oms.markersNearAnyOtherMarker();
 
-            if (spiderfiedMarkers.length > 0) {
-                // 広がっている → 戻す
-                oms.unspiderfy();
-            }
-            // 広がっていない場合は自動的に広がる（OMSのデフォルト動作）
+                if (spiderfied.length > 0 && spiderfied.includes(marker)) {
+                    // このマーカーが広がっている状態 → 戻す
+                    oms.unspiderfy();
+                }
+            }, 10); // OMSのデフォルト動作の後に実行
         });
 
         // OMSに追加
