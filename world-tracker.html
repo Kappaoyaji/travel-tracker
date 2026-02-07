@@ -89,20 +89,27 @@
         #person3-info { top: 280px; left: 10px; border-left: 4px solid #FFE66D; }
 
       
-        .person-name {
-            font-weight: bold;
+        .person-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 5px;
         }
-        
-        .person-location {
-            color: #666;
-            font-size: 12px;
+
+        .person-name {
+            font-weight: bold;
+            font-size: 14px;
         }
-        
+
         .person-time {
             color: #333;
             font-weight: 600;
-            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .person-location {
+            color: #666;
+            font-size: 12px;
         }
 
         /* コントロールパネル */
@@ -293,21 +300,27 @@
     </div>
    
     <div id="person1-info" class="person-info">
-        <div class="person-name">Person 1</div>
+        <div class="person-header">
+            <span class="person-name">Person 1</span>
+            <span class="person-time" id="person1-time">--:--</span>
+        </div>
         <div class="person-location" id="person1-location">--</div>
-        <div class="person-time" id="person1-time">--:--</div>
     </div>
-    
+
     <div id="person2-info" class="person-info">
-        <div class="person-name">Person 2</div>
+        <div class="person-header">
+            <span class="person-name">Person 2</span>
+            <span class="person-time" id="person2-time">--:--</span>
+        </div>
         <div class="person-location" id="person2-location">--</div>
-        <div class="person-time" id="person2-time">--:--</div>
     </div>
-    
+
     <div id="person3-info" class="person-info">
-        <div class="person-name">Person 3</div>
+        <div class="person-header">
+            <span class="person-name">Person 3</span>
+            <span class="person-time" id="person3-time">--:--</span>
+        </div>
         <div class="person-location" id="person3-location">--</div>
-        <div class="person-time" id="person3-time">--:--</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
@@ -351,11 +364,11 @@
         // タイムゾーン表記マッピング
         const timezoneDisplay = {
             'Asia/Tokyo': '',                          // 日本は表示なし
-            'America/Los_Angeles': 'ロサンゼルス時間',
+            'America/Los_Angeles': 'ＬＡ時間',
             'America/Vancouver': 'バンクーバー時間',
             'America/Denver': 'デンバー時間',
             'America/Chicago': 'シカゴ時間',
-            'America/New_York': 'ニューヨーク時間',
+            'America/New_York': 'ＮＹ時間',
             'America/Seattle': 'シアトル時間',
             'Pacific/Honolulu': 'ホノルル時間',
             'Europe/London': 'ロンドン時間',
