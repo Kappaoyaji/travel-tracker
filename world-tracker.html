@@ -372,9 +372,8 @@
             gap: 8px;
         }
 
-        /* 1段目: ページ切り替え + スライダー */
-        #prev-page-btn,
-        #next-page-btn {
+        /* 1段目: ページ切り替え（左右端） + スライダー（中央） */
+        #prev-page-btn {
             order: 1;
             min-width: 50px;
             height: 44px;
@@ -385,8 +384,64 @@
         .timeline-slider {
             order: 2;
             flex: 1;
-            width: 100%;
-            margin: 0;
+            margin: 0 8px;
+        }
+
+        #next-page-btn {
+            order: 3;
+            min-width: 50px;
+            height: 44px;
+            font-size: 18px;
+            padding: 8px 12px;
+            margin-left: auto;
+        }
+
+        /* 2段目: 再生コントロール（左寄せ） */
+        #play-btn {
+            order: 4;
+            min-width: 44px;
+            height: 44px;
+            font-size: 18px;
+            padding: 8px;
+        }
+
+        #pause-btn {
+            order: 5;
+            min-width: 44px;
+            height: 44px;
+            font-size: 18px;
+            padding: 8px;
+        }
+
+        #stop-btn {
+            order: 6;
+            min-width: 44px;
+            height: 44px;
+            font-size: 18px;
+            padding: 8px;
+        }
+
+        #now-btn {
+            order: 7;
+            min-width: 60px;
+            height: 44px;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        /* タイムゾーンと速度選択を右寄せ */
+        #timezone-select {
+            order: 8;
+            font-size: 12px;
+            padding: 4px 6px;
+            min-width: 120px;
+            height: 32px;
+            margin-left: auto;
+        }
+
+        .speed-control {
+            order: 9;
+            gap: 4px;
         }
 
         /* 2段目: 再生コントロール */
@@ -508,7 +563,7 @@
                 <div id="current-time-display">--</div>
                 <button id="now-btn">NOW</button>
                 <button id="play-btn" class="playback-btn">▶</button>
-                <button id="pause-btn" class="playback-btn" disabled>⏸</button>
+                <button id="pause-btn" class="playback-btn">⏸</button>
                 <button id="stop-btn" class="playback-btn">⏹</button>
                 <div class="speed-control">
                     <label for="speed-select">速度:</label>
@@ -1011,6 +1066,7 @@
             isPlaying = true;
             document.getElementById('play-btn').disabled = true;
             document.getElementById('pause-btn').disabled = false;
+            document.getElementById('stop-btn').disabled = false;
             document.getElementById('play-btn').classList.remove('active');
             document.getElementById('pause-btn').classList.add('active');
             
@@ -1052,12 +1108,12 @@
                 playInterval = null;
             }
             isPlaying = false;
-            
+
             document.getElementById('play-btn').disabled = false;
-            document.getElementById('pause-btn').disabled = true;
+            document.getElementById('pause-btn').disabled = false;
+            document.getElementById('stop-btn').disabled = false;
             document.getElementById('play-btn').classList.remove('active');
             document.getElementById('pause-btn').classList.remove('active');
-        }
 
         // 停止
     function stopPlayback() {
