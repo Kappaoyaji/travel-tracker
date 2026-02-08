@@ -984,32 +984,44 @@
             }
         });
 
-        // 再生ボタン（タッチ対応）
+       // 再生ボタン（タッチ対応）
         const playBtn = document.getElementById('play-btn');
         playBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
+
+            // 停止状態（最初 or 最後）なら最初に戻す
+            if (currentTime <= minTime || currentTime >= maxTime) {
+                currentTime = new Date(minTime);
+                updateTimeDisplay();
+                updateDisplay();
+            }
+
+            // 一時停止状態ならそのまま再開
             pausePlayback();
-            currentTime = new Date(minTime);  // ← 追加：最初の予定時刻にリセット
             isForwarding = false;
             isRewinding = false;
             playbackSpeed = 960;
-            updateTimeDisplay();  // ← 追加：時刻表示を更新
-            updateDisplay();      // ← 追加：マーカー位置を更新
             startPlayback();
             updateSpeedDisplay();
         }, { passive: false });
 
         playBtn.addEventListener('click', () => {
+            // 停止状態（最初 or 最後）なら最初に戻す
+            if (currentTime <= minTime || currentTime >= maxTime) {
+                currentTime = new Date(minTime);
+                updateTimeDisplay();
+                updateDisplay();
+            }
+
+            // 一時停止状態ならそのまま再開
             pausePlayback();
-            currentTime = new Date(minTime);  // ← 追加：最初の予定時刻にリセット
             isForwarding = false;
             isRewinding = false;
             playbackSpeed = 960;
-            updateTimeDisplay();  // ← 追加：時刻表示を更新
-            updateDisplay();      // ← 追加：マーカー位置を更新
             startPlayback();
             updateSpeedDisplay();
         });
+        
         // 一時停止ボタン（タッチ対応）
         const pauseBtn = document.getElementById('pause-btn');
         pauseBtn.addEventListener('touchstart', (e) => {
