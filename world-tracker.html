@@ -153,6 +153,12 @@
             font-size: 16px;
             font-weight: 700;
             color: #2c3e50;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #current-time-display:hover {
+            color: #4285f4;
         }
 
         /* 速度インジケーター */
@@ -328,6 +334,9 @@
 
             <!-- コントロールボタン -->
             <div class="control-buttons">
+                <button id="skip-to-start-btn" class="control-btn">
+                    <span class="material-symbols-outlined">skip_previous</span>
+                </button>
                 <button id="rewind-btn" class="control-btn">
                     <span class="material-symbols-outlined">fast_rewind</span>
                 </button>
@@ -970,6 +979,30 @@
 
     // コントロールパネル初期化
     function initControls() {
+        // 最初に戻るボタン（タッチ対応）
+        const skipToStartBtn = document.getElementById('skip-to-start-btn');
+        skipToStartBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            pausePlayback();
+            currentTime = new Date(minTime);
+            updateTimeDisplay();
+            updateDisplay();
+            updateNowButtonState();
+        }, { passive: false });
+        skipToStartBtn.addEventListener('click', () => {
+            pausePlayback();
+            currentTime = new Date(minTime);
+            updateTimeDisplay();
+            updateDisplay();
+            updateNowButtonState();
+        });
+
+        // 日付クリックでカレンダー表示
+        const timeDisplay = document.getElementById('current-time-display');
+        timeDisplay.addEventListener('click', () => {
+            showDateTimePicker();
+        });
+
         // NOWボタン
         document.getElementById('now-btn').addEventListener('click', () => {
             const now = new Date();
@@ -1079,6 +1112,52 @@
                 hour12: false
             });
             document.getElementById('current-time-display').textContent = formatted;
+        }
+
+                
+        // 日時選択ダイアログを表示
+        function showDateTimePicker() {
+            // 現在時刻をローカルタイムゾーンで表示
+            const localTime = new Date(currentTime.getTime() - currentTime.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+
+            // ダイアログで日時を選択
+            const input = document.createElement('input');
+            input.type = 'datetime-local';
+            input.value = localTime;
+            input.min = new Date(minTime.getTime() - minTime.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            input.max = new Date(maxTime.getTime() - maxTime.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+
+            input.style.position = 'fixed';
+            input.style.top = '-1000px';
+            document.body.appendChild(input);
+
+            input.addEventListener('change', (e) => {
+                const selectedTime = new Date(e.target.value);
+                if (selectedTime >= minTime && selectedTime <= maxTime) {
+                    pausePlayback();
+                    currentTime = selectedTime;
+                    updateTimeDisplay();
+                    updateDisplay();
+                    updateNowButtonState();
+                }
+                document.body.removeChild(input);
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    if (document.body.contains(input)) {
+                        document.body.removeChild(input);
+                    }
+                }, 100);
+            });
+
+            input.showPicker();
         }
        
     </script>
