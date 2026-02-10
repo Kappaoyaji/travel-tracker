@@ -1056,16 +1056,20 @@
             isPlaying = false;
         }
 
-        // 自動再生開始
-        function startPlayback() {
-            if (isPlaying) return;
-            
-            isPlaying = true;
-            document.getElementById('play-btn').disabled = true;
-            document.getElementById('pause-btn').disabled = false;
-            document.getElementById('stop-btn').disabled = false;
-            document.getElementById('play-btn').classList.remove('active');
-            document.getElementById('pause-btn').classList.add('active');
+            // 自動再生開始
+            function startPlayback() {
+                if (isPlaying) return;
+
+                isPlaying = true;
+                document.getElementById('pause-btn').disabled = false;
+                document.getElementById('stop-btn').disabled = false;
+
+                // 早送り/巻き戻し中でなければ再生ボタンを無効化
+                if (!isForwarding && !isRewinding) {
+                    document.getElementById('play-btn').disabled = true;
+                    document.getElementById('play-btn').classList.remove('active');
+                    document.getElementById('pause-btn').classList.add('active');
+                }
             
             playInterval = setInterval(() => {
                 const increment = 100 * Math.abs(playbackSpeed);
