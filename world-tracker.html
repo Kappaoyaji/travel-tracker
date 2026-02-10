@@ -161,6 +161,208 @@
             color: #4285f4;
         }
 
+        
+        /* 日時選択モーダル */
+        #datetime-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #datetime-modal.show {
+            display: flex;
+        }
+
+        #datetime-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #datetime-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #datetime-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        #datetime-modal-close {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #datetime-modal-close:active {
+            color: #333;
+        }
+
+        /* カレンダー */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .calendar-header button {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #4285f4;
+            cursor: pointer;
+            padding: 4px 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .calendar-header button:active {
+            color: #1a73e8;
+        }
+
+        .calendar-month {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            padding: 8px 0;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+        }
+
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.enabled {
+            color: #2c3e50;
+            background: #e3f2fd;
+        }
+
+        .calendar-day.enabled:active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .calendar-day.selected {
+            background: #4285f4;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* 時刻選択 */
+        .time-selector {
+            margin-bottom: 20px;
+        }
+
+        .time-selector label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .time-selector select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        /* ボタン */
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .modal-btn-cancel {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .modal-btn-cancel:active {
+            background: #e0e0e0;
+        }
+
+        .modal-btn-ok {
+            background: #4285f4;
+            color: white;
+        }
+
+        .modal-btn-ok:active {
+            background: #1a73e8;
+        }
+
+        .modal-btn-ok:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
         /* 速度インジケーター */
         #rewind-indicator,
         #forward-indicator {
@@ -384,6 +586,38 @@
             <span class="person-time" id="person3-time">--:--</span>
         </div>
         <div class="person-location" id="person3-location">--</div>
+    </div>
+
+    <!-- 日時選択モーダル -->
+    <div id="datetime-modal">
+        <div id="datetime-modal-content">
+            <div id="datetime-modal-header">
+                <h3>日時を選択</h3>
+                <button id="datetime-modal-close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+    
+            <!-- カレンダー -->
+            <div class="calendar-header">
+                <button id="calendar-prev-month">&lt;</button>
+                <span class="calendar-month" id="calendar-month-display"></span>
+                <button id="calendar-next-month">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
+    
+            <!-- 時刻選択 -->
+            <div class="time-selector">
+                <label for="time-select">時刻:</label>
+                <select id="time-select"></select>
+            </div>
+    
+            <!-- ボタン -->
+            <div class="modal-buttons">
+                <button class="modal-btn-cancel" id="modal-btn-cancel">キャンセル</button>
+                <button class="modal-btn-ok" id="modal-btn-ok" disabled>決定</button>
+            </div>
+        </div>
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
@@ -970,10 +1204,19 @@
                 `<option value="${tz}" ${tz === currentTimezone ? 'selected' : ''}>${tz}</option>`
             ).join('');
             
-            tzSelect.addEventListener('change', (e) => {
+                        tzSelect.addEventListener('change', (e) => {
                 currentTimezone = e.target.value;
                 updateTimeDisplay();
-                generateTimelineTicks();
+
+                // モーダルが開いている場合は再描画
+                const modal = document.getElementById('datetime-modal');
+                if (modal && modal.classList.contains('show')) {
+                    modal.classList.remove('show');
+                    // 少し待ってから再表示（タイムゾーン反映のため）
+                    setTimeout(() => {
+                        showDateTimePicker();
+                    }, 100);
+                }
             });
         }
 
@@ -1115,51 +1358,157 @@
         }
 
                 
-        // 日時選択ダイアログを表示
-        function showDateTimePicker() {
-            // 現在時刻をローカルタイムゾーンで表示
-            const localTime = new Date(currentTime.getTime() - currentTime.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
+            // 日時選択ダイアログを表示
+            function showDateTimePicker() {
+                const modal = document.getElementById('datetime-modal');
+                const closeBtn = document.getElementById('datetime-modal-close');
+                const cancelBtn = document.getElementById('modal-btn-cancel');
+                const okBtn = document.getElementById('modal-btn-ok');
+                const timeSelect = document.getElementById('time-select');
+                const calendarGrid = document.getElementById('calendar-grid');
+                const monthDisplay = document.getElementById('calendar-month-display');
+                const prevMonthBtn = document.getElementById('calendar-prev-month');
+                const nextMonthBtn = document.getElementById('calendar-next-month');
 
-            // ダイアログで日時を選択
-            const input = document.createElement('input');
-            input.type = 'datetime-local';
-            input.value = localTime;
-            input.min = new Date(minTime.getTime() - minTime.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
-            input.max = new Date(maxTime.getTime() - maxTime.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
+                let currentCalendarDate = new Date(currentTime);
+                let selectedDate = null;
 
-            input.style.position = 'fixed';
-            input.style.top = '-1000px';
-            document.body.appendChild(input);
-
-            input.addEventListener('change', (e) => {
-                const selectedTime = new Date(e.target.value);
-                if (selectedTime >= minTime && selectedTime <= maxTime) {
-                    pausePlayback();
-                    currentTime = selectedTime;
-                    updateTimeDisplay();
-                    updateDisplay();
-                    updateNowButtonState();
-                }
-                document.body.removeChild(input);
-            });
-
-            input.addEventListener('blur', () => {
-                setTimeout(() => {
-                    if (document.body.contains(input)) {
-                        document.body.removeChild(input);
+                // 予定のある日付を取得（選択中のタイムゾーン基準）
+                const scheduleDates = new Set();
+                schedules.forEach(s => {
+                    if (s.日時UTC) {
+                        // 選択中のタイムゾーンでの日付を取得
+                        const localDateStr = s.日時UTC.toLocaleDateString('ja-JP', {
+                            timeZone: currentTimezone,
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        });
+                        // "2026/05/06" → "2026-05-06" に変換
+                        const dateKey = localDateStr.replace(/\//g, '-');
+                        scheduleDates.add(dateKey);
                     }
-                }, 100);
-            });
+                });
 
-            input.showPicker();
-        }
-       
+                // 時刻ドロップダウンを生成（00:00～23:00）
+                function generateTimeOptions() {
+                    timeSelect.innerHTML = '';
+                    for (let h = 0; h < 24; h++) {
+                        const option = document.createElement('option');
+                        option.value = h;
+                        option.textContent = `${String(h).padStart(2, '0')}:00`;
+                        timeSelect.appendChild(option);
+                    }
+                    timeSelect.value = currentTime.getHours();
+                }
+
+                // カレンダーを描画
+                function renderCalendar() {
+                    const year = currentCalendarDate.getFullYear();
+                    const month = currentCalendarDate.getMonth();
+
+                    monthDisplay.textContent = `${year}年 ${month + 1}月`;
+
+                    // カレンダーグリッドをクリア
+                    calendarGrid.innerHTML = '';
+
+                    // 曜日ヘッダー
+                    ['日', '月', '火', '水', '木', '金', '土'].forEach(day => {
+                        const header = document.createElement('div');
+                        header.className = 'calendar-day-header';
+                        header.textContent = day;
+                        calendarGrid.appendChild(header);
+                    });
+
+                    // 月の最初の日と最後の日
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
+                    const firstDayOfWeek = firstDay.getDay();
+                    const daysInMonth = lastDay.getDate();
+
+                    // 空白セル
+                    for (let i = 0; i < firstDayOfWeek; i++) {
+                        const emptyCell = document.createElement('div');
+                        emptyCell.className = 'calendar-day empty';
+                        calendarGrid.appendChild(emptyCell);
+                    }
+
+                    // 日付セル
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const hasSchedule = scheduleDates.has(dateKey);
+
+                        const dayCell = document.createElement('div');
+                        dayCell.className = 'calendar-day';
+                        dayCell.textContent = day;
+
+                        if (hasSchedule) {
+                            dayCell.classList.add('enabled');
+                            dayCell.addEventListener('click', () => {
+                                selectedDate = new Date(year, month, day);
+
+                                // 選択状態を更新
+                                document.querySelectorAll('.calendar-day').forEach(cell => {
+                                    cell.classList.remove('selected');
+                                });
+                                dayCell.classList.add('selected');
+
+                                okBtn.disabled = false;
+                            });
+                        } else {
+                            dayCell.classList.add('disabled');
+                        }
+
+                        calendarGrid.appendChild(dayCell);
+                    }
+                }
+
+                // 前月ボタン
+                prevMonthBtn.onclick = () => {
+                    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+                    renderCalendar();
+                };
+
+                // 次月ボタン
+                nextMonthBtn.onclick = () => {
+                    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+                    renderCalendar();
+                };
+
+                // 決定ボタン
+                okBtn.onclick = () => {
+                    if (selectedDate) {
+                        const selectedHour = parseInt(timeSelect.value);
+                        selectedDate.setHours(selectedHour, 0, 0, 0);
+
+                        pausePlayback();
+                        currentTime = new Date(selectedDate);
+                        updateTimeDisplay();
+                        updateDisplay();
+                        updateNowButtonState();
+                        modal.classList.remove('show');
+                    }
+                };
+
+                // キャンセル・閉じる
+                const closeModal = () => {
+                    modal.classList.remove('show');
+                };
+                closeBtn.onclick = closeModal;
+                cancelBtn.onclick = closeModal;
+                modal.onclick = (e) => {
+                    if (e.target === modal) closeModal();
+                };
+
+                // 初期化
+                generateTimeOptions();
+                renderCalendar();
+                okBtn.disabled = true;
+
+                // モーダルを表示
+                modal.classList.add('show');
+            }
+
     </script>
     
     <script async defer
