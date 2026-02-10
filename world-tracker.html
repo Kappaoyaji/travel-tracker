@@ -677,7 +677,7 @@
         };
 
         let playbackSpeed = 960;
-        const speedLevels = [60, 240, 960, 2880]; // 速度レベル
+        const speedLevels = [240, 960, 2880]; // 速度レベル（240倍、960倍、2880倍）
         let forwardSpeedIndex = 0;  // 早送り速度インデックス
         let rewindSpeedIndex = 0;   // 巻き戻し速度インデックス
         let isForwarding = false;   // 早送り中フラグ
@@ -1170,10 +1170,9 @@
 
                 // 三角マークの数を決定
                 const getArrows = (speedIndex) => {
-                    if (speedIndex === 0) return ''; // x60: 表示なし
-                    if (speedIndex === 1) return '▶'; // x240: 1個
-                    if (speedIndex === 2) return '▶▶'; // x960: 2個
-                    if (speedIndex === 3) return '▶▶▶'; // x2880: 3個
+                    if (speedIndex === 0) return '▶'; // x240: 1個
+                    if (speedIndex === 1) return '▶▶'; // x960: 2個
+                    if (speedIndex === 2) return '▶▶▶'; // x2880: 3個
                     return '';
                 };
 
