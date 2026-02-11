@@ -126,6 +126,40 @@
             line-height: 1.3;        /* 行間を詰める */
         }
         
+        .reset-view-btn {
+            position: absolute;
+            bottom: 180px;  /* 230px → 180px に変更 */
+            left: 10px;
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .reset-view-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .reset-view-btn:active {
+            background: #e0e0e0;
+            transform: scale(0.95);
+        }
+
+        .reset-view-btn .material-symbols-outlined {
+            font-size: 28px;
+            color: #4285f4;
+        }
+
+        #person1-info { bottom: 180px; left: 10px; border-left: 4px solid #FF6B6B; }
+
         #person1-info { bottom: 130px; left: 10px; border-left: 4px solid #FF6B6B; }
         #person2-info { bottom: 80px; left: 10px; border-left: 4px solid #4ECDC4; }
         #person3-info { bottom: 30px; left: 10px; border-left: 4px solid #FFE66D; }
@@ -572,6 +606,11 @@
     <main class="page-main">
         <div id="map"></div>
         <canvas id="day-night-canvas"></canvas>
+
+        <!-- 初期位置に戻るボタン -->
+        <button id="reset-view-btn" class="reset-view-btn" title="3人全員を表示">
+            <span class="material-symbols-outlined">groups</span>
+        </button>
 
         <div id="person1-info" class="person-info">
             <div class="person-header">
@@ -1467,11 +1506,21 @@
             startRewind();
         });
 
-        updateTimeDisplay();
-    }
+                updateTimeDisplay();
 
-        // 時刻表示を更新
-        function updateTimeDisplay() {
+                // 初期位置に戻るボタン
+                const resetViewBtn = document.getElementById('reset-view-btn');
+                resetViewBtn.addEventListener('click', () => {
+                    fitMapToAllPeople();
+                });
+                resetViewBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    fitMapToAllPeople();
+                }, { passive: false });
+            }
+
+            // 時刻表示を更新
+            function updateTimeDisplay() {
             const formatted = currentTime.toLocaleString('ja-JP', {
                 timeZone: currentTimezone,
                 year: 'numeric',
