@@ -223,7 +223,10 @@
             padding: 4px 10px;
             border-radius: 6px;
             border: 2px solid #4285f4;
-            gap: 2px;
+            gap: 0;
+            height: 50px;
+            min-height: 50px;
+            max-height: 50px;
         }
 
         #time-date {
@@ -238,6 +241,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            height: 20px;
         }
 
         #current-time-display {
@@ -246,6 +250,16 @@
             color: #2c3e50;
             cursor: pointer;
             user-select: none;
+            line-height: 1;
+        }
+
+        /* 速度インジケーター */
+        #rewind-indicator,
+        #forward-indicator {
+            font-size: 14px;
+            font-weight: 700;
+            color: #4285f4;
+            min-width: 20px;
             line-height: 1;
         }
 
@@ -281,26 +295,43 @@
 
         /* 日付表示コンテナ */
         #time-display-container {
+            flex: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
             background: #f0f8ff;
-            padding: 8px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
             border: 2px solid #4285f4;
+            gap: 0;
+            height: 50px;
+            min-height: 50px;
+            max-height: 50px;
+        }
+
+        #time-date {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            line-height: 1;
+        }
+
+        #time-clock {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 20px;
         }
 
         #current-time-display {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #2c3e50;
             cursor: pointer;
             user-select: none;
-        }
-
-        #current-time-display:hover {
-            color: #4285f4;
+            line-height: 1;
         }
 
         
@@ -503,23 +534,6 @@
         .modal-btn-ok:disabled {
             background: #ccc;
             cursor: not-allowed;
-        }
-
-        /* 速度インジケーター */
-        #rewind-indicator,
-        #forward-indicator {
-            font-size: 14px;
-            font-weight: 700;
-            color: #4285f4;
-            min-width: 30px;
-        }
-
-        #rewind-indicator {
-            text-align: right;
-        }
-
-        #forward-indicator {
-            text-align: left;
         }
 
         /* コントロールボタン */
