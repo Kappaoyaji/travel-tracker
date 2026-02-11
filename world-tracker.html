@@ -201,15 +201,18 @@
 
         #timezone-select {
             flex: 0 0 auto;
-            min-width: 60px;
-            max-width: 80px;
+            width: 70px;
             padding: 6px 8px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 600;
             background: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+
         #time-display-container {
             flex: 1;
             display: flex;
@@ -1358,12 +1361,8 @@
         // 初期選択
         tzSelect.value = currentTimezone;
 
-        // 選択後は短縮表記に変更
-        updateTimezoneDisplay();
-
         tzSelect.addEventListener('change', (e) => {
             currentTimezone = e.target.value;
-            updateTimezoneDisplay();
             updateTimeDisplay();
 
             // モーダルが開いている場合は再描画
@@ -1375,35 +1374,8 @@
                 }, 100);
             }
         });
-
-            // プルダウンを開いた時、全て日本語表記に戻す
-        tzSelect.addEventListener('focus', () => {
-            Array.from(tzSelect.options).forEach(option => {
-                const tz = option.value;
-                option.textContent = timezoneDisplay[tz] || tz;
-            });
-        });
-
-        // プルダウンを閉じた時、選択中だけ短縮表記に戻す
-        tzSelect.addEventListener('blur', () => {
-            updateTimezoneDisplay();
-        });
     }
 
-    // タイムゾーン表示を更新
-    function updateTimezoneDisplay() {
-        const tzSelect = document.getElementById('timezone-select');
-
-        // 全ての option を日本語表記に戻す
-        Array.from(tzSelect.options).forEach(option => {
-            const tz = option.value;
-            option.textContent = timezoneDisplay[tz] || tz;
-        });
-
-        // 選択中の option だけ短縮表記に変更
-        const selectedOption = tzSelect.options[tzSelect.selectedIndex];
-        selectedOption.textContent = timezoneShort[currentTimezone] || currentTimezone;
-    }
     // コントロールパネル初期化
     function initControls() {
         // 最初に戻るボタン（タッチ対応）
