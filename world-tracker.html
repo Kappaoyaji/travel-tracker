@@ -897,7 +897,7 @@
                 loadSchedules();
             }
 
-            // 全員が見える範囲に地図を調整
+        // 全員が見える範囲に地図を調整
     function fitMapToAllPeople() {
         const positions = [];
 
@@ -910,36 +910,22 @@
 
         if (positions.length === 0) return;
 
-        // 経度の範囲を計算
-        const lngs = positions.map(p => p.経度);
-        const minLng = Math.min(...lngs);
-        const maxLng = Math.max(...lngs);
-        const centerLng = (minLng + maxLng) / 2;
+        // 3人の位置から境界を作成
+        const bounds = new google.maps.LatLngBounds();
+        positions.forEach(pos => {
+            bounds.extend(new google.maps.LatLng(pos.緯度, pos.経度));
+        });
 
-        // 経度の範囲に基づいてズームレベルを計算
-        const lngSpan = maxLng - minLng;
-        let zoom;
-        if (lngSpan > 180) {
-            zoom = 2;
-        } else if (lngSpan > 90) {
-            zoom = 3;
-        } else if (lngSpan > 45) {
-            zoom = 4;
-        } else {
-            zoom = 5;
-        }
+        // パディングを設定（人物情報ボックス分の余白を確保）
+        const padding = {
+            top: 80,      // 人物情報ボックス + 余白
+            bottom: 80,   // 余白
+            left: 60,
+            right: 60
+        };
 
-        // 下部コントロールパネルの高さを取得
-        const controlHeight = document.getElementById('control-container').offsetHeight;
-        const mapHeight = window.innerHeight;
-
-        // 視覚的な中心を下にずらす（コントロールパネル分）
-        const offsetRatio = controlHeight / mapHeight;
-        const latOffset = offsetRatio * 90; // 緯度で調整（約-10〜-15度）
-
-        // 中心を設定（緯度は赤道から下部パネル分ずらす）
-        map.setCenter({ lat: -latOffset, lng: centerLng });
-        map.setZoom(zoom);
+        // 境界に合わせて地図を調整
+        map.fitBounds(bounds, padding);
     }
             
     // 初期表示時刻を設定
