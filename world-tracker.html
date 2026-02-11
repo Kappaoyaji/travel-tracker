@@ -496,19 +496,21 @@
 
         /* 時刻選択 */
         .time-selector {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .time-selector label {
-            display: block;
             font-size: 14px;
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 8px;
+            white-space: nowrap;
         }
 
         .time-selector select {
-            width: 100%;
+            flex: 1;
             padding: 10px;
             font-size: 16px;
             border: 2px solid #ddd;
