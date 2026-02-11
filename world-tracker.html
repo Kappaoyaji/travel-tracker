@@ -227,6 +227,7 @@
             height: 50px;
             min-height: 50px;
             max-height: 50px;
+            position: relative;
         }
 
         #time-date {
@@ -238,10 +239,12 @@
         }
 
         #time-clock {
+            position: relative;
+            width: 100%;
+            height: 20px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            height: 20px;
+            justify-content: center;
         }
 
         #current-time-display {
@@ -254,12 +257,21 @@
         }
 
         /* 速度インジケーター */
-        #rewind-indicator,
-        #forward-indicator {
+        #rewind-indicator {
+            position: absolute;
+            left: 0;
             font-size: 14px;
             font-weight: 700;
             color: #4285f4;
-            min-width: 20px;
+            line-height: 1;
+        }
+
+        #forward-indicator {
+            position: absolute;
+            right: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #4285f4;
             line-height: 1;
         }
 
