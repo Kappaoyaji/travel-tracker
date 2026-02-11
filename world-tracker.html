@@ -974,8 +974,10 @@
         // スケジュール読み込み
         async function loadSchedules() {
             try {
+                console.log('1. データ取得開始');
                 const response = await fetch(CONFIG.SHEET_URL);
                 schedules = await response.json();
+                console.log('2. データ取得完了:', schedules.length);
                 
                       
                         // UTCをDateオブジェクトに変換
@@ -1005,9 +1007,13 @@
                 // 初期表示時刻を設定
                 initializeCurrentTime();
 
+                console.log('3. updateDisplay() 開始');
                 updateDisplay();
+                console.log('4. updateNowButtonState() 開始');
                 updateNowButtonState();
+                console.log('5. fitMapToAllPeople() 開始');
                 fitMapToAllPeople();
+                console.log('6. ローディング非表示');
                 // ローディング画面を非表示
                 setTimeout(() => {
                     document.getElementById('loading-overlay').classList.add('hidden');
