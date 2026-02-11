@@ -875,28 +875,32 @@
 
         if (positions.length === 0) return;
 
-        // 経度の範囲を計算（東西は3人の中央）
+        // 経度の範囲を計算
         const lngs = positions.map(p => p.経度);
         const minLng = Math.min(...lngs);
         const maxLng = Math.max(...lngs);
-        const centerLng = (minLng + maxLng) / 2;
 
-        // 緯度の範囲を計算（3人が見える範囲）
-        const lats = positions.map(p => p.緯度);
-        const minLat = Math.min(...lats);
-        const maxLat = Math.max(...lats);
-        const latSpan = maxLat - minLat;
+        // 経度差が180度を超える場合は、逆回り（太平洋経由）で計算
+        let centerLng;
+        if (maxLng - minLng > 180) {
+            // 太平洋を横切る場合
+            centerLng = (minLng + maxLng) / 2 + 180;
+            if (centerLng > 180) centerLng -= 360;
+        } else {
+            // 通常（ユーラシア大陸経由）
+            centerLng = (minLng + maxLng) / 2;
+        }
 
-        // ズームレベルを計算（経度と緯度の範囲から）
+        // 経度の範囲に基づいてズームレベルを計算
         const lngSpan = maxLng - minLng;
         let zoom;
-        if (lngSpan > 180 || latSpan > 90) {
+        if (lngSpan > 180) {
             zoom = 1;
-        } else if (lngSpan > 90 || latSpan > 45) {
+        } else if (lngSpan > 90) {
             zoom = 2;
-        } else if (lngSpan > 45 || latSpan > 22) {
+        } else if (lngSpan > 45) {
             zoom = 3;
-        } else if (lngSpan > 22 || latSpan > 11) {
+        } else if (lngSpan > 22) {
             zoom = 4;
         } else {
             zoom = 5;
