@@ -530,12 +530,40 @@
 </head>
 <body>
     <div class="page-container">
-<!-- ヘッダー（タイトル） -->
-<header class="page-header">
-    Coming to pick you up! <span class="subtitle">via Vancouver</span>
-</header>
-    <div id="map"></div>
-    
+    <!-- ヘッダー（タイトル） -->
+    <header class="page-header">
+        Coming to pick you up! <span class="subtitle">via Vancouver</span>
+    </header>
+    <!-- メイン（地図エリア） -->
+    <main class="page-main">
+        <div id="map"></div>
+        <canvas id="day-night-canvas"></canvas>
+
+        <div id="person1-info" class="person-info">
+            <div class="person-header">
+                <span class="person-name">Person 1</span>
+                <span class="person-time" id="person1-time">--:--</span>
+            </div>
+            <div class="person-location" id="person1-location">--</div>
+        </div>
+
+        <div id="person2-info" class="person-info">
+            <div class="person-header">
+                <span class="person-name">Person 2</span>
+                <span class="person-time" id="person2-time">--:--</span>
+            </div>
+            <div class="person-location" id="person2-location">--</div>
+        </div>
+
+        <div id="person3-info" class="person-info">
+            <div class="person-header">
+                <span class="person-name">Person 3</span>
+                <span class="person-time" id="person3-time">--:--</span>
+            </div>
+            <div class="person-location" id="person3-location">--</div>
+        </div>
+    </main>
+
     <!-- ローディング画面 -->
     <div id="loading-overlay">
         <div id="loading-content">
