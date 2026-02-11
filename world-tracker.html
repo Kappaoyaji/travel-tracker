@@ -209,30 +209,7 @@
             font-size: 13px;
             font-weight: 600;
             background: white;
-            color: transparent;  /* 元のテキストを透明に */
-            position: relative;
         }
-
-        /* 短縮表記を表示 */
-        #timezone-select::after {
-            content: attr(data-short);
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #333;
-            pointer-events: none;
-        }
-
-        /* プルダウンを開いた時は元のテキストを表示 */
-        #timezone-select:focus {
-            color: #333;
-        }
-
-        #timezone-select:focus::after {
-            display: none;
-        }
-
         #time-display-container {
             flex: 1;
             display: flex;
@@ -1398,14 +1375,34 @@
                 }, 100);
             }
         });
+
+            // プルダウンを開いた時、全て日本語表記に戻す
+        tzSelect.addEventListener('focus', () => {
+            Array.from(tzSelect.options).forEach(option => {
+                const tz = option.value;
+                option.textContent = timezoneDisplay[tz] || tz;
+            });
+        });
+
+        // プルダウンを閉じた時、選択中だけ短縮表記に戻す
+        tzSelect.addEventListener('blur', () => {
+            updateTimezoneDisplay();
+        });
     }
 
     // タイムゾーン表示を更新
     function updateTimezoneDisplay() {
         const tzSelect = document.getElementById('timezone-select');
 
-        // data-short 属性に短縮表記を保存
-        tzSelect.setAttribute('data-short', timezoneShort[currentTimezone] || currentTimezone);
+        // 全ての option を日本語表記に戻す
+        Array.from(tzSelect.options).forEach(option => {
+            const tz = option.value;
+            option.textContent = timezoneDisplay[tz] || tz;
+        });
+
+        // 選択中の option だけ短縮表記に変更
+        const selectedOption = tzSelect.options[tzSelect.selectedIndex];
+        selectedOption.textContent = timezoneShort[currentTimezone] || currentTimezone;
     }
     // コントロールパネル初期化
     function initControls() {
