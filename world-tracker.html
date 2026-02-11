@@ -875,22 +875,36 @@
 
         if (positions.length === 0) return;
 
-        // 3人の位置から境界を作成
-        const bounds = new google.maps.LatLngBounds();
-        positions.forEach(pos => {
-            bounds.extend(new google.maps.LatLng(pos.緯度, pos.経度));
-        });
+        // 経度の範囲を計算（東西は3人の中央）
+        const lngs = positions.map(p => p.経度);
+        const minLng = Math.min(...lngs);
+        const maxLng = Math.max(...lngs);
+        const centerLng = (minLng + maxLng) / 2;
 
-        // パディングを設定（人物情報ボックス分の余白を確保）
-        const padding = {
-            top: 80,      // 人物情報ボックス + 余白
-            bottom: 80,   // 余白
-            left: 60,
-            right: 60
-        };
+        // 緯度の範囲を計算（3人が見える範囲）
+        const lats = positions.map(p => p.緯度);
+        const minLat = Math.min(...lats);
+        const maxLat = Math.max(...lats);
+        const latSpan = maxLat - minLat;
 
-        // 境界に合わせて地図を調整
-        map.fitBounds(bounds, padding);
+        // ズームレベルを計算（経度と緯度の範囲から）
+        const lngSpan = maxLng - minLng;
+        let zoom;
+        if (lngSpan > 180 || latSpan > 90) {
+            zoom = 1;
+        } else if (lngSpan > 90 || latSpan > 45) {
+            zoom = 2;
+        } else if (lngSpan > 45 || latSpan > 22) {
+            zoom = 3;
+        } else if (lngSpan > 22 || latSpan > 11) {
+            zoom = 4;
+        } else {
+            zoom = 5;
+        }
+
+        // 中心を設定（東西: 3人の中央、南北: 赤道）
+        map.setCenter({ lat: 0, lng: centerLng });
+        map.setZoom(zoom);
     }
             
     // 初期表示時刻を設定
