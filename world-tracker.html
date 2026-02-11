@@ -201,7 +201,7 @@
 
         #timezone-select {
             flex: 0 0 auto;
-            width: 70px;
+            width: 100px;
             padding: 6px 8px;
             border: 1px solid #ddd;
             border-radius: 6px;
@@ -216,13 +216,26 @@
         #time-display-container {
             flex: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
             background: #f0f8ff;
             padding: 6px 10px;
             border-radius: 6px;
             border: 2px solid #4285f4;
+        }
+
+        #time-date {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        #time-clock {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         #current-time-display {
@@ -647,9 +660,12 @@
             <div class="top-controls">
                 <select id="timezone-select"></select>
                 <div id="time-display-container">
-                    <span id="rewind-indicator"></span>
-                    <span id="current-time-display">--</span>
-                    <span id="forward-indicator"></span>
+                    <div id="time-date">--</div>
+                    <div id="time-clock">
+                        <span id="rewind-indicator"></span>
+                        <span id="current-time-display">--</span>
+                        <span id="forward-indicator"></span>
+                    </div>
                 </div>
                 <button id="now-btn">NOW</button>
             </div>
@@ -1511,17 +1527,25 @@
 
             // 時刻表示を更新
             function updateTimeDisplay() {
-            const formatted = currentTime.toLocaleString('ja-JP', {
-                timeZone: currentTimezone,
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-            document.getElementById('current-time-display').textContent = formatted;
-        }
+                // 日付部分
+                const dateFormatted = currentTime.toLocaleString('ja-JP', {
+                    timeZone: currentTimezone,
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+
+                // 時刻部分
+                const timeFormatted = currentTime.toLocaleString('ja-JP', {
+                    timeZone: currentTimezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+
+                document.getElementById('time-date').textContent = dateFormatted;
+                document.getElementById('current-time-display').textContent = timeFormatted;
+            }
 
                 
             // 日時選択ダイアログを表示
