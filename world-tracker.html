@@ -158,7 +158,43 @@
             color: #4285f4;
         }
 
-        #person1-info { bottom: 180px; left: 10px; border-left: 4px solid #FF6B6B; }
+        /* 全画面表示ボタン */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .fullscreen-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .fullscreen-btn:active {
+            background: #e0e0e0;
+            transform: scale(0.95);
+        }
+
+        .fullscreen-btn .material-symbols-outlined {
+            font-size: 28px;
+            color: #4285f4;
+        }
+
+        /* 全画面時はアイコンを変更 */
+        .fullscreen-btn.active .material-symbols-outlined::before {
+            content: 'fullscreen_exit';
+        }
 
         #person1-info { bottom: 130px; left: 10px; border-left: 4px solid #FF6B6B; }
         #person2-info { bottom: 80px; left: 10px; border-left: 4px solid #4ECDC4; }
@@ -662,10 +698,17 @@
         <div id="map"></div>
         <canvas id="day-night-canvas"></canvas>
 
-        <!-- 初期位置に戻るボタン -->
+    <!-- 初期位置に戻るボタン -->
         <button id="reset-view-btn" class="reset-view-btn" title="3人全員を表示">
             <span class="material-symbols-outlined">groups</span>
         </button>
+        
+        <!-- 全画面表示ボタン -->
+        <button id="fullscreen-btn" class="fullscreen-btn" title="全画面表示">
+            <span class="material-symbols-outlined">fullscreen</span>
+        </button>
+        
+        <div id="person1-info" class="person-info">
 
         <div id="person1-info" class="person-info">
             <div class="person-header">
@@ -1559,11 +1602,48 @@
                 resetViewBtn.addEventListener('click', () => {
                     fitMapToAllPeople();
                 });
+                
                 resetViewBtn.addEventListener('touchstart', (e) => {
                     e.preventDefault();
                     fitMapToAllPeople();
                 }, { passive: false });
+
+                // 全画面表示ボタン
+                const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+                function toggleFullscreen() {
+                    if (!document.fullscreenElement) {
+                        // 全画面表示にする
+                        document.documentElement.requestFullscreen().then(() => {
+                            fullscreenBtn.classList.add('active');
+                            fullscreenBtn.querySelector('.material-symbols-outlined').textContent = 'fullscreen_exit';
+                        }).catch(err => {
+                            console.log('全画面表示に失敗:', err);
+                        });
+                    } else {
+                        // 全画面を解除
+                        document.exitFullscreen().then(() => {
+                            fullscreenBtn.classList.remove('active');
+                            fullscreenBtn.querySelector('.material-symbols-outlined').textContent = 'fullscreen';
+                        });
+                    }
+                }
+
+                fullscreenBtn.addEventListener('click', toggleFullscreen);
+                fullscreenBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    toggleFullscreen();
+                }, { passive: false });
+
+                // 全画面状態の変化を監視
+                document.addEventListener('fullscreenchange', () => {
+                    if (!document.fullscreenElement) {
+                        fullscreenBtn.classList.remove('active');
+                        fullscreenBtn.querySelector('.material-symbols-outlined').textContent = 'fullscreen';
+                    }
+                });
             }
+            
 
             // 時刻表示を更新
             function updateTimeDisplay() {
