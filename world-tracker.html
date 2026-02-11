@@ -117,6 +117,62 @@
         }
 
         /* コントロールパネル */
+        /* 上部コントロール（タイムゾーン + 日付 + NOW） */
+        .top-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        #timezone-select {
+            flex: 0 0 auto;
+            min-width: 60px;
+            max-width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            background: white;
+        }
+
+        #time-display-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #f0f8ff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 2px solid #4285f4;
+        }
+
+        #current-time-display {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #now-btn {
+            flex: 0 0 auto;
+            padding: 6px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+
+
         #control-container {
             position: fixed;
             bottom: 0;
@@ -444,34 +500,7 @@
             color: #1a73e8; /* 少し濃い青 */
         }
 
-        /* 下部コントロール */
-        .bottom-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
 
-        #timezone-select {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-        }
-
-        #now-btn {
-            padding: 8px 20px;
-            background: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
 
         #now-btn:hover:not(:disabled) {
             background: #357ae8;
@@ -527,11 +556,15 @@
 
     <div id="control-container">
         <div id="control-panel">
-            <!-- 日付表示（速度表示統合） -->
-            <div id="time-display-container">
-                <span id="rewind-indicator"></span>
-                <span id="current-time-display">--</span>
-                <span id="forward-indicator"></span>
+            <!-- タイムゾーン + 日付 + NOWボタン（1行に統合） -->
+            <div class="top-controls">
+                <select id="timezone-select"></select>
+                <div id="time-display-container">
+                    <span id="rewind-indicator"></span>
+                    <span id="current-time-display">--</span>
+                    <span id="forward-indicator"></span>
+                </div>
+                <button id="now-btn">NOW</button>
             </div>
 
             <!-- コントロールボタン -->
@@ -554,12 +587,6 @@
                 <button id="forward-btn" class="control-btn">
                     <span class="material-symbols-outlined">fast_forward</span>
                 </button>
-            </div>
-
-            <!-- タイムゾーン＋NOWボタン -->
-            <div class="bottom-controls">
-                <select id="timezone-select"></select>
-                <button id="now-btn">NOW</button>
             </div>
         </div>
     </div>
@@ -660,21 +687,39 @@
             };
 
         // タイムゾーン表記マッピング
-        const timezoneDisplay = {
-            'Asia/Tokyo': '日本',                          // 日本は表示なし
-            'America/Los_Angeles': 'ＬＡ',
-            'America/Vancouver': 'バンクーバー',
-            'America/Denver': 'デンバー',
-            'America/Chicago': 'シカゴ',
-            'America/New_York': 'ＮＹ',
-            'America/Seattle': 'シアトル',
-            'Pacific/Honolulu': 'ホノルル',
-            'Europe/London': 'ロンドン',
-            'Europe/Paris': 'パリ',
-            'Asia/Hong_Kong': '香港',
-            'Asia/Singapore': 'シンガポール',
-            'Australia/Sydney': 'シドニー'
-        };
+    // プルダウン表示用（日本語）
+    const timezoneDisplay = {
+        'Asia/Tokyo': '日本',
+        'America/Los_Angeles': 'ＬＡ',
+        'America/Vancouver': 'バンクーバー',
+        'America/Denver': 'デンバー',
+        'America/Chicago': 'シカゴ',
+        'America/New_York': 'ＮＹ',
+        'America/Seattle': 'シアトル',
+        'Pacific/Honolulu': 'ホノルル',
+        'Europe/London': 'ロンドン',
+        'Europe/Paris': 'パリ',
+        'Asia/Hong_Kong': '香港',
+        'Asia/Singapore': 'シンガポール',
+        'Australia/Sydney': 'シドニー'
+    };
+
+    // 選択後の短縮表記
+    const timezoneShort = {
+        'Asia/Tokyo': 'JST',
+        'America/Los_Angeles': 'PST',
+        'America/Vancouver': 'PST',
+        'America/Denver': 'MST',
+        'America/Chicago': 'CST',
+        'America/New_York': 'EST',
+        'America/Seattle': 'PST',
+        'Pacific/Honolulu': 'HST',
+        'Europe/London': 'GMT',
+        'Europe/Paris': 'CET',
+        'Asia/Hong_Kong': 'HKT',
+        'Asia/Singapore': 'SGT',
+        'Australia/Sydney': 'AEDT'
+    };
 
         let playbackSpeed = 960;
         const speedLevels = [240, 960, 2880]; // 速度レベル（240倍、960倍、2880倍）
@@ -818,11 +863,19 @@
             zoom = 5;
         }
 
-        // 中心を設定（緯度は赤道固定）
-        map.setCenter({ lat: 0, lng: centerLng });
+        // 下部コントロールパネルの高さを取得
+        const controlHeight = document.getElementById('control-container').offsetHeight;
+        const mapHeight = window.innerHeight;
+
+        // 視覚的な中心を下にずらす（コントロールパネル分）
+        const offsetRatio = controlHeight / mapHeight;
+        const latOffset = offsetRatio * 90; // 緯度で調整（約-10〜-15度）
+
+        // 中心を設定（緯度は赤道から下部パネル分ずらす）
+        map.setCenter({ lat: -latOffset, lng: centerLng });
         map.setZoom(zoom);
     }
-        
+            
     // 初期表示時刻を設定
     function initializeCurrentTime() {
         const now = new Date();
@@ -1214,30 +1267,45 @@
             }
        
         // タイムゾーン選択肢を生成
-        function initTimezoneSelect() {
-            const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
-            const tzSelect = document.getElementById('timezone-select');
-            
-            tzSelect.innerHTML = uniqueTimezones.map(tz => 
-                `<option value="${tz}" ${tz === currentTimezone ? 'selected' : ''}>${tz}</option>`
-            ).join('');
-            
-                        tzSelect.addEventListener('change', (e) => {
-                currentTimezone = e.target.value;
-                updateTimeDisplay();
+    function initTimezoneSelect() {
+        const uniqueTimezones = [...new Set(schedules.map(s => s.タイムゾーン))];
+        const tzSelect = document.getElementById('timezone-select');
 
-                // モーダルが開いている場合は再描画
-                const modal = document.getElementById('datetime-modal');
-                if (modal && modal.classList.contains('show')) {
-                    modal.classList.remove('show');
-                    // 少し待ってから再表示（タイムゾーン反映のため）
-                    setTimeout(() => {
-                        showDateTimePicker();
-                    }, 100);
-                }
-            });
-        }
+        // プルダウン内は日本語表記
+        tzSelect.innerHTML = uniqueTimezones.map(tz =>
+            `<option value="${tz}">${timezoneDisplay[tz] || tz}</option>`
+        ).join('');
 
+        // 初期選択
+        tzSelect.value = currentTimezone;
+
+        // 選択後は短縮表記に変更
+        updateTimezoneDisplay();
+
+        tzSelect.addEventListener('change', (e) => {
+            currentTimezone = e.target.value;
+            updateTimezoneDisplay();
+            updateTimeDisplay();
+
+            // モーダルが開いている場合は再描画
+            const modal = document.getElementById('datetime-modal');
+            if (modal && modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    showDateTimePicker();
+                }, 100);
+            }
+        });
+    }
+
+    // タイムゾーン表示を更新
+    function updateTimezoneDisplay() {
+        const tzSelect = document.getElementById('timezone-select');
+        const selectedOption = tzSelect.options[tzSelect.selectedIndex];
+
+        // 選択後は短縮表記に変更
+        selectedOption.textContent = timezoneShort[currentTimezone] || currentTimezone;
+    }
     // コントロールパネル初期化
     function initControls() {
         // 最初に戻るボタン（タッチ対応）
