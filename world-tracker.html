@@ -1139,10 +1139,10 @@
 
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
-                      schedules.push({
+                        schedules.push({
                             ID: data.ID,
                             persons: data.persons || [],
-                            日時UTC: data.日時UTC ? new Date(data.日時UTC) : null,  // ← Date オブジェクトに変換
+                            日時UTC: data.日時UTC ? new Date(data.日時UTC) : null,
                             タイムゾーン: data.タイムゾーン,
                             緯度: data.緯度,
                             経度: data.経度,
@@ -1157,6 +1157,14 @@
                     });
 
                     console.log('2. データ取得完了（Firestore）:', schedules.length);
+
+                    // ID順にソート（数値として比較）
+                    schedules.sort((a, b) => {
+                        const idA = Number(a.ID) || 0;
+                        const idB = Number(b.ID) || 0;
+                        return idA - idB;
+                    });
+
                             // デバッグ: 最初のデータを確認
                     if (schedules.length > 0) {
                         console.log('サンプルデータ:', schedules[0]);
