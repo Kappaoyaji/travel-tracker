@@ -1404,15 +1404,14 @@
 
         // 新しいマーカーを作成
         const marker = new google.maps.Marker({
-            position: latLng,
+            position: { lat: schedule.緯度, lng: schedule.経度 },
             map: map,
-            title: personNames[person] || person,
             icon: {
                 path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: colors[person],
+                scale: 20, // 円のサイズ
+                fillColor: 'white',
                 fillOpacity: 1,
-                strokeColor: 'white',
+                strokeColor: iconColor, // アイコンの色で縁取り
                 strokeWeight: 2
             },
             zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
