@@ -938,7 +938,7 @@
         let oms; // OverlappingMarkerSpiderfier
                 
         // 初期化
-            function initMap() {
+            window.initMap = function () {
                     // CustomMarkerクラスを定義
                 CustomMarker = class extends google.maps.OverlayView {
                     constructor(position, color, person, offset) {
