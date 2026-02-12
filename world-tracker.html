@@ -1266,8 +1266,10 @@
     let locationMarkers = {}; // 位置ごとのアイコンマーカーを保持
 
     function updateLocationMarkers() {
+        console.log('updateLocationMarkers() 実行');
+
         // 現在表示すべき位置を収集
-        const currentLocations = new Map(); // key: "緯度,経度", value: schedule
+        const currentLocations = new Map();
 
         ['Person1', 'Person2', 'Person3'].forEach(person => {
             const position = getCurrentPosition(person);
@@ -1279,6 +1281,8 @@
                 }
             }
         });
+
+        console.log('currentLocations:', currentLocations.size);  // ← 追加
 
         // 既存のマーカーで不要なものを削除
         Object.keys(locationMarkers).forEach(key => {
@@ -1316,6 +1320,7 @@
                 });
 
                 locationMarkers[key] = marker;
+                console.log('アイコン作成:', iconName, iconColor, position.場所名);  // ← 追加
             }
         });
     }
