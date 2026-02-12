@@ -1213,6 +1213,9 @@
                 updateInfo(person, position);
             }
         });
+
+        // アイコンマーカーを更新
+        updateLocationMarkers();
     }
         
             // 現在位置を取得
@@ -1259,6 +1262,64 @@
                 return current;
             }
    
+    // アイコンマーカーを作成・更新
+    let locationMarkers = {}; // 位置ごとのアイコンマーカーを保持
+
+    function updateLocationMarkers() {
+        // 現在表示すべき位置を収集
+        const currentLocations = new Map(); // key: "緯度,経度", value: schedule
+
+        ['Person1', 'Person2', 'Person3'].forEach(person => {
+            const position = getCurrentPosition(person);
+            if (position && position.緯度 && position.経度 && position.アイコン) {
+                const key = `${position.緯度},${position.経度}`;
+                // 同じ位置に複数人いる場合、最初の人のアイコンを使用
+                if (!currentLocations.has(key)) {
+                    currentLocations.set(key, position);
+                }
+            }
+        });
+
+        // 既存のマーカーで不要なものを削除
+        Object.keys(locationMarkers).forEach(key => {
+            if (!currentLocations.has(key)) {
+                if (locationMarkers[key]) {
+                    locationMarkers[key].setMap(null);
+                    delete locationMarkers[key];
+                }
+            }
+        });
+
+        // 新しいマーカーを作成または更新
+        currentLocations.forEach((position, key) => {
+            if (!locationMarkers[key]) {
+                const iconName = getIconName(position);
+                const iconColor = getIconColor(position.アイコン);
+
+                // カスタムマーカー（Material Symbols）を作成
+                const marker = new google.maps.Marker({
+                    position: { lat: position.緯度, lng: position.経度 },
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 0, // 円を非表示
+                        fillOpacity: 0,
+                        strokeOpacity: 0
+                    },
+                    label: {
+                        text: iconName,
+                        fontFamily: 'Material Symbols Outlined',
+                        fontSize: '32px',
+                        color: iconColor
+                    },
+                    zIndex: 999 // 人物マーカーより下
+                });
+
+                locationMarkers[key] = marker;
+            }
+        });
+    }
+
     // マーカー更新
     function updateMarker(person, position) {
         const latLng = new google.maps.LatLng(position.緯度, position.経度);
