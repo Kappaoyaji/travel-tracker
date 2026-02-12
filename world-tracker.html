@@ -1157,6 +1157,12 @@
                     });
 
                     console.log('2. データ取得完了（Firestore）:', schedules.length);
+                            // デバッグ: 最初のデータを確認
+                    if (schedules.length > 0) {
+                        console.log('サンプルデータ:', schedules[0]);
+                        console.log('日時UTC型:', typeof schedules[0].日時UTC);
+                        console.log('日時UTC値:', schedules[0].日時UTC);
+                    }
                                       
                         // ↓↓↓ ここに追加 ↓↓↓
                         // 人物名を取得（最初のデータから）
