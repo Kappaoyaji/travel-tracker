@@ -777,7 +777,87 @@
 
 <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier/1.0.3/oms.min.js"></script>
-<script>
+<script type="module">
+
+            // Firebase SDK インポート
+            import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+            import {getFirestore, collection, getDocs} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+            // Firebase 設定
+            const firebaseConfig = {
+                apiKey: "AIzaSyBwc8WTnawIe-U9N_W3kbguy-BahmNyrdU",
+            authDomain: "coming-to-pick-you-up.firebaseapp.com",
+            projectId: "coming-to-pick-you-up",
+            storageBucket: "coming-to-pick-you-up.firebasestorage.app",
+            messagingSenderId: "767755613904",
+            appId: "1:767755613904:web:8fb1f8b759b153eb8310d5"
+    };
+
+            // Firebase 初期化
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+
+            // アイコンマッピング
+            const ICON_MAPPING = {
+                '飛行機': 'flight',
+            '電車': 'train',
+            'バス': 'directions_bus',
+            'タクシー': 'local_taxi',
+            '船': 'directions_boat',
+            '自転車': 'directions_bike',
+            '徒歩': 'directions_walk',
+            'ケーブルカー': 'gondola_lift',
+            '泳ぐ': 'pool',
+            'レストラン': 'restaurant',
+            'レジャー': 'attractions',
+            '観光地': 'tour',
+            'ホテル': 'hotel'
+    };
+
+            const ACTIVITY_CATEGORIES = {
+                '移動系': {
+                types: ['飛行機', '電車', 'バス', 'タクシー', '船', '自転車', '徒歩', 'ケーブルカー'],
+            color: '#4285f4'
+        },
+            'アクティビティ系': {
+                types: ['泳ぐ', 'レストラン', 'レジャー', '観光地'],
+            color: '#34a853'
+        },
+            'ホテル': {
+                types: ['ホテル'],
+            color: '#ea4335'
+        }
+    };
+
+            // カテゴリ取得
+            function getCategory(iconType) {
+        for (const [category, data] of Object.entries(ACTIVITY_CATEGORIES)) {
+            if (data.types.includes(iconType)) {
+                return category;
+            }
+        }
+            return 'アクティビティ系';
+    }
+
+            // アイコン名取得
+            function getIconName(schedule) {
+        if (schedule.アイコン === '飛行機') {
+            return schedule.タイプ === '出発' ? 'flight_takeoff' : 'flight_land';
+        }
+            return ICON_MAPPING[schedule.アイコン] || 'place';
+    }
+
+            // アイコン色取得
+            function getIconColor(iconType) {
+        const category = getCategory(iconType);
+            return ACTIVITY_CATEGORIES[category].color;
+    }
+            // ↑↑↑ ここまで追加 ↑↑↑
+
+            const CONFIG = {
+                SHEET_URL: 'https://script.google.com/macros/s/AKfycbwzao-67p0eODsPnqxa2a5qBTkKT6jx3B91xaU15bylyrKE28im__5OYKHyVdeJfAW-/exec',
+            MAPS_API_KEY: 'AIzaSyBSZjctKwqVnB2hbP2UgWQJAStHV0bXb5g'
+    };
         const CONFIG = {
             SHEET_URL: 'https://script.google.com/macros/s/AKfycbwzao-67p0eODsPnqxa2a5qBTkKT6jx3B91xaU15bylyrKE28im__5OYKHyVdeJfAW-/exec',
             MAPS_API_KEY: 'AIzaSyBSZjctKwqVnB2hbP2UgWQJAStHV0bXb5g'
@@ -1053,11 +1133,33 @@
         // ↓↓↓ ここに追加 ↓↓↓
         // スケジュール読み込み
         async function loadSchedules() {
-            try {
-                console.log('1. データ取得開始');
-                const response = await fetch(CONFIG.SHEET_URL);
-                schedules = await response.json();
-                console.log('2. データ取得完了:', schedules.length);
+                try {
+                    console.log('1. データ取得開始（Firestore）');
+
+                    // Firestore からデータ取得
+                    const querySnapshot = await getDocs(collection(db, 'schedules'));
+                    schedules = [];
+
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        schedules.push({
+                            ID: data.ID,
+                            persons: data.persons || [],
+                            日時UTC: data.日時UTC,
+                            タイムゾーン: data.タイムゾーン,
+                            緯度: data.緯度,
+                            経度: data.経度,
+                            場所名: data.場所名,
+                            タイプ: data.タイプ,
+                            到着地ID: data.到着地ID,
+                            personNames: data.personNames,
+                            内容: data.内容 || '',
+                            アイコン: data.アイコン || '',
+                            source: data.source
+                        });
+                    });
+
+                    console.log('2. データ取得完了（Firestore）:', schedules.length);
                 
                       
                         // UTCをDateオブジェクトに変換
