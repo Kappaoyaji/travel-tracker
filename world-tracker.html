@@ -1275,8 +1275,64 @@
     // アイコンマーカーを作成・更新
     let locationMarkers = {}; // 位置ごとのアイコンマーカーを保持
 
-    function updateLocationMarkers() {
-        console.log('updateLocationMarkers() 実行');
+        function updateLocationMarkers() {
+            console.log('updateLocationMarkers() 実行');
+
+            // 全ての予定地点を収集（重複を除く）
+            const allLocations = new Map(); // key: "緯度,経度", value: schedule
+
+            schedules.forEach(schedule => {
+                if (schedule.緯度 && schedule.経度 && schedule.アイコン) {
+                    const key = `${schedule.緯度},${schedule.経度}`;
+                    // 同じ位置に複数の予定がある場合、最初のものを使用
+                    if (!allLocations.has(key)) {
+                        allLocations.set(key, schedule);
+                    }
+                }
+            });
+
+            console.log('allLocations:', allLocations.size);
+
+            // 既存のマーカーで不要なものを削除
+            Object.keys(locationMarkers).forEach(key => {
+                if (!allLocations.has(key)) {
+                    if (locationMarkers[key]) {
+                        locationMarkers[key].setMap(null);
+                        delete locationMarkers[key];
+                    }
+                }
+            });
+
+            // 新しいマーカーを作成または更新
+            allLocations.forEach((schedule, key) => {
+                if (!locationMarkers[key]) {
+                    const iconName = getIconName(schedule);
+                    const iconColor = getIconColor(schedule.アイコン);
+
+                    // カスタムマーカー（Material Symbols）を作成
+                    const marker = new google.maps.Marker({
+                        position: { lat: schedule.緯度, lng: schedule.経度 },
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 0, // 円を非表示
+                            fillOpacity: 0,
+                            strokeOpacity: 0
+                        },
+                        label: {
+                            text: iconName,
+                            fontFamily: 'Material Symbols Outlined',
+                            fontSize: '32px',
+                            color: iconColor
+                        },
+                        zIndex: 999 // 人物マーカーより下
+                    });
+
+                    locationMarkers[key] = marker;
+                    console.log('アイコン作成:', iconName, iconColor, schedule.場所名);
+                }
+            });
+        }
 
         // 現在表示すべき位置を収集
         const currentLocations = new Map();
