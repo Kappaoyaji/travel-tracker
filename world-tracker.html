@@ -1315,9 +1315,11 @@
                         map: map,
                         icon: {
                             path: google.maps.SymbolPath.CIRCLE,
-                            scale: 20, // 円を非表示
-                            fillOpacity: 0,
-                            strokeOpacity: 0
+                            scale: 20, // 円のサイズ
+                            fillColor: 'white',
+                            fillOpacity: 1,
+                            strokeColor: iconColor, // アイコンの色で縁取り
+                            strokeWeight: 2
                         },
                         label: {
                             text: iconName,
@@ -1372,9 +1374,11 @@
                     map: map,
                     icon: {
                         path: google.maps.SymbolPath.CIRCLE,
-                        scale: 20, // 円を非表示
-                        fillOpacity: 0,
-                        strokeOpacity: 0
+                        scale: 20, // 円のサイズ
+                        fillColor: 'white',
+                        fillOpacity: 1,
+                        strokeColor: iconColor, // アイコンの色で縁取り
+                        strokeWeight: 2
                     },
                     label: {
                         text: iconName,
