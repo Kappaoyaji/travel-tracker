@@ -1393,6 +1393,16 @@
 
     // マーカー更新
     function updateMarker(person, position) {
+        // position が null なら既存マーカーを削除して終了
+        if (!position) {
+            if (markers[person]) {
+                oms.removeMarker(markers[person]);
+                markers[person].setMap(null);
+                markers[person] = null;
+            }
+            return;
+        }
+
         const latLng = new google.maps.LatLng(position.緯度, position.経度);
 
         // 既存のマーカーをOMSから削除
@@ -1404,14 +1414,15 @@
 
         // 新しいマーカーを作成
         const marker = new google.maps.Marker({
-            position: { lat: schedule.緯度, lng: schedule.経度 },
+            position: latLng,
             map: map,
+            title: personNames[person] || person,
             icon: {
                 path: google.maps.SymbolPath.CIRCLE,
-                scale: 20, // 円のサイズ
-                fillColor: 'white',
+                scale: 10,
+                fillColor: colors[person],
                 fillOpacity: 1,
-                strokeColor: iconColor, // アイコンの色で縁取り
+                strokeColor: 'white',
                 strokeWeight: 2
             },
             zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
