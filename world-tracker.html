@@ -1139,10 +1139,10 @@
 
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
-                        schedules.push({
+                      schedules.push({
                             ID: data.ID,
                             persons: data.persons || [],
-                            日時UTC: data.日時UTC,
+                            日時UTC: data.日時UTC ? new Date(data.日時UTC) : null,  // ← Date オブジェクトに変換
                             タイムゾーン: data.タイムゾーン,
                             緯度: data.緯度,
                             経度: data.経度,
@@ -1157,14 +1157,7 @@
                     });
 
                     console.log('2. データ取得完了（Firestore）:', schedules.length);
-                
-                      
-                        // UTCをDateオブジェクトに変換
-                        schedules = schedules.map(s => ({
-                            ...s,
-                            日時UTC: s.UTC ? new Date(s.UTC) : null
-                        }));
-                        
+                                      
                         // ↓↓↓ ここに追加 ↓↓↓
                         // 人物名を取得（最初のデータから）
                         if (schedules.length > 0 && schedules[0].personNames) {
