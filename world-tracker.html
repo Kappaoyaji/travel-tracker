@@ -1227,6 +1227,7 @@
         
             // 現在位置を取得
             function getCurrentPosition(person) {
+                console.log(`[${person}] getCurrentPosition 開始`);
                 const personSchedules = schedules.filter(s => s.persons.includes(person));
                 if (personSchedules.length === 0) return null;
                 
@@ -1247,6 +1248,7 @@
                         
                         // 移動中なら補間
                         if (currentTime >= departTime && currentTime <= arriveTime) {
+                            console.log(`[${person}] 移動中: ${current.場所名} → ${arrival.場所名}`);
                             const totalDuration = arriveTime - departTime;
                             const elapsed = currentTime - departTime;
                             const progress = elapsed / totalDuration;
@@ -1266,6 +1268,7 @@
                     }
                 }
                 
+                console.log(`[${person}] 現在位置:`, current.場所名, current.タイプ);
                 return current;
             }
    
