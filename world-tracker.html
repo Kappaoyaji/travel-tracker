@@ -1432,11 +1432,11 @@
             pinElement.className = 'person-pin';
             pinElement.innerHTML = `
             <svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <!-- ピンの外枠 -->
+                <!-- ピンの外枠（縁を細く） -->
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" 
-                      fill="${colors[person]}" stroke="white" stroke-width="0.5"/>
-                <!-- 内側の白い円 -->
-                <circle cx="12" cy="9" r="4" fill="white"/>
+                      fill="${colors[person]}" stroke="white" stroke-width="0.3"/>
+                <!-- 内側の白い円（大きく） -->
+                <circle cx="12" cy="9" r="5" fill="white"/>
                 <!-- 人物アイコン -->
                 <circle cx="12" cy="8" r="1.5" fill="${colors[person]}"/>
                 <path d="M12 10.5c-1.5 0-2.5 0.8-2.5 1.5v1h5v-1c0-0.7-1-1.5-2.5-1.5z" 
