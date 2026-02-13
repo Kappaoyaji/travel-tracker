@@ -1384,65 +1384,6 @@
                     }
                 });
             }
-        // 現在表示すべき位置を収集
-        const currentLocations = new Map();
-
-        ['Person1', 'Person2', 'Person3'].forEach(person => {
-            const position = getCurrentPosition(person);
-            if (position && position.緯度 && position.経度 && position.アイコン) {
-                const key = `${position.緯度},${position.経度}`;
-                // 同じ位置に複数人いる場合、最初の人のアイコンを使用
-                if (!currentLocations.has(key)) {
-                    currentLocations.set(key, position);
-                }
-            }
-        });
-
-        console.log('currentLocations:', currentLocations.size);  // ← 追加
-
-        // 既存のマーカーで不要なものを削除
-        Object.keys(locationMarkers).forEach(key => {
-            if (!currentLocations.has(key)) {
-                if (locationMarkers[key]) {
-                    locationMarkers[key].setMap(null);
-                    delete locationMarkers[key];
-                }
-            }
-        });
-
-        // 新しいマーカーを作成または更新
-        currentLocations.forEach((position, key) => {
-            if (!locationMarkers[key]) {
-                const iconName = getIconName(position);
-                const iconColor = getIconColor(position.アイコン);
-
-                console.log(`[${person}] マーカー作成:`, latLng.lat(), latLng.lng());
-
-                // カスタムマーカー（Material Symbols）を作成
-                const marker = new google.maps.Marker({
-                    position: { lat: position.緯度, lng: position.経度 },
-                    map: map,
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 20, // 円のサイズ
-                        fillColor: 'white',
-                        fillOpacity: 1,
-                        strokeColor: iconColor, // アイコンの色で縁取り
-                        strokeWeight: 2
-                    },
-                    label: {
-                        text: iconName,
-                        fontFamily: 'Material Symbols Outlined',
-                        fontSize: '32px',
-                        color: iconColor
-                    },
-                    zIndex: 999 // 人物マーカーより下
-                });
-
-                locationMarkers[key] = marker;
-                console.log('アイコン作成:', iconName, iconColor, position.場所名);  // ← 追加
-            }
-        });
     
 
     // マーカー更新
