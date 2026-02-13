@@ -1416,6 +1416,8 @@
                 const iconName = getIconName(position);
                 const iconColor = getIconColor(position.アイコン);
 
+                console.log(`[${person}] マーカー作成:`, latLng.lat(), latLng.lng());
+
                 // カスタムマーカー（Material Symbols）を作成
                 const marker = new google.maps.Marker({
                     position: { lat: position.緯度, lng: position.経度 },
