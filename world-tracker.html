@@ -633,7 +633,51 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
+                /* 位置アイコン */
+        .location-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        .location-icon.transport {
+            border: 3px solid #4285f4; /* 移動系: 青 */
+        }
+
+        .location-icon.activity {
+            border: 3px solid #34a853; /* アクティビティ系: 緑 */
+        }
+
+        .location-icon.hotel {
+            border: 3px solid #ea4335; /* ホテル: 赤 */
+        }
+
+        .location-icon .material-symbols-outlined {
+            font-size: 28px;
+        }
+
+        .location-icon.transport .material-symbols-outlined {
+            color: #4285f4;
+        }
+
+        .location-icon.activity .material-symbols-outlined {
+            color: #34a853;
+        }
+
+        .location-icon.hotel .material-symbols-outlined {
+            color: #ea4335;
+        }
+
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+                
         .material-symbols-outlined {
             font-family: 'Material Symbols Outlined';
             font-weight: normal;
@@ -1272,70 +1316,75 @@
                 return current;
             }
    
-    // アイコンマーカーを作成・更新
-    let locationMarkers = {}; // 位置ごとのアイコンマーカーを保持
+            // アイコンマーカーを作成・更新
+            let locationMarkers = {}; // 位置ごとのアイコンマーカーを保持
 
-        function updateLocationMarkers() {
-            console.log('updateLocationMarkers() 実行');
+            function updateLocationMarkers() {
+                console.log('updateLocationMarkers() 実行');
 
-            // 全ての予定地点を収集（重複を除く）
-            const allLocations = new Map(); // key: "緯度,経度", value: schedule
+                // 全ての予定地点を収集（重複を除く）
+                const allLocations = new Map(); // key: "緯度,経度", value: schedule
 
-            schedules.forEach(schedule => {
-                if (schedule.緯度 && schedule.経度 && schedule.アイコン) {
-                    const key = `${schedule.緯度},${schedule.経度}`;
-                    // 同じ位置に複数の予定がある場合、最初のものを使用
+                schedules.forEach(schedule => {
+                    if (schedule.緯度 && schedule.経度 && schedule.アイコン) {
+                        const key = `${schedule.緯度},${schedule.経度}`;
+                        // 同じ位置に複数の予定がある場合、最初のものを使用
+                        if (!allLocations.has(key)) {
+                            allLocations.set(key, schedule);
+                        }
+                    }
+                });
+
+                console.log('allLocations:', allLocations.size);
+
+                // 既存のマーカーで不要なものを削除
+                Object.keys(locationMarkers).forEach(key => {
                     if (!allLocations.has(key)) {
-                        allLocations.set(key, schedule);
+                        if (locationMarkers[key]) {
+                            locationMarkers[key].setMap(null);
+                            delete locationMarkers[key];
+                        }
                     }
-                }
-            });
+                });
 
-            console.log('allLocations:', allLocations.size);
+                // 新しいマーカーを作成
+                allLocations.forEach((schedule, key) => {
+                    if (!locationMarkers[key]) {
+                        const iconName = getIconName(schedule);
+                        const category = getCategory(schedule.アイコン);
 
-            // 既存のマーカーで不要なものを削除
-            Object.keys(locationMarkers).forEach(key => {
-                if (!allLocations.has(key)) {
-                    if (locationMarkers[key]) {
-                        locationMarkers[key].setMap(null);
-                        delete locationMarkers[key];
+                        // HTML要素を作成
+                        const iconElement = document.createElement('div');
+                        iconElement.className = 'location-icon';
+
+                        // カテゴリに応じたクラスを追加
+                        if (category === '移動系') {
+                            iconElement.classList.add('transport');
+                        } else if (category === 'アクティビティ系') {
+                            iconElement.classList.add('activity');
+                        } else if (category === 'ホテル') {
+                            iconElement.classList.add('hotel');
+                        }
+
+                        // アイコンを追加
+                        const icon = document.createElement('span');
+                        icon.className = 'material-symbols-outlined';
+                        icon.textContent = iconName;
+                        iconElement.appendChild(icon);
+
+                        // AdvancedMarkerElement を作成
+                        const marker = new google.maps.marker.AdvancedMarkerElement({
+                            position: { lat: schedule.緯度, lng: schedule.経度 },
+                            map: map,
+                            content: iconElement,
+                            zIndex: 500 // 人物マーカーより下
+                        });
+
+                        locationMarkers[key] = marker;
+                        console.log('アイコン作成:', iconName, category, schedule.場所名);
                     }
-                }
-            });
-
-            // 新しいマーカーを作成または更新
-            allLocations.forEach((schedule, key) => {
-                if (!locationMarkers[key]) {
-                    const iconName = getIconName(schedule);
-                    const iconColor = getIconColor(schedule.アイコン);
-
-                    // カスタムマーカー（Material Symbols）を作成
-                    const marker = new google.maps.Marker({
-                        position: { lat: schedule.緯度, lng: schedule.経度 },
-                        map: map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 20, // 円のサイズ
-                            fillColor: 'white',
-                            fillOpacity: 1,
-                            strokeColor: iconColor, // アイコンの色で縁取り
-                            strokeWeight: 2
-                        },
-                        label: {
-                            text: iconName,
-                            fontFamily: 'Material Symbols Outlined',
-                            fontSize: '32px',
-                            color: iconColor
-                        },
-                        zIndex: 999 // 人物マーカーより下
-                    });
-
-                    locationMarkers[key] = marker;
-                    console.log('アイコン作成:', iconName, iconColor, schedule.場所名);
-                }
-            });
-        }
-
+                });
+            }
         // 現在表示すべき位置を収集
         const currentLocations = new Map();
 
@@ -1987,7 +2036,7 @@
     </script>
     
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSZjctKwqVnB2hbP2UgWQJAStHV0bXb5g&libraries=geometry&callback=initMap">
-    </script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSZjctKwqVnB2hbP2UgWQJAStHV0bXb5g&libraries=geometry,marker&callback=initMap">
+        </script>
 </body>
 </html>
