@@ -634,6 +634,22 @@
             cursor: not-allowed;
         }
 
+        /* Person ピン */
+        .person-pin {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            transform: translateY(-48px);  /* 高さ分だけ上に移動 */
+            cursor: pointer;
+        }
+
+        .person-pin .material-symbols-outlined {
+            font-size: 48px;
+        }
+
         /* 位置アイコン */
         .location-icon {
             width: 32px;
@@ -1411,34 +1427,25 @@
         try {
             console.log(`[${person}] マーカー作成開始:`, latLng.lat(), latLng.lng());
 
-            // 新しいマーカーを作成
-            const marker = new google.maps.Marker({
+            // HTML要素を作成
+            const pinElement = document.createElement('div');
+            pinElement.className = 'person-pin';
+            pinElement.style.color = colors[person];
+            pinElement.innerHTML = '<span class="material-symbols-outlined">person_pin_circle</span>';
+
+            // AdvancedMarkerElement を作成
+            const marker = new google.maps.marker.AdvancedMarkerElement({
                 position: latLng,
                 map: map,
+                content: pinElement,
                 title: personNames[person] || person,
-                label: {
-                    text: 'person_pin_circle',
-                    fontFamily: 'Material Symbols Outlined',
-                    fontSize: '48px',
-                    color: colors[person],
-                    anchor: new google.maps.Point(24, 48)  // ← 追加
-                },
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 0,
-                    fillOpacity: 0,
-                    strokeOpacity: 0,
-                    anchor: new google.maps.Point(0, 0)
-                },
-                zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
+                zIndex: person === 'Person1' ? 2003 : (person === 'Person2' ? 2002 : 2001)
             });
 
             markers[person] = marker;
 
             console.log(`[${person}] マーカー作成完了:`, marker);
 
-            // OMSに追加
-            oms.addMarker(marker);
         } catch (error) {
             console.error(`[${person}] マーカー作成エラー:`, error);
         }
