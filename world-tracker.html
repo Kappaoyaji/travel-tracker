@@ -1424,16 +1424,10 @@
                 },
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
-                    scale: 0,  // 円を非表示
+                    scale: 0,
                     fillOpacity: 0,
                     strokeOpacity: 0,
-                    anchor: new google.maps.Point(0, 24)  // 基準点を下に
-                },
-                    scale: 10,
-                    fillColor: colors[person],
-                    fillOpacity: 1,
-                    strokeColor: 'white',
-                    strokeWeight: 2
+                    anchor: new google.maps.Point(0, 24)
                 },
                 zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
             });
