@@ -1388,6 +1388,7 @@
 
     // マーカー更新
     function updateMarker(person, position) {
+        console.log(`[${person}] updateMarker 呼び出し:`, position ? 'あり' : 'なし');
         // position が null なら既存マーカーを削除して終了
         if (!position) {
             if (markers[person]) {
