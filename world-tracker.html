@@ -1408,28 +1408,34 @@
             markers[person] = null;
         }
 
-        // 新しいマーカーを作成
-        const marker = new google.maps.Marker({
-            position: latLng,
-            map: map,
-            title: personNames[person] || person,
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: colors[person],
-                fillOpacity: 1,
-                strokeColor: 'white',
-                strokeWeight: 2
-            },
-            zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
-        });
+        try {
+            console.log(`[${person}] マーカー作成開始:`, latLng.lat(), latLng.lng());
 
-        markers[person] = marker;
+            // 新しいマーカーを作成
+            const marker = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                title: personNames[person] || person,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: colors[person],
+                    fillOpacity: 1,
+                    strokeColor: 'white',
+                    strokeWeight: 2
+                },
+                zIndex: person === 'Person1' ? 1003 : (person === 'Person2' ? 1002 : 1001)
+            });
 
-        console.log(`[${person}] マーカー作成完了:`, marker);
+            markers[person] = marker;
 
-        // OMSに追加
-        oms.addMarker(marker);
+            console.log(`[${person}] マーカー作成完了:`, marker);
+
+            // OMSに追加
+            oms.addMarker(marker);
+        } catch (error) {
+            console.error(`[${person}] マーカー作成エラー:`, error);
+        }
     }
 
     // 情報パネル更新
