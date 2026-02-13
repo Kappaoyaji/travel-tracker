@@ -1416,8 +1416,19 @@
                 position: latLng,
                 map: map,
                 title: personNames[person] || person,
+                label: {
+                    text: 'person_pin_circle',
+                    fontFamily: 'Material Symbols Outlined',
+                    fontSize: '48px',
+                    color: colors[person]
+                },
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
+                    scale: 0,  // 円を非表示
+                    fillOpacity: 0,
+                    strokeOpacity: 0,
+                    anchor: new google.maps.Point(0, 24)  // 基準点を下に
+                },
                     scale: 10,
                     fillColor: colors[person],
                     fillOpacity: 1,
