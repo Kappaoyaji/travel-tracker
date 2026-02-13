@@ -634,10 +634,10 @@
             cursor: not-allowed;
         }
 
-                /* 位置アイコン */
+        /* 位置アイコン */
         .location-icon {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             background: white;
             border-radius: 50%;
             display: flex;
@@ -645,6 +645,7 @@
             justify-content: center;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             cursor: pointer;
+            transform: translateY(12px);  /* 12px 下にオフセット */
         }
 
         .location-icon.transport {
@@ -660,7 +661,7 @@
         }
 
         .location-icon .material-symbols-outlined {
-            font-size: 28px;
+            font-size: 22px;  /* 28px → 22px */
         }
 
         .location-icon.transport .material-symbols-outlined {
