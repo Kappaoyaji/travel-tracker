@@ -1207,7 +1207,7 @@
                         schedules.push({
                             ID: data.ID,
                             persons: data.persons || [],
-                            日時UTC: data.日時UTC ? new Date(data.日時UTC) : null,
+                            日時UTC: data.日時UTC ? (data.日時UTC.toDate ? data.日時UTC.toDate() : new Date(data.日時UTC)) : null,
                             タイムゾーン: data.タイムゾーン,
                             緯度: data.緯度,
                             経度: data.経度,
