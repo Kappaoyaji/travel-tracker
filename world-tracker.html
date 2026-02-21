@@ -1306,7 +1306,9 @@
                 // 出発タイプで到着地がある場合、補間
                 if (current.タイプ === '出発' && current.到着地ID) {
                     const arrival = schedules.find(s => s.ID === current.到着地ID);
-                    
+
+                    console.log(`[${person}] 到着地ID: ${current.到着地ID}, 見つかった:`, arrival ? 'あり' : 'なし');
+                                   
                     if (arrival && arrival.日時UTC) {
                         const departTime = current.日時UTC;
                         const arriveTime = arrival.日時UTC;
