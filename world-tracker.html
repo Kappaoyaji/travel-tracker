@@ -1299,7 +1299,15 @@
                 // 現在時刻より前の最新スケジュール
                 const pastSchedules = personSchedules
                     .filter(s => s.日時UTC && s.日時UTC <= currentTime)
-                    .sort((a, b) => b.日時UTC - a.日時UTC);
+                    .sort((a, b) => {
+                        const timeDiff = b.日時UTC - a.日時UTC;
+                        if (timeDiff !== 0) return timeDiff;
+                        
+                        // 同じ時刻の場合、出発を後（最新）にする
+                        if (a.タイプ === '到着' && b.タイプ === '出発') return 1;
+                        if (a.タイプ === '出発' && b.タイプ === '到着') return -1;
+                        return 0;
+                    });
 
                 console.log(`[${person}] 過去のスケジュール数: ${pastSchedules.length}`);
                 if (pastSchedules.length > 0) {
