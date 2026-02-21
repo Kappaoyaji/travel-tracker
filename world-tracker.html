@@ -1301,10 +1301,10 @@
                     .filter(s => s.日時UTC && s.日時UTC <= currentTime)
                     .sort((a, b) => b.日時UTC - a.日時UTC);
 
-            console.log(`[${person}] 過去のスケジュール数: ${pastSchedules.length}`);
-            if (pastSchedules.length > 0) {
-                console.log(`[${person}] 最新: ID=${pastSchedules[0].ID}, 場所=${pastSchedules[0].場所名}, タイプ=${pastSchedules[0].タイプ}`);
-            }
+                console.log(`[${person}] 過去のスケジュール数: ${pastSchedules.length}`);
+                if (pastSchedules.length > 0) {
+                    console.log(`[${person}] 最新: ID=${pastSchedules[0].ID}, 場所=${pastSchedules[0].場所名}, タイプ=${pastSchedules[0].タイプ}`);
+                }
                 
                 const current = pastSchedules.length > 0 ? pastSchedules[0] : personSchedules[0];
                 
